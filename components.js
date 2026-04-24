@@ -1,0 +1,351 @@
+// ── Form endpoint config ───────────────────────────────────────────────────────
+// On localhost:4000 → use local Express API
+// On Cloudflare Pages (or any other host) → use Formspree
+const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+const FORMSPREE = {
+  registration: 'https://formspree.io/f/REPLACE_REG_ID',
+  contact:      'https://formspree.io/f/REPLACE_CON_ID',
+  enquiry:      'https://formspree.io/f/REPLACE_ENQ_ID',
+};
+
+async function postForm(endpoint, data) {
+  if (IS_LOCAL) {
+    // Local dev — hit the Express API
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error('Server error');
+    return res.json();
+  } else {
+    // Production (Cloudflare Pages) — use Formspree
+    const key = endpoint.replace('/api/', '').split('/')[0]; // registration | contact | enquiry
+    const url = FORMSPREE[key];
+    if (!url || url.includes('REPLACE')) throw new Error('Formspree not configured');
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error('Formspree error');
+    return res.json();
+  }
+}
+
+// ── Consulting modal ────────────────────────────────────────────────────────────
+function buildConsultingModal() {
+  document.body.insertAdjacentHTML('beforeend', `
+    <button class="consult-fab" id="consultFab" aria-label="Connect for Consulting">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span>Connect for Consulting</span>
+    </button>
+    <div class="consult-overlay" id="consultOverlay"></div>
+    <div class="consult-modal" id="consultModal" role="dialog" aria-modal="true">
+      <div class="consult-modal__header">
+        <div><h3>Connect for Consulting</h3><p>Tell us your need — we respond within 24 hours.</p></div>
+        <button class="consult-modal__close" id="consultClose" aria-label="Close">&#10005;</button>
+      </div>
+      <form id="consultForm" class="consult-modal__body">
+        <div class="form-row">
+          <div class="form-group"><label for="c-name">Full Name *</label><input type="text" id="c-name" placeholder="Your full name" required/></div>
+          <div class="form-group"><label for="c-org">Organisation</label><input type="text" id="c-org" placeholder="Company / Institution"/></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label for="c-email">Email *</label><input type="email" id="c-email" placeholder="your@email.com" required/></div>
+          <div class="form-group"><label for="c-phone">Mobile *</label><input type="tel" id="c-phone" placeholder="+91 XXXXX XXXXX" required/></div>
+        </div>
+        <div class="form-group">
+          <label for="c-service">Area of Interest</label>
+          <select id="c-service">
+            <option value="">Select a Service</option>
+            <option>Business Consulting &amp; Growth</option>
+            <option>Startup &amp; Entrepreneurial Mentoring</option>
+            <option>Academic Institution Building &amp; Empowerment</option>
+            <option>Corporate Training &amp; Professional Development</option>
+            <option>Risk, Compliance, ESG &amp; Funding Advisory</option>
+            <option>Branding, Collaborations &amp; Transformation</option>
+            <option>General Enquiry</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="c-message">Your Message / Requirement *</label>
+          <textarea id="c-message" placeholder="Briefly describe your need..." required></textarea>
+        </div>
+        <div id="consult-msg" style="display:none;padding:.7rem 1rem;border-radius:8px;font-size:.88rem;margin-bottom:.8rem;"></div>
+        <button type="submit" class="btn-submit" id="consultSubmitBtn">SEND ENQUIRY</button>
+      </form>
+    </div>
+  `);
+
+  const fab = document.getElementById('consultFab');
+  const modal = document.getElementById('consultModal');
+  const overlay = document.getElementById('consultOverlay');
+  const closeBtn = document.getElementById('consultClose');
+  const openModal = () => { modal.classList.add('open'); overlay.classList.add('open'); document.body.style.overflow = 'hidden'; };
+  const closeModal = () => { modal.classList.remove('open'); overlay.classList.remove('open'); document.body.style.overflow = ''; };
+
+  fab.addEventListener('click', openModal);
+  closeBtn.addEventListener('click', closeModal);
+  overlay.addEventListener('click', closeModal);
+  window._openConsultModal = openModal;
+
+  document.getElementById('consultForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('consultSubmitBtn');
+    const msgEl = document.getElementById('consult-msg');
+    btn.textContent = 'Sending...'; btn.disabled = true;
+    try {
+      await postForm('/api/enquiry', {
+        name:         document.getElementById('c-name').value,
+        organisation: document.getElementById('c-org').value,
+        email:        document.getElementById('c-email').value,
+        phone:        document.getElementById('c-phone').value,
+        service:      document.getElementById('c-service').value,
+        message:      document.getElementById('c-message').value,
+      });
+      msgEl.style.cssText = 'display:block;background:#d4edda;color:#155724;padding:.7rem 1rem;border-radius:8px;font-size:.88rem;margin-bottom:.8rem;';
+      msgEl.textContent = '✓ Enquiry received! We will get back to you within 24 hours.';
+      e.target.reset();
+      setTimeout(closeModal, 2500);
+    } catch {
+      msgEl.style.cssText = 'display:block;background:#f8d7da;color:#721c24;padding:.7rem 1rem;border-radius:8px;font-size:.88rem;margin-bottom:.8rem;';
+      msgEl.textContent = 'Something went wrong. Please email us at mail@gasuccessfactors.com';
+    } finally {
+      btn.textContent = 'SEND ENQUIRY'; btn.disabled = false;
+    }
+  });
+}
+
+// ── Header ─────────────────────────────────────────────────────────────────────
+function buildHeader() {
+  const current = location.pathname.split('/').pop() || 'index.html';
+  const links = [
+    { href: 'index.html', label: 'Home' },
+    { href: 'services.html', label: 'Services' },
+    { href: 'profile.html', label: 'Profile' },
+    { href: 'training-programs.html', label: 'Training Programs' },
+    { href: 'gallery.html', label: 'Gallery' },
+    { href: 'reach-us.html', label: 'Reach Us', cta: true },
+  ];
+  const navHTML = links.map(l =>
+    `<a href="${l.href}" class="${l.cta?'btn-nav-cta':''}${current===l.href||(current===''&&l.href==='index.html')?' active':''}">${l.label}</a>`
+  ).join('');
+  document.getElementById('header-mount').innerHTML = `
+    <div class="top-bar">
+      <a href="mailto:mail@gasuccessfactors.com">&#9993; mail@gasuccessfactors.com</a>
+      <a href="tel:+918330833330">&#128222; +91 8330 833330</a>
+    </div>
+    <header class="site-header" id="siteHeader">
+      <div class="header-inner">
+        <a href="index.html" class="logo">
+          <div class="logo-icon">&#127823;</div>
+          <span>GreenApple <em style="font-style:normal;color:var(--teal-600);">Success Factors</em></span>
+        </a>
+        <nav class="nav-links" id="navLinks">${navHTML}</nav>
+        <button class="hamburger" id="hamburgerBtn" aria-label="Open menu"><span></span><span></span><span></span></button>
+      </div>
+    </header>
+    <div class="mobile-nav-overlay" id="mobileOverlay"></div>
+    <nav class="mobile-nav" id="mobileNav">${navHTML}</nav>`;
+  const btn = document.getElementById('hamburgerBtn');
+  const mn = document.getElementById('mobileNav');
+  const ov = document.getElementById('mobileOverlay');
+  const close = () => { btn.classList.remove('open'); mn.classList.remove('open'); ov.classList.remove('show'); };
+  btn.addEventListener('click', () => { const o=mn.classList.toggle('open'); btn.classList.toggle('open',o); ov.classList.toggle('show',o); });
+  ov.addEventListener('click', close);
+  mn.querySelectorAll('a').forEach(a => a.addEventListener('click', close));
+  window.addEventListener('scroll', () => document.getElementById('siteHeader')?.classList.toggle('scrolled', window.scrollY > 40));
+}
+
+// ── Footer ─────────────────────────────────────────────────────────────────────
+function buildFooter() {
+  const m = document.getElementById('footer-mount');
+  if (!m) return;
+  m.innerHTML = `
+    <footer class="site-footer">
+      <div class="footer-grid">
+        <div>
+          <a href="index.html" class="logo" style="margin-bottom:1rem;">
+            <div class="logo-icon">&#127823;</div>
+            <span style="color:#fff;">GreenApple <em style="font-style:normal;color:var(--teal-300);">Success Factors</em></span>
+          </a>
+          <p style="color:var(--teal-300);font-weight:600;font-size:.9rem;margin-bottom:.6rem;">Clarity. Intelligence. Growth.</p>
+          <p>Enabling sustainable business growth and long-term value creation through strategic insight, decision intelligence, and empowered leadership.</p>
+          <div class="social-links" style="margin-top:1rem;">
+            <a href="mailto:mail@gasuccessfactors.com" aria-label="Email">&#9993;</a>
+            <a href="tel:+918330833330" aria-label="Call">&#128222;</a>
+          </div>
+        </div>
+        <div>
+          <h4>Our Services</h4>
+          <nav class="footer-links">
+            <a href="business-consulting.html">Business Consulting</a>
+            <a href="startup-mentoring.html">Startup Mentoring</a>
+            <a href="academic-empowerment.html">Academic Empowerment</a>
+            <a href="training-programs.html">Training Programs</a>
+            <a href="risk-compliance-funding.html">Risk &amp; Funding</a>
+            <a href="branding-transformation.html">Branding &amp; Transformation</a>
+          </nav>
+        </div>
+        <div>
+          <h4>Quick Links</h4>
+          <nav class="footer-links">
+            <a href="index.html">Home</a>
+            <a href="profile.html">Profile</a>
+            <a href="services.html">Our Services</a>
+            <a href="gallery.html">Gallery</a>
+            <a href="reach-us.html">Reach Us</a>
+            <a href="registration.html">Register</a>
+          </nav>
+        </div>
+      </div>
+      <div class="footer-bottom">&copy; 2025 GreenApple Success Factors Pvt Ltd. All rights reserved. | Clarity. Intelligence. Growth.</div>
+    </footer>`;
+}
+
+// ── Register CTA ───────────────────────────────────────────────────────────────
+function buildRegisterCTA() {
+  const m = document.getElementById('register-cta-mount');
+  if (!m) return;
+  m.innerHTML = `
+    <section style="background:linear-gradient(135deg,var(--navy-900),var(--teal-900));padding:clamp(3rem,6vw,5rem) 1.5rem;text-align:center;">
+      <h2 style="color:#fff;margin-bottom:.8rem;">Ready to Begin Your Growth Journey?</h2>
+      <p style="color:rgba(255,255,255,.82);max-width:620px;margin:0 auto 2rem;font-size:.98rem;line-height:1.8;">Enabling leadership to think beyond the obvious, act with clarity, and create lasting impact.</p>
+      <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+        <button onclick="window._openConsultModal&&window._openConsultModal()" class="btn-primary">Connect for Consulting</button>
+        <a href="registration.html" class="btn-outline">Register for a Programme</a>
+      </div>
+    </section>`;
+}
+
+// ── Scroll reveal ──────────────────────────────────────────────────────────────
+function initScrollReveal() {
+  const io = new IntersectionObserver(entries => entries.forEach(e => { if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target);} }), { threshold: 0.08 });
+  document.querySelectorAll('.fade-up').forEach(el => io.observe(el));
+}
+
+// ── Carousel ───────────────────────────────────────────────────────────────────
+function initCarousel() {
+  const slides = document.querySelectorAll('.carousel-slide');
+  const dots = document.querySelectorAll('.carousel-dots .dot');
+  if (!slides.length) return;
+  let cur = 0, timer;
+  const go = idx => { slides[cur].classList.remove('active'); dots[cur]?.classList.remove('active'); cur=(idx+slides.length)%slides.length; slides[cur].classList.add('active'); dots[cur]?.classList.add('active'); };
+  const start = () => { clearInterval(timer); timer = setInterval(()=>go(cur+1), 5500); };
+  dots.forEach((d,i) => d.addEventListener('click', ()=>{go(i);start();}));
+  start();
+}
+
+// ── Payment tabs ───────────────────────────────────────────────────────────────
+function initTabs() {
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-'+btn.dataset.tab)?.classList.add('active');
+    });
+  });
+}
+
+// ── Registration form ──────────────────────────────────────────────────────────
+const AMOUNTS = {career:'Rs. 5,000',icwim:'Rs. 15,000',institution:'Rs. 10,000',financial:'Rs. 7,500',startup:'Rs. 8,000'};
+
+function initRegistrationForm() {
+  const sel = document.getElementById('reg-programme');
+  const amt = document.getElementById('reg-amount');
+  if (sel && amt) sel.addEventListener('change', () => { amt.value = AMOUNTS[sel.value] || ''; });
+
+  const form = document.getElementById('registrationForm');
+  if (!form) return;
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = form.querySelector('.btn-submit');
+    btn.textContent = 'Submitting...'; btn.disabled = true;
+
+    const getVal = id => document.getElementById(id)?.value || '';
+    const getRadio = name => document.querySelector(`input[name="${name}"]:checked`)?.value || '';
+
+    try {
+      await postForm('/api/registration', {
+        reg_type:       getRadio('reg-type'),
+        programme:      getVal('reg-programme'),
+        title:          getVal('reg-title'),
+        first_name:     getVal('reg-firstname'),
+        middle_name:    getVal('reg-middlename'),
+        last_name:      getVal('reg-lastname'),
+        dob:            getVal('reg-dob'),
+        designation:    getVal('reg-designation'),
+        company:        getVal('reg-company'),
+        industry:       getVal('reg-industry'),
+        specialization: getVal('reg-specialization'),
+        addr_office:    getVal('reg-addr-office'),
+        pin_office:     getVal('reg-pin-office'),
+        addr_residence: getVal('reg-addr-residence'),
+        pin_residence:  getVal('reg-pin-residence'),
+        tel:            getVal('reg-tel'),
+        mobile:         getVal('reg-mobile'),
+        email_office:   getVal('reg-email-office'),
+        email_permanent:getVal('reg-email-permanent'),
+        iod_member:     getRadio('iod'),
+        amount:         getVal('reg-amount'),
+        date:           getVal('reg-date'),
+      });
+      showFormMsg(form, '✓ Registration submitted successfully! We will contact you shortly.', 'success');
+      form.reset();
+    } catch {
+      showFormMsg(form, '✗ Submission failed. Please email mail@gasuccessfactors.com directly.', 'error');
+    } finally {
+      btn.textContent = 'SUBMIT FORM'; btn.disabled = false;
+    }
+  });
+}
+
+// ── Contact form ───────────────────────────────────────────────────────────────
+function initContactForm() {
+  const form = document.getElementById('contactForm');
+  if (!form) return;
+  form.removeAttribute('onsubmit');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = form.querySelector('.btn-submit, button[type=submit]');
+    btn.textContent = 'Sending...'; btn.disabled = true;
+    try {
+      await postForm('/api/contact', {
+        name:    document.getElementById('contact-name')?.value || '',
+        phone:   document.getElementById('contact-phone')?.value || '',
+        email:   document.getElementById('contact-email')?.value || '',
+        message: document.getElementById('contact-message')?.value || '',
+      });
+      showFormMsg(form, '✓ Message received! We will get back to you soon.', 'success');
+      form.reset();
+    } catch {
+      showFormMsg(form, '✗ Failed to send. Please email mail@gasuccessfactors.com directly.', 'error');
+    } finally {
+      btn.textContent = 'SEND'; btn.disabled = false;
+    }
+  });
+}
+
+function showFormMsg(form, text, type) {
+  let el = form.querySelector('.form-result-msg');
+  if (!el) { el = document.createElement('div'); el.className = 'form-result-msg'; form.prepend(el); }
+  el.textContent = text;
+  el.style.cssText = `display:block;padding:.8rem 1rem;border-radius:8px;font-size:.9rem;margin-bottom:1rem;font-weight:500;background:${type==='success'?'#d4edda':'#f8d7da'};color:${type==='success'?'#155724':'#721c24'};`;
+  setTimeout(() => { el.style.display = 'none'; }, 6000);
+}
+
+// ── Init ───────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  buildHeader();
+  buildFooter();
+  buildRegisterCTA();
+  buildConsultingModal();
+  initScrollReveal();
+  initCarousel();
+  initTabs();
+  initRegistrationForm();
+  initContactForm();
+});

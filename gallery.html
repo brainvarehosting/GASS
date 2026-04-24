@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Gallery - GreenApple Success Factors. Showcasing our corporate environment and success stories."/>
+  <title>Gallery | GreenApple Success Factors</title>
+  <link rel="stylesheet" href="assets/components.css"/>
+  <link rel="stylesheet" href="extra.css"/>
+  <style>
+    .gallery-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1.5rem; padding:2rem 0; }
+    .gallery-item { position:relative; border-radius:var(--r-md); overflow:hidden; aspect-ratio:4/3; box-shadow:var(--shadow-sm); transition:all var(--t-base) var(--ease); cursor:zoom-in; }
+    .gallery-item:hover { transform:scale(1.02); box-shadow:var(--shadow-lg); }
+    .gallery-item img { width:100%; height:100%; object-fit:cover; transition:transform var(--t-slow) var(--ease); }
+    .gallery-item:hover img { transform:scale(1.1); }
+    .gallery-overlay { position:absolute; inset:0; background:linear-gradient(to top,rgba(4,10,20,.6),transparent); opacity:0; transition:opacity var(--t-base) var(--ease); display:flex; align-items:flex-end; padding:1.5rem; color:var(--white); }
+    .gallery-item:hover .gallery-overlay { opacity:1; }
+    .gallery-overlay span { font-weight:600; font-size:.9rem; transform:translateY(10px); transition:transform var(--t-base) var(--ease); }
+    .gallery-item:hover .gallery-overlay span { transform:translateY(0); }
+  </style>
+</head>
+<body>
+  <div id="header-mount"></div>
+
+  <section class="hero hero--has-bg" style="background-image:url('assets/gallery-skyscrapers.avif');">
+    <h1>Our Gallery</h1>
+    <p>A visual journey through our professional excellence and success milestones.</p>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="gallery-grid">
+        <div class="gallery-item fade-up">
+          <img src="assets/gallery-corporate-1.jpg" alt="Corporate Excellence"/>
+          <div class="gallery-overlay"><span>Corporate Excellence</span></div>
+        </div>
+        <div class="gallery-item fade-up" style="transition-delay:.1s;">
+          <img src="assets/gallery-team-success.webp" alt="Team Achievement"/>
+          <div class="gallery-overlay"><span>Diverse Success Teams</span></div>
+        </div>
+        <div class="gallery-item fade-up" style="transition-delay:.2s;">
+          <img src="assets/gallery-skyscrapers.avif" alt="Visionary Growth"/>
+          <div class="gallery-overlay"><span>Strategic Growth</span></div>
+        </div>
+        <div class="gallery-item fade-up" style="transition-delay:.3s;">
+          <img src="assets/gallery-office-life.jpg" alt="Professional Environment"/>
+          <div class="gallery-overlay"><span>Collaborative Spaces</span></div>
+        </div>
+        <div class="gallery-item fade-up" style="transition-delay:.4s;">
+          <img src="assets/gallery-meetings.webp" alt="Strategic Planning"/>
+          <div class="gallery-overlay"><span>Focused Leadership</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="footer-mount"></div>
+  <script src="components.js"></script>
+  <script src="content-loader.js"></script>
+</body>
+</html>

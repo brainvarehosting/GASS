@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="GreenApple Success Factors - Registration Form for programmes and certifications."/>
+  <title>Registration Form | GreenApple Success Factors</title>
+  <link rel="stylesheet" href="assets/components.css"/>
+  <link rel="stylesheet" href="extra.css"/>
+</head>
+<body>
+  <div id="header-mount"></div>
+
+  <section class="hero" style="background:linear-gradient(135deg,var(--navy-900),var(--teal-900));">
+    <h1>Registration Form</h1>
+    <p>GreenApple Success Factors — Empowerment beyond transformation</p>
+  </section>
+
+  <section class="section">
+    <div class="reg-form-container fade-up">
+      <div class="reg-notice">
+        ⚠️ Form submission details may contain deviations. Please contact technical support!
+      </div>
+
+      <form id="registrationForm" onsubmit="event.preventDefault(); alert('Form submitted successfully! We will contact you shortly.');">
+
+        <!-- Registration Type -->
+        <div class="form-group">
+          <label>Registration Type</label>
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="reg-type" value="individual" checked/> <span>Individual</span></label>
+            <label class="radio-label"><input type="radio" name="reg-type" value="business"/> <span>Business</span></label>
+          </div>
+        </div>
+
+        <!-- Programme -->
+        <div class="form-group">
+          <label for="reg-programme">Programme</label>
+          <select id="reg-programme" required>
+            <option value="">Select Programme</option>
+            <option value="career">Career Planning, Empowerment and Professional Wellness</option>
+            <option value="icwim">International Certificate in Wealth and Investment Management (ICWIM)</option>
+            <option value="institution">Institution Building and Professional Empowerment Programme</option>
+            <option value="financial">Financial Wellness Planning</option>
+            <option value="startup">Start-up Mentoring and Leadership Coaching</option>
+          </select>
+        </div>
+
+        <!-- Title + First Name -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reg-title">Title</label>
+            <select id="reg-title">
+              <option value="Mr.">Mr.</option>
+              <option value="Mrs.">Mrs.</option>
+              <option value="Ms.">Ms.</option>
+              <option value="Dr.">Dr.</option>
+              <option value="Prof.">Prof.</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="reg-firstname">First Name</label>
+            <input type="text" id="reg-firstname" placeholder="First Name" required/>
+          </div>
+        </div>
+
+        <!-- Middle + Last Name -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reg-middlename">Middle Name</label>
+            <input type="text" id="reg-middlename" placeholder="Middle Name"/>
+          </div>
+          <div class="form-group">
+            <label for="reg-lastname">Last Name</label>
+            <input type="text" id="reg-lastname" placeholder="Last Name" required/>
+          </div>
+        </div>
+
+        <!-- DOB -->
+        <div class="form-group">
+          <label for="reg-dob">Date of Birth</label>
+          <input type="date" id="reg-dob"/>
+        </div>
+
+        <!-- Designation & Company -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reg-designation">Designation</label>
+            <input type="text" id="reg-designation" placeholder="Designation"/>
+          </div>
+          <div class="form-group">
+            <label for="reg-company">Company</label>
+            <input type="text" id="reg-company" placeholder="Company"/>
+          </div>
+        </div>
+
+        <!-- Industry & Specialization -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reg-industry">Industry</label>
+            <input type="text" id="reg-industry" placeholder="Industry"/>
+          </div>
+          <div class="form-group">
+            <label for="reg-specialization">Specialization</label>
+            <input type="text" id="reg-specialization" placeholder="Specialization"/>
+          </div>
+        </div>
+
+        <!-- Office Address -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reg-addr-office">Address - Office</label>
+            <input type="text" id="reg-addr-office" placeholder="Office Address"/>
+          </div>
+          <div class="form-group">
+            <label for="reg-pin-office">PIN</label>
+            <input type="text" id="reg-pin-office" placeholder="PIN Code"/>
+          </div>
+        </div>
+
+        <!-- Residence Address -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reg-addr-residence">Address - Residence</label>
+            <input type="text" id="reg-addr-residence" placeholder="Residence Address"/>
+          </div>
+          <div class="form-group">
+            <label for="reg-pin-residence">PIN</label>
+            <input type="text" id="reg-pin-residence" placeholder="PIN Code"/>
+          </div>
+        </div>
+
+        <!-- Tel & Mobile -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reg-tel">Tel</label>
+            <input type="tel" id="reg-tel" placeholder="Telephone"/>
+          </div>
+          <div class="form-group">
+            <label for="reg-mobile">Mobile</label>
+            <input type="tel" id="reg-mobile" placeholder="Mobile Number" required/>
+          </div>
+        </div>
+
+        <!-- Emails -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reg-email-office">Email - Office</label>
+            <input type="email" id="reg-email-office" placeholder="Office Email"/>
+          </div>
+          <div class="form-group">
+            <label for="reg-email-permanent">Email - Permanent</label>
+            <input type="email" id="reg-email-permanent" placeholder="Permanent Email" required/>
+          </div>
+        </div>
+
+        <!-- IOD Membership -->
+        <div class="form-group">
+          <label>Are you a member of IOD?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="iod" value="yes"/> Yes</label>
+            <label><input type="radio" name="iod" value="no" checked/> No</label>
+          </div>
+        </div>
+
+        <!-- Amount Payable -->
+        <div class="form-group">
+          <label for="reg-amount">Amount Payable</label>
+          <input type="text" id="reg-amount" placeholder="Select the program above" readonly/>
+        </div>
+
+        <!-- Payment Tabs -->
+        <div class="tabs">
+          <button type="button" class="tab-btn active" data-tab="bank">Bank Details</button>
+          <button type="button" class="tab-btn" data-tab="gpay">Google-Pay Number</button>
+        </div>
+
+        <div class="tab-content active" id="tab-bank">
+          <div class="bank-details">
+            <strong>Account Number:</strong> 0098073000009916<br/>
+            <strong>Name:</strong> Green Apple Success Factors Pvt. Ltd.<br/>
+            <strong>Bank:</strong> South Indian Bank, Banerji Road, Ernakulam, Kerala<br/>
+            <strong>IFSC Code:</strong> SIBL0000098
+          </div>
+        </div>
+
+        <div class="tab-content" id="tab-gpay">
+          <div class="bank-details">
+            <strong>Google-Pay Number:</strong> +91 8330 833330<br/>
+            <strong>Name:</strong> Green Apple Success Factors Pvt. Ltd.
+          </div>
+        </div>
+
+        <!-- Date -->
+        <div class="form-group mt-2">
+          <label for="reg-date">Date</label>
+          <input type="date" id="reg-date"/>
+        </div>
+
+        <!-- IOD Address -->
+        <div class="address-block">
+          <p>Kindly return the filled up application form to the IOD National Nodal Office, Kochi in the following address:</p>
+          <p style="margin-top:.5rem;">
+            <strong>Dr. George V Antony</strong><br/>
+            Honorary Regional Director<br/>
+            Institute of Directors (IOD)<br/>
+            7/26B, Karuchira Temple Rd, Karumaloore P.O., Kochi 683511, Kerala<br/>
+            Mobile: +91 7293729729, 8330833330<br/>
+            E-mail: <a href="mailto:rd.kerala@iodglobal.com" style="color:var(--teal-700);">rd.kerala@iodglobal.com</a>
+          </p>
+        </div>
+
+        <div class="text-center mt-2">
+          <button type="submit" class="btn-submit">SUBMIT FORM</button>
+        </div>
+
+      </form>
+    </div>
+  </section>
+
+  <div id="footer-mount"></div>
+  <script src="components.js"></script>
+  <script src="content-loader.js"></script>
+</body>
+</html>

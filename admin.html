@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Admin | GreenApple Success Factors</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#f0f4f5;color:#2a3439}
+.bar{background:linear-gradient(135deg,#0a1628,#0e6574);color:#fff;padding:.9rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;position:sticky;top:0;z-index:100}
+.bar h1{font-size:1rem;font-weight:700}
+.bar-actions{display:flex;gap:.5rem;align-items:center}
+.bar-actions button{background:rgba(255,255,255,.15);color:#fff;border:none;border-radius:6px;padding:.4rem .9rem;font-size:.8rem;cursor:pointer}
+.bar-actions button:hover{background:rgba(255,255,255,.25)}
+#loginBox{max-width:360px;margin:80px auto;background:#fff;border-radius:16px;padding:2.5rem;box-shadow:0 8px 36px rgba(4,10,20,.12)}
+#loginBox h2{color:#0a1628;margin-bottom:1.2rem;font-size:1.3rem}
+#loginBox input{width:100%;padding:.75rem 1rem;border:1.5px solid #e1e8ea;border-radius:8px;font-size:1rem;margin-bottom:.8rem;font-family:inherit}
+#loginBox input:focus{outline:none;border-color:#1a9bab}
+#loginBox button{width:100%;background:#0e6574;color:#fff;padding:.85rem;border:none;border-radius:8px;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit}
+#app{display:none;padding:1.5rem;max-width:1400px;margin:0 auto}
+.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:.8rem;margin-bottom:1.5rem}
+.sc{background:#fff;border-radius:12px;padding:1rem 1.2rem;box-shadow:0 1px 6px rgba(4,10,20,.08);border-left:4px solid #1a9bab}
+.sc.warn{border-color:#f59e0b}.sc.ok{border-color:#22c55e}
+.sc b{display:block;font-size:1.8rem;font-weight:800;color:#0e6574}
+.sc small{font-size:.72rem;color:#6d8089}
+.tnav{display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap;align-items:center}
+.tnav-btn{padding:.55rem 1.1rem;border:none;border-radius:8px;font-weight:600;font-size:.85rem;cursor:pointer;background:#fff;color:#516068;box-shadow:0 1px 4px rgba(4,10,20,.08)}
+.tnav-btn.active{background:#0e6574;color:#fff}
+.tp{display:none}.tp.active{display:block}
+.toolbar{display:flex;gap:.6rem;margin-bottom:.8rem;flex-wrap:wrap;align-items:center}
+.toolbar input{flex:1;min-width:180px;padding:.6rem 1rem;border:1.5px solid #e1e8ea;border-radius:8px;font-size:.88rem;font-family:inherit}
+.toolbar input:focus{outline:none;border-color:#1a9bab}
+.tbtn{padding:.55rem 1rem;border:none;border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:inherit}
+.tbtn.csv{background:#166534;color:#fff}.tbtn.csv:hover{background:#15803d}
+.tbtn.ref{background:#0e6574;color:#fff}.tbtn.ref:hover{background:#1a9bab}
+.tbl-wrap{overflow-x:auto;border-radius:12px;box-shadow:0 1px 6px rgba(4,10,20,.08)}
+table{width:100%;border-collapse:collapse;background:#fff;min-width:700px}
+th{background:#0a1628;color:#fff;padding:.65rem 1rem;text-align:left;font-size:.73rem;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+td{padding:.65rem 1rem;border-bottom:1px solid #f0f4f5;font-size:.83rem;vertical-align:middle}
+tr:hover td{background:#f6f9fa}
+td.wrap{max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.status-pill{padding:.2rem .6rem;border-radius:99px;font-size:.7rem;font-weight:700;white-space:nowrap}
+.status-pill.new{background:#ccf1f5;color:#0a4f5a}
+.status-pill.read{background:#fef3c7;color:#92400e}
+.status-pill.done{background:#d1fae5;color:#065f46}
+select.ss{border:1px solid #e1e8ea;border-radius:6px;padding:.2rem .5rem;font-size:.78rem;cursor:pointer;background:#fff;font-family:inherit}
+.view-btn{background:#0e6574;color:#fff;border:none;border-radius:6px;padding:.25rem .7rem;font-size:.75rem;cursor:pointer;white-space:nowrap}
+.view-btn:hover{background:#1a9bab}
+.reply-btn{background:#7c3aed;color:#fff;border:none;border-radius:6px;padding:.25rem .7rem;font-size:.75rem;cursor:pointer;margin-left:.3rem}
+.reply-btn:hover{background:#6d28d9}
+.del-btn{background:#dc2626;color:#fff;border:none;border-radius:6px;padding:.25rem .6rem;font-size:.75rem;cursor:pointer;margin-left:.3rem}
+.del-btn:hover{background:#b91c1c}
+.empty{text-align:center;padding:3rem;color:#97a8ae;font-size:.9rem}
+/* Detail Modal */
+.modal-bg{position:fixed;inset:0;background:rgba(4,10,20,.6);z-index:500;display:none;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(4px)}
+.modal-bg.open{display:flex}
+.modal{background:#fff;border-radius:16px;width:min(700px,100%);max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(4,10,20,.35)}
+.modal-head{background:linear-gradient(135deg,#0a1628,#0e6574);color:#fff;padding:1.2rem 1.5rem;display:flex;justify-content:space-between;align-items:center;border-radius:16px 16px 0 0;position:sticky;top:0}
+.modal-head h3{font-size:1rem}
+.modal-close{background:rgba(255,255,255,.2);border:none;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center}
+.modal-body{padding:1.5rem}
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+@media(max-width:500px){.field-grid{grid-template-columns:1fr}}
+.field{background:#f6f9fa;border-radius:8px;padding:.7rem 1rem}
+.field label{display:block;font-size:.7rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#6d8089;margin-bottom:.25rem}
+.field span{font-size:.88rem;color:#2a3439;word-break:break-word}
+.field.full{grid-column:1/-1}
+.modal-actions{display:flex;gap:.7rem;padding:1rem 1.5rem 1.5rem;flex-wrap:wrap}
+.modal-actions a,.modal-actions button{padding:.6rem 1.2rem;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;text-decoration:none;border:none;font-family:inherit}
+.act-reply{background:#7c3aed;color:#fff}
+.act-done{background:#166534;color:#fff}
+.act-close{background:#e1e8ea;color:#516068}
+@media(max-width:700px){.stats{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:400px){.stats{grid-template-columns:repeat(2,1fr)}}
+/* Content Manager */
+.cms-page{margin-bottom:2rem}
+.cms-page-title{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.6rem 1rem;background:#0a1628;color:#fff;border-radius:10px 10px 0 0;font-size:.82rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.cms-page-title a{color:var(--teal,#1a9bab);font-size:.75rem;text-decoration:none;opacity:.85}
+.cms-page-title a:hover{opacity:1}
+.cms-items{background:#fff;border-radius:0 0 10px 10px;border:1px solid #e1e8ea;border-top:none;overflow:hidden}
+.cms-item{padding:1rem 1.2rem;border-bottom:1px solid #f0f4f5;display:grid;grid-template-columns:180px 1fr auto;gap:.8rem;align-items:start}
+.cms-item:last-child{border-bottom:none}
+.cms-item label{font-size:.75rem;font-weight:700;color:#6d8089;padding-top:.5rem;text-transform:uppercase;letter-spacing:.04em}
+.cms-item input[type=text],.cms-item textarea{width:100%;padding:.55rem .8rem;border:1.5px solid #e1e8ea;border-radius:8px;font-size:.88rem;font-family:inherit;color:#2a3439;resize:vertical}
+.cms-item input[type=text]:focus,.cms-item textarea:focus{outline:none;border-color:#1a9bab;box-shadow:0 0 0 3px rgba(26,155,171,.1)}
+.cms-item textarea{min-height:72px}
+.save-btn{background:#0e6574;color:#fff;border:none;border-radius:8px;padding:.5rem 1rem;font-size:.8rem;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit;margin-top:.2rem}
+.save-btn:hover{background:#1a9bab}
+.save-btn.saved{background:#166534}
+.cms-search{width:100%;padding:.7rem 1rem;border:1.5px solid #e1e8ea;border-radius:8px;font-size:.9rem;margin-bottom:1rem;font-family:inherit}
+.cms-search:focus{outline:none;border-color:#1a9bab}
+@media(max-width:600px){.cms-item{grid-template-columns:1fr;gap:.4rem}}
+</style>
+</head>
+<body>
+<div class="bar">
+  <h1>🍏 GreenApple Success Factors — Admin Dashboard</h1>
+  <div class="bar-actions">
+    <span id="bar-time" style="font-size:.75rem;opacity:.7"></span>
+    <button onclick="refresh()">⟳ Refresh</button>
+    <button onclick="doLogout()">Logout</button>
+  </div>
+</div>
+
+<!-- Login -->
+<div id="loginBox">
+  <h2>Admin Login</h2>
+  <input type="password" id="pwdInput" placeholder="Enter admin password" autocomplete="current-password"/>
+  <div id="loginErr" style="color:#dc2626;font-size:.83rem;margin-bottom:.8rem;display:none;">Incorrect password. Try again.</div>
+  <button onclick="doLogin()">Login →</button>
+</div>
+
+<!-- App -->
+<div id="app">
+  <div class="stats">
+    <div class="sc warn"><b id="s-new-reg">0</b><small>New Registrations</small></div>
+    <div class="sc"><b id="s-reg">0</b><small>Total Registrations</small></div>
+    <div class="sc warn"><b id="s-new-con">0</b><small>New Messages</small></div>
+    <div class="sc"><b id="s-con">0</b><small>Total Messages</small></div>
+    <div class="sc warn"><b id="s-new-enq">0</b><small>New Enquiries</small></div>
+    <div class="sc ok"><b id="s-enq">0</b><small>Total Enquiries</small></div>
+  </div>
+
+  <div class="tnav">
+    <button class="tnav-btn active" onclick="showTab('registrations',this)">📋 Registrations</button>
+    <button class="tnav-btn" onclick="showTab('contacts',this)">✉ Contact Messages</button>
+    <button class="tnav-btn" onclick="showTab('enquiries',this)">💼 Consulting Enquiries</button>
+    <button class="tnav-btn" onclick="showTab('content',this)">✏️ Content Manager</button>
+  </div>
+
+  <!-- Registrations -->
+  <div class="tp active" id="tp-registrations">
+    <div class="toolbar">
+      <input placeholder="Search by name, email, programme..." oninput="filter('tbl-reg',this.value)"/>
+      <button class="tbtn csv" onclick="exportCSV('registrations')">⬇ Export CSV</button>
+      <button class="tbtn ref" onclick="refresh()">⟳ Refresh</button>
+    </div>
+    <div class="tbl-wrap"><table id="tbl-reg">
+      <thead><tr><th>#</th><th>Date &amp; Time</th><th>Name</th><th>Programme</th><th>Mobile</th><th>Email</th><th>Company</th><th>IOD?</th><th>Amount</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody id="body-reg"></tbody>
+    </table></div>
+  </div>
+
+  <!-- Contacts -->
+  <div class="tp" id="tp-contacts">
+    <div class="toolbar">
+      <input placeholder="Search by name, email, message..." oninput="filter('tbl-con',this.value)"/>
+      <button class="tbtn csv" onclick="exportCSV('contacts')">⬇ Export CSV</button>
+      <button class="tbtn ref" onclick="refresh()">⟳ Refresh</button>
+    </div>
+    <div class="tbl-wrap"><table id="tbl-con">
+      <thead><tr><th>#</th><th>Date &amp; Time</th><th>Name</th><th>Phone</th><th>Email</th><th>Message</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody id="body-con"></tbody>
+    </table></div>
+  </div>
+
+  <!-- Enquiries -->
+  <div class="tp" id="tp-enquiries">
+    <div class="toolbar">
+      <input placeholder="Search by name, service, organisation..." oninput="filter('tbl-enq',this.value)"/>
+      <button class="tbtn csv" onclick="exportCSV('enquiries')">⬇ Export CSV</button>
+      <button class="tbtn ref" onclick="refresh()">⟳ Refresh</button>
+    </div>
+    <div class="tbl-wrap"><table id="tbl-enq">
+      <thead><tr><th>#</th><th>Date &amp; Time</th><th>Name</th><th>Organisation</th><th>Phone</th><th>Email</th><th>Service</th><th>Message</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody id="body-enq"></tbody>
+    </table></div>
+  </div>
+
+  <!-- Content Manager -->
+  <div class="tp" id="tp-content">
+    <input class="cms-search" id="cmsSearch" placeholder="Search content by label or key..." oninput="filterCMS(this.value)"/>
+    <div id="cms-panels"></div>
+  </div>
+</div>
+
+<!-- Detail Modal -->
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modal-title">Submission Details</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-actions" id="modal-actions"></div>
+  </div>
+</div>
+
+<script>
+let pwd='', allData={registrations:[],contacts:[],enquiries:[]};
+
+/* ── Auth ── */
+function doLogin(){
+  const v=document.getElementById('pwdInput').value;
+  fetch('/api/admin/all',{headers:{'x-admin-password':v}})
+    .then(r=>{if(!r.ok)throw 0;return r.json();})
+    .then(d=>{
+      pwd=v;
+      document.getElementById('loginBox').style.display='none';
+      document.getElementById('app').style.display='block';
+      allData=d; renderAll(d);
+      setInterval(()=>refresh(),30000);
+      setInterval(()=>{document.getElementById('bar-time').textContent=new Date().toLocaleTimeString();},1000);
+    })
+    .catch(()=>document.getElementById('loginErr').style.display='block');
+}
+document.getElementById('pwdInput').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+function doLogout(){pwd='';location.reload();}
+
+function refresh(){
+  if(!pwd)return;
+  fetch('/api/admin/all',{headers:{'x-admin-password':pwd}})
+    .then(r=>r.json()).then(d=>{allData=d;renderAll(d);}).catch(()=>{});
+}
+
+/* ── Tabs ── */
+function showTab(n,btn){
+  document.querySelectorAll('.tp').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tnav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tp-'+n).classList.add('active'); btn.classList.add('active');
+}
+
+/* ── Utils ── */
+function esc(s){return String(s||'—').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function dt(s){return s?s.replace('T',' ').split('.')[0]:'—';}
+function pill(s){return `<span class="status-pill ${s||'new'}">${s||'new'}</span>`;}
+function ss(table,id,cur){
+  return `<select class="ss" onchange="setStatus('${table}',${id},this.value)">
+    <option value="new"${cur==='new'?' selected':''}>New</option>
+    <option value="read"${cur==='read'?' selected':''}>Read</option>
+    <option value="done"${cur==='done'?' selected':''}>Done</option>
+  </select>`;
+}
+function setStatus(table,id,status){
+  fetch(`/api/${table}/${id}/status`,{method:'PATCH',
+    headers:{'Content-Type':'application/json','x-admin-password':pwd},
+    body:JSON.stringify({status})}).then(()=>refresh());
+}
+function delRow(table,id){
+  if(!confirm('Delete this entry?'))return;
+  fetch(`/api/${table}/${id}`,{method:'DELETE',headers:{'x-admin-password':pwd}})
+    .then(()=>refresh());
+}
+
+/* ── Render ── */
+function renderAll(d){
+  document.getElementById('s-reg').textContent=d.registrations.length;
+  document.getElementById('s-con').textContent=d.contacts.length;
+  document.getElementById('s-enq').textContent=d.enquiries.length;
+  document.getElementById('s-new-reg').textContent=d.registrations.filter(r=>r.status==='new').length;
+  document.getElementById('s-new-con').textContent=d.contacts.filter(r=>r.status==='new').length;
+  document.getElementById('s-new-enq').textContent=d.enquiries.filter(r=>r.status==='new').length;
+
+  const br=document.getElementById('body-reg');
+  br.innerHTML=!d.registrations.length
+    ?'<tr><td colspan="11" class="empty">No registrations yet. They will appear here when someone submits the form.</td></tr>'
+    :d.registrations.map(r=>`<tr>
+      <td>${r.id}</td><td style="white-space:nowrap">${dt(r.created_at)}</td>
+      <td><strong>${esc(r.first_name)} ${esc(r.last_name)}</strong><br><small style="color:#6d8089">${esc(r.title)}</small></td>
+      <td class="wrap" title="${esc(r.programme)}">${esc(r.programme)}</td>
+      <td><a href="tel:${esc(r.mobile)}" style="color:#0e6574">${esc(r.mobile)}</a></td>
+      <td class="wrap"><a href="mailto:${esc(r.email_permanent)}" style="color:#0e6574">${esc(r.email_permanent)}</a></td>
+      <td>${esc(r.company)}</td><td>${esc(r.iod_member)}</td><td>${esc(r.amount)}</td>
+      <td>${ss('registrations',r.id,r.status)}</td>
+      <td style="white-space:nowrap">
+        <button class="view-btn" onclick='viewReg(${r.id})'>View</button>
+        <a class="reply-btn" href="mailto:${esc(r.email_permanent)}?subject=Re: Your Registration — GreenApple Success Factors">Reply</a>
+        <button class="del-btn" onclick="delRow('registrations',${r.id})">✕</button>
+      </td>
+    </tr>`).join('');
+
+  const bc=document.getElementById('body-con');
+  bc.innerHTML=!d.contacts.length
+    ?'<tr><td colspan="8" class="empty">No contact messages yet.</td></tr>'
+    :d.contacts.map(c=>`<tr>
+      <td>${c.id}</td><td style="white-space:nowrap">${dt(c.created_at)}</td>
+      <td><strong>${esc(c.name)}</strong></td>
+      <td><a href="tel:${esc(c.phone)}" style="color:#0e6574">${esc(c.phone)}</a></td>
+      <td><a href="mailto:${esc(c.email)}" style="color:#0e6574">${esc(c.email)}</a></td>
+      <td class="wrap" title="${esc(c.message)}">${esc(c.message)}</td>
+      <td>${ss('contacts',c.id,c.status)}</td>
+      <td style="white-space:nowrap">
+        <button class="view-btn" onclick='viewCon(${c.id})'>View</button>
+        <a class="reply-btn" href="mailto:${esc(c.email)}?subject=Re: Your Message — GreenApple Success Factors">Reply</a>
+        <button class="del-btn" onclick="delRow('contacts',${c.id})">✕</button>
+      </td>
+    </tr>`).join('');
+
+  const be=document.getElementById('body-enq');
+  be.innerHTML=!d.enquiries.length
+    ?'<tr><td colspan="10" class="empty">No consulting enquiries yet.</td></tr>'
+    :d.enquiries.map(e=>`<tr>
+      <td>${e.id}</td><td style="white-space:nowrap">${dt(e.created_at)}</td>
+      <td><strong>${esc(e.name)}</strong></td>
+      <td>${esc(e.organisation)}</td>
+      <td><a href="tel:${esc(e.phone)}" style="color:#0e6574">${esc(e.phone)}</a></td>
+      <td><a href="mailto:${esc(e.email)}" style="color:#0e6574">${esc(e.email)}</a></td>
+      <td class="wrap" title="${esc(e.service)}">${esc(e.service)}</td>
+      <td class="wrap" title="${esc(e.message)}">${esc(e.message)}</td>
+      <td>${ss('enquiries',e.id,e.status)}</td>
+      <td style="white-space:nowrap">
+        <button class="view-btn" onclick='viewEnq(${e.id})'>View</button>
+        <a class="reply-btn" href="mailto:${esc(e.email)}?subject=Re: Your Consulting Enquiry — GreenApple Success Factors">Reply</a>
+        <button class="del-btn" onclick="delRow('enquiries',${e.id})">✕</button>
+      </td>
+    </tr>`).join('');
+}
+
+/* ── Detail views ── */
+function field(label,val,full){
+  return `<div class="field${full?' full':''}"><label>${label}</label><span>${esc(val)}</span></div>`;
+}
+function openModal(title,bodyHTML,email){
+  document.getElementById('modal-title').textContent=title;
+  document.getElementById('modal-body').innerHTML=bodyHTML;
+  document.getElementById('modal-actions').innerHTML=`
+    ${email?`<a class="act-reply" href="mailto:${email}?subject=Re: GreenApple Success Factors">✉ Reply by Email</a>`:''}
+    <button class="act-close" onclick="closeModal()">Close</button>`;
+  document.getElementById('modalBg').classList.add('open');
+}
+function closeModal(){document.getElementById('modalBg').classList.remove('open');}
+
+function viewReg(id){
+  const r=allData.registrations.find(x=>x.id===id); if(!r)return;
+  const b=`<div class="field-grid">
+    ${field('Registration ID','#'+r.id)}${field('Submitted',dt(r.created_at))}
+    ${field('Registration Type',r.reg_type)}${field('Programme',r.programme)}
+    ${field('Title',r.title)}${field('First Name',r.first_name)}
+    ${field('Middle Name',r.middle_name)}${field('Last Name',r.last_name)}
+    ${field('Date of Birth',r.dob)}${field('IOD Member?',r.iod_member)}
+    ${field('Designation',r.designation)}${field('Company',r.company)}
+    ${field('Industry',r.industry)}${field('Specialization',r.specialization)}
+    ${field('Office Address',r.addr_office)}${field('Office PIN',r.pin_office)}
+    ${field('Residence Address',r.addr_residence)}${field('Residence PIN',r.pin_residence)}
+    ${field('Telephone',r.tel)}${field('Mobile',r.mobile)}
+    ${field('Office Email',r.email_office)}${field('Permanent Email',r.email_permanent)}
+    ${field('Amount Payable',r.amount)}${field('Date of Payment',r.date)}
+    ${field('Status',r.status)}
+  </div>`;
+  openModal(`Registration — ${r.first_name} ${r.last_name}`,b,r.email_permanent);
+}
+function viewCon(id){
+  const c=allData.contacts.find(x=>x.id===id); if(!c)return;
+  const b=`<div class="field-grid">
+    ${field('ID','#'+c.id)}${field('Submitted',dt(c.created_at))}
+    ${field('Full Name',c.name)}${field('Phone',c.phone)}
+    ${field('Email',c.email)}${field('Status',c.status)}
+    ${field('Message',c.message,true)}
+  </div>`;
+  openModal(`Message — ${c.name}`,b,c.email);
+}
+function viewEnq(id){
+  const e=allData.enquiries.find(x=>x.id===id); if(!e)return;
+  const b=`<div class="field-grid">
+    ${field('ID','#'+e.id)}${field('Submitted',dt(e.created_at))}
+    ${field('Full Name',e.name)}${field('Organisation',e.organisation)}
+    ${field('Phone',e.phone)}${field('Email',e.email)}
+    ${field('Service of Interest',e.service)}${field('Status',e.status)}
+    ${field('Message / Requirement',e.message,true)}
+  </div>`;
+  openModal(`Enquiry — ${e.name}`,b,e.email);
+}
+
+/* ── Search filter ── */
+function filter(tId,q){
+  q=q.toLowerCase();
+  document.querySelectorAll(`#${tId} tbody tr`).forEach(r=>{
+    r.style.display=r.textContent.toLowerCase().includes(q)?'':'none';
+  });
+}
+
+/* ── CSV Export ── */
+function exportCSV(type){
+  const rows=allData[type];
+  if(!rows||!rows.length){alert('No data to export.');return;}
+  const keys=Object.keys(rows[0]);
+  const csv=[keys.join(','),...rows.map(r=>keys.map(k=>{
+    const v=String(r[k]||'').replace(/"/g,'""');
+    return `"${v}"`;
+  }).join(','))].join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download=`gasf_${type}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+
+/* ── Content Manager ── */
+const PAGE_LINKS = {
+  'Home':'index.html','Profile':'profile.html','Services':'services.html',
+  'Business Consulting':'business-consulting.html','Startup Mentoring':'startup-mentoring.html',
+  'Training':'training-programs.html','Risk':'risk-compliance-funding.html',
+  'Branding':'branding-transformation.html','Global':'#'
+};
+
+function escVal(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function renderCMS(rows){
+  if(!rows||!rows.length) return;
+  const pages={};
+  rows.forEach(c=>{ const p=c.page||'General'; if(!pages[p])pages[p]=[]; pages[p].push(c); });
+  document.getElementById('cms-panels').innerHTML = Object.entries(pages).map(([page,items])=>`
+    <div class="cms-page" data-page="${escVal(page)}">
+      <div class="cms-page-title">
+        <span>📄 ${escVal(page)}</span>
+        ${PAGE_LINKS[page]?`<a href="${PAGE_LINKS[page]}" target="_blank">Preview Page ↗</a>`:''}
+      </div>
+      <div class="cms-items">
+        ${items.map(c=>`
+          <div class="cms-item" data-label="${escVal(c.label)}" data-key="${escVal(c.key)}">
+            <label title="Key: ${escVal(c.key)}">${escVal(c.label)}</label>
+            ${c.type==='textarea'
+              ?`<textarea id="cms-${escVal(c.key)}">${escVal(c.value)}</textarea>`
+              :`<input type="text" id="cms-${escVal(c.key)}" value="${escVal(c.value)}"/>`}
+            <button class="save-btn" onclick="saveCMS('${escVal(c.key)}')">Save</button>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+async function saveCMS(key){
+  const el=document.getElementById('cms-'+key);
+  if(!el)return;
+  const btn=el.closest('.cms-item').querySelector('.save-btn');
+  btn.textContent='Saving…'; btn.disabled=true;
+  try{
+    const r=await fetch('/api/content/'+encodeURIComponent(key),{
+      method:'PUT',
+      headers:{'Content-Type':'application/json','x-admin-password':pwd},
+      body:JSON.stringify({value:el.tagName==='TEXTAREA'?el.value:el.value})
+    });
+    if(!r.ok)throw 0;
+    btn.textContent='✓ Saved!'; btn.classList.add('saved');
+    setTimeout(()=>{btn.textContent='Save';btn.classList.remove('saved');btn.disabled=false;},2200);
+  }catch{
+    btn.textContent='✗ Error'; btn.disabled=false;
+    setTimeout(()=>{btn.textContent='Save';},2000);
+  }
+}
+
+function filterCMS(q){
+  q=q.toLowerCase();
+  document.querySelectorAll('.cms-item').forEach(el=>{
+    el.style.display=(el.dataset.label+' '+el.dataset.key).toLowerCase().includes(q)?'':'none';
+  });
+  document.querySelectorAll('.cms-page').forEach(p=>{
+    p.style.display=[...p.querySelectorAll('.cms-item')].some(i=>i.style.display!=='none')?'':'none';
+  });
+}
+
+/* patch renderAll to also render CMS */
+const _renderAll=renderAll;
+window.renderAll=function(d){ _renderAll(d); if(d&&d.content) renderCMS(d.content); };
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+</script>
+</body>
+</html>

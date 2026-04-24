@@ -1,13 +1,8 @@
 // ── Form endpoint config ───────────────────────────────────────────────────────
-// On localhost:4000 → use local Express API
-// On Cloudflare Pages (or any other host) → use Formspree
+// On localhost:4000 → use local Express API (stores to SQLite)
+// On Cloudflare Pages → use Web3Forms (free, sends email to brainvarehosting@gmail.com)
 const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-
-const FORMSPREE = {
-  registration: 'https://formspree.io/f/REPLACE_REG_ID',
-  contact:      'https://formspree.io/f/REPLACE_CON_ID',
-  enquiry:      'https://formspree.io/f/REPLACE_ENQ_ID',
-};
+const W3F_KEY  = 'c4b02d7a-520a-4322-b106-25b1925817c8';
 
 async function postForm(endpoint, data) {
   if (IS_LOCAL) {
@@ -20,17 +15,22 @@ async function postForm(endpoint, data) {
     if (!res.ok) throw new Error('Server error');
     return res.json();
   } else {
-    // Production (Cloudflare Pages) — use Formspree
-    const key = endpoint.replace('/api/', '').split('/')[0]; // registration | contact | enquiry
-    const url = FORMSPREE[key];
-    if (!url || url.includes('REPLACE')) throw new Error('Formspree not configured');
-    const res = await fetch(url, {
-      method: 'POST',
+    // Production (Cloudflare Pages) — use Web3Forms
+    const formType = endpoint.replace('/api/', '');
+    const payload  = {
+      access_key:   W3F_KEY,
+      subject:      `[GASF] New ${formType.charAt(0).toUpperCase() + formType.slice(1)} Submission`,
+      from_name:    'GreenApple Success Factors Website',
+      ...data,
+    };
+    const res = await fetch('https://api.web3forms.com/submit', {
+      method:  'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify(data),
+      body:    JSON.stringify(payload),
     });
-    if (!res.ok) throw new Error('Formspree error');
-    return res.json();
+    const json = await res.json();
+    if (!json.success) throw new Error(json.message || 'Web3Forms error');
+    return json;
   }
 }
 

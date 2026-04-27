@@ -45,13 +45,19 @@
         </div>
       </div>
 
-      <!-- Book CTA -->
-      <div class="book-cta" style="margin-top:2.5rem;">
-        <div class="book-cta__icon">&#128218;</div>
-        <div class="book-cta__text">
-          <h4>Why Mentor Matters</h4>
-          <p>A cornerstone of our mentoring philosophy is captured in the book <em>"Why Mentor Matters"</em>, authored by Dr. George V Antony, Director of GreenApple. The book offers powerful insights into the role of mentorship in shaping entrepreneurial success—highlighting how the right guidance can accelerate learning, sharpen decision-making, and prevent costly missteps. For startup founders and entrepreneurs, this book serves as both a strategic guide and a source of inspiration, helping them understand when to seek mentorship, how to leverage it effectively, and how it can become a decisive factor in their growth journey. A must-read for anyone serious about building a business with clarity, confidence, and long-term impact.</p>
-          <a href="reach-us.html">Enquire About the Book &#8594;</a>
+      <!-- Book Feature -->
+      <div class="book-feature" style="margin-top:2.5rem;">
+        <img src="assets/why-mentor-matters-cover.webp" alt="Why Mentor Matters book cover" class="book-feature__cover" loading="lazy"/>
+        <div>
+          <div class="book-feature__eyebrow">From Our Founder</div>
+          <h3 class="book-feature__title">Why Mentor Matters</h3>
+          <p class="book-feature__sub">A must-read handbook for MSME Entrepreneurs and Startup Leadership</p>
+          <p class="book-feature__author">By Dr. George V Antony, Director, GreenApple</p>
+          <p class="book-feature__desc">A cornerstone of our mentoring philosophy. The book offers powerful insights into how the right guidance can accelerate learning, sharpen decision-making, and prevent costly missteps — a strategic guide for founders serious about building with clarity, confidence, and long-term impact.</p>
+          <div class="book-feature__actions">
+            <button type="button" onclick="window._openBookModal&&window._openBookModal()" class="btn-primary">Read More</button>
+            <a href="https://whymentormatters.com/" target="_blank" rel="noopener" class="btn-outline-dark">Visit whymentormatters.com</a>
+          </div>
         </div>
       </div>
 
@@ -63,6 +69,48 @@
     </div>
   </div>
 </section>
+<!-- Book Modal -->
+<div id="bookModal" class="book-modal" onclick="if(event.target===this)window._closeBookModal&&window._closeBookModal()">
+  <div class="book-modal__panel">
+    <button type="button" class="book-modal__close" onclick="window._closeBookModal&&window._closeBookModal()" aria-label="Close">&times;</button>
+    <h3>Why Mentor Matters</h3>
+    <p style="font-style:italic;color:var(--gray-500);margin-bottom:.4rem;">A must-read handbook for MSME Entrepreneurs and Startup Leadership</p>
+    <p style="color:var(--navy-800);font-weight:600;">By Dr. George V Antony</p>
+
+    <h4>About the Book</h4>
+    <p>Officially released on June 28, 2025 by Union Minister Sushri Shobha Karandlaje, this handbook brings together decades of mentoring experience to help entrepreneurs and startup leaders navigate the realities of building enduring businesses in India.</p>
+
+    <h4>What You'll Gain</h4>
+    <ul>
+      <li>Strategic wisdom drawn from real mentoring engagements</li>
+      <li>Understanding of the critical mistakes founders most often make</li>
+      <li>Frameworks for effective mentor&ndash;mentee collaboration</li>
+      <li>Tools for assessing and measuring a mentor's contribution</li>
+    </ul>
+
+    <h4>Ideal For</h4>
+    <ul>
+      <li>MSME business owners and startup founders</li>
+      <li>Practising and aspiring mentors</li>
+      <li>Academicians and institution leaders</li>
+    </ul>
+
+    <h4>Endorsed By</h4>
+    <p>Forewords and endorsements from the Attorney General of India, university chancellors, senior IAS/IPS officers, and leading banking executives.</p>
+
+    <div class="book-modal__actions">
+      <a href="https://www.amazon.in/dp/9358478047" target="_blank" rel="noopener" class="btn-primary">Buy on Amazon</a>
+      <a href="https://whymentormatters.com/" target="_blank" rel="noopener" class="btn-outline-dark">Visit Book Website</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  window._openBookModal = function(){ document.getElementById('bookModal').classList.add('active'); document.body.style.overflow='hidden'; };
+  window._closeBookModal = function(){ document.getElementById('bookModal').classList.remove('active'); document.body.style.overflow=''; };
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') window._closeBookModal(); });
+</script>
+
 <div id="register-cta-mount"></div>
 <div id="footer-mount"></div>
 <script src="components.js"></script>

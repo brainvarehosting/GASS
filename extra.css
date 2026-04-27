@@ -182,7 +182,15 @@
 .mt-2 { margin-top: 1.5rem; }
 .text-center { text-align: center; }
 
-/* ===== LOGO IMAGE ===== */
+/* ===== FIX: Show full service card titles (remove 2-line clamp) ===== */
+.course-tile-body h3 {
+  -webkit-line-clamp: unset !important;
+  display: block !important;
+  overflow: visible !important;
+  min-height: unset !important;
+}
+
+
 .logo-img {
   height: 48px;
   width: auto;

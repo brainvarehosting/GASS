@@ -125,7 +125,7 @@ function buildHeader() {
     { href: 'index.html', label: 'Home' },
     { href: 'services.html', label: 'Services' },
     { href: 'profile.html', label: 'Profile' },
-    { href: 'training-programs.html', label: 'Training Programs' },
+    { href: 'training-programs.html', label: 'Upcoming Event' },
     { href: 'gallery.html', label: 'Gallery' },
     { href: 'reach-us.html', label: 'Reach Us', cta: true },
   ];

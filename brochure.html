@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="GreenApple Success Factors — Corporate Brochure. Consulting, mentoring and empowerment services for boards, founders and institutions."/>
+  <title>Brochure | GreenApple Success Factors</title>
+  <link rel="stylesheet" href="assets/components.css"/>
+  <link rel="stylesheet" href="extra.css"/>
+  <style>
+    /* ===== BROCHURE LAYOUT ===== */
+    .brochure-toolbar {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(255,255,255,.92); backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--gray-100);
+      padding: .8rem 1.2rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+    }
+    .brochure-toolbar__left { display: flex; align-items: center; gap: .8rem; }
+    .brochure-toolbar__left img { height: 36px; }
+    .brochure-toolbar__left strong { color: var(--navy-800); font-family: var(--font-heading); font-size: .95rem; }
+    .brochure-toolbar__actions { display: flex; gap: .6rem; flex-wrap: wrap; }
+    .brochure-toolbar .btn-ghost {
+      color: var(--gray-600); padding: .55rem 1rem; border-radius: var(--r-sm);
+      font-weight: 600; font-size: .85rem; border: 1px solid var(--gray-200); background: var(--white);
+    }
+    .brochure-toolbar .btn-ghost:hover { color: var(--teal-700); border-color: var(--teal-300); }
+    .brochure-toolbar .btn-primary { padding: .55rem 1.2rem; font-size: .85rem; }
+
+    .br-page {
+      max-width: 1000px; margin: 0 auto; padding: clamp(2rem, 5vw, 3.5rem) clamp(1.2rem, 4vw, 3rem);
+    }
+
+    /* Cover */
+    .br-cover {
+      position: relative; min-height: 92vh; padding: 0;
+      background: linear-gradient(135deg, var(--navy-900) 0%, var(--teal-900) 100%);
+      color: var(--white); overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .br-cover::before {
+      content: ""; position: absolute; inset: 0;
+      background: radial-gradient(circle at 20% 30%, rgba(26,155,171,.3), transparent 50%),
+                  radial-gradient(circle at 80% 70%, rgba(251,191,36,.08), transparent 50%);
+      pointer-events: none;
+    }
+    .br-cover__inner {
+      position: relative; z-index: 1; text-align: center; padding: 3rem 1.5rem; max-width: 720px;
+    }
+    .br-cover__logo { height: 72px; margin: 0 auto 2rem; filter: brightness(0) invert(1); }
+    .br-cover__brand { font-family: var(--font-heading); font-size: clamp(1.4rem,3vw,2rem); font-weight: 800; letter-spacing: .02em; margin-bottom: .4rem; }
+    .br-cover__sub { color: var(--teal-300); font-size: .82rem; letter-spacing: .25em; text-transform: uppercase; margin-bottom: 2.4rem; font-weight: 500; }
+    .br-cover h1 { font-size: clamp(1.8rem, 5vw, 3rem); line-height: 1.2; margin-bottom: 1.2rem; }
+    .br-cover h1 span { color: var(--teal-300); }
+    .br-cover__tagline {
+      display: inline-block; margin-top: 2rem; padding: .9rem 2rem;
+      border: 1px solid rgba(204,241,245,.3); border-radius: var(--r-full);
+      font-family: var(--font-heading); font-weight: 700; letter-spacing: .15em; text-transform: uppercase; font-size: .85rem;
+      color: var(--teal-200);
+    }
+    .br-cover__meta { margin-top: 2.5rem; font-size: .82rem; color: rgba(255,255,255,.6); }
+
+    /* Section base */
+    .br-section { padding: clamp(2.5rem, 5vw, 4rem) 0; }
+    .br-section + .br-section { border-top: 1px solid var(--gray-100); }
+    .br-section--alt { background: var(--gray-50); }
+    .br-eyebrow {
+      display: inline-block; font-size: .75rem; font-weight: 700; letter-spacing: .15em;
+      text-transform: uppercase; color: var(--teal-700); margin-bottom: .6rem;
+    }
+    .br-h2 { color: var(--navy-800); font-size: clamp(1.5rem, 3.5vw, 2.2rem); margin-bottom: 1rem; line-height: 1.2; }
+    .br-lead { color: var(--gray-500); font-size: 1rem; line-height: 1.85; max-width: 760px; }
+
+    /* About split */
+    .br-about { display: grid; grid-template-columns: 1.2fr 1fr; gap: 3rem; align-items: center; }
+    .br-about img { border-radius: var(--r-lg); box-shadow: var(--shadow-md); width: 100%; }
+    @media(max-width:768px){ .br-about{ grid-template-columns:1fr; } }
+
+    /* Mission/Vision */
+    .br-mv { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .br-mv__card {
+      background: var(--white); border: 1px solid var(--teal-100); border-radius: var(--r-lg);
+      padding: 2rem 1.8rem; box-shadow: var(--shadow-sm);
+    }
+    .br-mv__icon { font-size: 2.2rem; margin-bottom: .6rem; }
+    .br-mv__card h3 { color: var(--navy-800); margin-bottom: .6rem; font-size: 1.15rem; }
+    .br-mv__card p { color: var(--gray-600); font-size: .94rem; line-height: 1.75; }
+    @media(max-width:600px){ .br-mv{ grid-template-columns:1fr; } }
+
+    /* Services grid */
+    .br-services { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-top: 2rem; }
+    .br-svc {
+      background: var(--white); border: 1px solid var(--gray-100); border-radius: var(--r-md);
+      box-shadow: var(--shadow-xs); overflow: hidden; display: flex; flex-direction: column;
+    }
+    .br-svc__img { aspect-ratio: 16/8; object-fit: cover; width: 100%; }
+    .br-svc__body { padding: 1.4rem 1.4rem 1.6rem; flex: 1; display: flex; flex-direction: column; }
+    .br-svc__num {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--teal-50); color: var(--teal-700);
+      font-weight: 700; font-size: .82rem; display: inline-flex;
+      align-items: center; justify-content: center; margin-bottom: .8rem;
+      border: 1px solid var(--teal-100);
+    }
+    .br-svc h3 { color: var(--navy-800); font-size: 1.08rem; margin-bottom: .5rem; line-height: 1.35; }
+    .br-svc p { color: var(--gray-500); font-size: .9rem; line-height: 1.7; flex: 1; }
+    .br-svc ul { list-style: none; padding: 0; margin: .8rem 0 0; }
+    .br-svc li {
+      color: var(--gray-600); font-size: .85rem; line-height: 1.55;
+      padding: .25rem 0 .25rem 1.2rem; position: relative;
+    }
+    .br-svc li::before {
+      content: "✓"; position: absolute; left: 0; color: var(--teal-600); font-weight: 700; font-size: .82rem;
+    }
+    @media(max-width:768px){ .br-services{ grid-template-columns:1fr; } }
+
+    /* Approach */
+    .br-approach {
+      background: linear-gradient(135deg, var(--teal-50), rgba(251,191,36,.04));
+      border-left: 4px solid var(--teal-500);
+      border-radius: 0 var(--r-lg) var(--r-lg) 0; padding: 2rem 2rem;
+    }
+    .br-approach p { color: var(--gray-600); font-size: .95rem; line-height: 1.8; margin-bottom: .8rem; }
+    .br-approach p:last-child { margin-bottom: 0; }
+
+    /* Book strip */
+    .br-book {
+      display: grid; grid-template-columns: 200px 1fr; gap: 2rem; align-items: center;
+      background: var(--white); border: 1px solid var(--teal-100);
+      border-radius: var(--r-lg); padding: 2rem; box-shadow: var(--shadow-sm);
+    }
+    .br-book img { width: 100%; border-radius: var(--r-sm); box-shadow: 0 14px 32px rgba(4,10,20,.18); }
+    .br-book h3 { color: var(--navy-800); font-size: 1.4rem; margin-bottom: .3rem; }
+    .br-book__sub { font-style: italic; color: var(--gray-500); font-size: .92rem; margin-bottom: .8rem; }
+    .br-book p { color: var(--gray-600); font-size: .92rem; line-height: 1.75; margin-bottom: 1rem; }
+    .br-book__buy { display: inline-block; background: var(--teal-700); color: var(--white); padding: .5rem 1.1rem; border-radius: var(--r-sm); font-size: .85rem; font-weight: 600; }
+    .br-book__buy:hover { background: var(--teal-800); color: var(--white); }
+    @media(max-width:600px){
+      .br-book{ grid-template-columns:1fr; text-align:center; }
+      .br-book img{ max-width:180px; margin:0 auto; }
+    }
+
+    /* Outcomes */
+    .br-outcomes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 1.6rem; }
+    .br-outcome {
+      background: var(--white); border: 1px solid var(--gray-100); border-radius: var(--r-md);
+      padding: 1.4rem 1.2rem; text-align: center;
+    }
+    .br-outcome__num {
+      font-family: var(--font-heading); font-weight: 800; font-size: 2rem;
+      color: var(--teal-700); line-height: 1; margin-bottom: .4rem;
+    }
+    .br-outcome__label { color: var(--gray-600); font-size: .82rem; line-height: 1.5; }
+    @media(max-width:768px){ .br-outcomes{ grid-template-columns:repeat(2,1fr); } }
+
+    /* Connect */
+    .br-connect {
+      background: linear-gradient(135deg, var(--navy-900), var(--teal-900));
+      color: var(--white); border-radius: var(--r-lg);
+      padding: clamp(2rem, 5vw, 3rem) clamp(1.5rem, 4vw, 2.5rem);
+      display: grid; grid-template-columns: 1.4fr 1fr; gap: 2.5rem; align-items: center;
+    }
+    .br-connect h2 { color: var(--white); margin-bottom: .8rem; }
+    .br-connect p { color: rgba(255,255,255,.78); font-size: .95rem; line-height: 1.8; margin-bottom: 1rem; }
+    .br-connect__contact { font-size: .9rem; line-height: 1.9; }
+    .br-connect__contact strong { color: var(--teal-300); display: block; font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; margin-bottom: .2rem; }
+    .br-connect__contact a { color: var(--teal-200); }
+    .br-connect__cta { display: inline-block; margin-top: .8rem; background: var(--teal-500); color: var(--white); padding: .8rem 1.8rem; border-radius: var(--r-full); font-weight: 700; font-size: .9rem; }
+    .br-connect__cta:hover { background: var(--teal-400); color: var(--white); }
+    @media(max-width:768px){ .br-connect{ grid-template-columns:1fr; } }
+
+    /* Footer line */
+    .br-foot {
+      text-align: center; padding: 2rem 1.5rem;
+      color: var(--gray-400); font-size: .82rem; border-top: 1px solid var(--gray-100);
+    }
+    .br-foot strong { color: var(--navy-800); }
+
+    /* ===== PRINT STYLES ===== */
+    @media print {
+      @page { size: A4; margin: 12mm; }
+      body { background: var(--white); }
+      .brochure-toolbar { display: none !important; }
+      .br-cover { min-height: auto; padding: 4rem 2rem; page-break-after: always; }
+      .br-cover__logo { height: 60px; }
+      .br-section { padding: 2rem 0; page-break-inside: avoid; }
+      .br-page { padding: 1rem 1.5rem; }
+      .br-services, .br-mv, .br-outcomes { gap: .8rem; }
+      .br-svc, .br-mv__card, .br-outcome, .br-book, .br-approach { box-shadow: none !important; }
+      .br-connect { page-break-before: avoid; }
+      a { color: var(--navy-800) !important; text-decoration: none !important; }
+      .br-cover a, .br-connect a { color: inherit !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Toolbar (hidden on print) -->
+<div class="brochure-toolbar">
+  <div class="brochure-toolbar__left">
+    <img src="assets/logo.png" alt="GreenApple Success Factors"/>
+    <strong>Corporate Brochure</strong>
+  </div>
+  <div class="brochure-toolbar__actions">
+    <a href="index.html" class="btn-ghost">&larr; Back to Site</a>
+    <button type="button" class="btn-primary" onclick="window.print()">Download / Print PDF</button>
+  </div>
+</div>
+
+<!-- COVER -->
+<section class="br-cover">
+  <div class="br-cover__inner">
+    <img src="assets/logo.png" alt="GreenApple Success Factors" class="br-cover__logo"/>
+    <div class="br-cover__brand">GreenApple Success Factors</div>
+    <div class="br-cover__sub">Corporate Profile &amp; Services</div>
+    <h1>Empowering <span>Business Growth</span> &amp; Sustainability</h1>
+    <p style="opacity:.85;line-height:1.85;font-size:1rem;max-width:560px;margin:0 auto;">We partner with boards, entrepreneurs and academic institutions to deliver visible, measurable outcomes through focused involvement and innovative strategy.</p>
+    <div class="br-cover__tagline">Clarity &middot; Intelligence &middot; Growth</div>
+    <div class="br-cover__meta">www.gasuccessfactors.com &middot; mail@gasuccessfactors.com &middot; +91 8330 833330</div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="br-section">
+  <div class="br-page">
+    <div class="br-about">
+      <div>
+        <span class="br-eyebrow">About Us</span>
+        <h2 class="br-h2">Enabling Leadership to Think Beyond the Obvious</h2>
+        <p class="br-lead" style="margin-bottom:1rem;">At GreenApple Success Factors Pvt Ltd, we believe that true success is not accidental — it is designed through clarity, shaped by insight, and sustained through disciplined execution.</p>
+        <p class="br-lead" style="margin-bottom:1rem;">GreenApple was founded with a clear purpose: to bridge the gap between strategy and execution, vision and result. We partner with boards, entrepreneurs, and institutions to shape future-ready organizations through strategic insight, decision intelligence, and empowered leadership.</p>
+        <p class="br-lead">With over two decades of combined experience spanning industry, academia, research, and consulting, our team brings a distinctive blend of strategic foresight and execution excellence.</p>
+      </div>
+      <img src="assets/office-minimal.png" alt="GreenApple Success Factors office"/>
+    </div>
+  </div>
+</section>
+
+<!-- MISSION & VISION -->
+<section class="br-section br-section--alt">
+  <div class="br-page">
+    <div style="text-align:center;margin-bottom:2rem;">
+      <span class="br-eyebrow">Purpose</span>
+      <h2 class="br-h2">Mission &amp; Vision</h2>
+    </div>
+    <div class="br-mv">
+      <div class="br-mv__card">
+        <div class="br-mv__icon">&#127919;</div>
+        <h3>Our Mission</h3>
+        <p>To enable decision-ready intelligence, strategic clarity, and disciplined execution through integrated consulting, mentoring, and capability building.</p>
+      </div>
+      <div class="br-mv__card">
+        <div class="br-mv__icon">&#127793;</div>
+        <h3>Our Vision</h3>
+        <p>To shape future-ready leadership and organizations that define sustainable growth and lasting impact.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="br-section">
+  <div class="br-page">
+    <div style="text-align:center;margin-bottom:.5rem;">
+      <span class="br-eyebrow">What We Do</span>
+      <h2 class="br-h2">Our Core Services</h2>
+      <p class="br-lead" style="margin:0 auto;">Six integrated practice areas designed to support organizations and individuals at every stage of growth.</p>
+    </div>
+
+    <div class="br-services">
+      <div class="br-svc">
+        <img src="assets/building-modern.png" alt="Business Consulting" class="br-svc__img"/>
+        <div class="br-svc__body">
+          <span class="br-svc__num">01</span>
+          <h3>Business Consulting &amp; Growth</h3>
+          <p>Strengthening business fundamentals, unlocking growth, and navigating complexity with clarity and control.</p>
+          <ul>
+            <li>Performance assessment &amp; growth levers</li>
+            <li>Strategy &amp; competitive positioning</li>
+            <li>Operational efficiency &amp; execution</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="br-svc">
+        <img src="assets/abstract-pattern.png" alt="Startup Mentoring" class="br-svc__img"/>
+        <div class="br-svc__body">
+          <span class="br-svc__num">02</span>
+          <h3>Startup &amp; Entrepreneurial Mentoring</h3>
+          <p>Translating ideas into structured, scalable enterprises through rigorous thinking and experience-led guidance.</p>
+          <ul>
+            <li>Validate ideas &amp; refine business models</li>
+            <li>Go-to-market &amp; growth pathways</li>
+            <li>Investor readiness &amp; scale systems</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="br-svc">
+        <img src="assets/office-minimal.png" alt="Academic Empowerment" class="br-svc__img"/>
+        <div class="br-svc__body">
+          <span class="br-svc__num">03</span>
+          <h3>Academic &amp; Institutional Empowerment</h3>
+          <p>Helping institutions enhance relevance, strengthen outcomes, and align with evolving industry expectations.</p>
+          <ul>
+            <li>Align academia with industry needs</li>
+            <li>Faculty development &amp; excellence</li>
+            <li>Industry–academia collaboration</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="br-svc">
+        <img src="assets/gallery-meetings.webp" alt="Corporate Training" class="br-svc__img"/>
+        <div class="br-svc__body">
+          <span class="br-svc__num">04</span>
+          <h3>Corporate Training &amp; Professional Development</h3>
+          <p>High-impact learning interventions focused on behavioural shift, decision-making, and real-world application.</p>
+          <ul>
+            <li>Customised leadership programmes</li>
+            <li>Decision-making &amp; execution focus</li>
+            <li>Succession &amp; bench strength</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="br-svc">
+        <img src="assets/hero-risk-compliance.png" alt="Risk &amp; Funding" class="br-svc__img"/>
+        <div class="br-svc__body">
+          <span class="br-svc__num">05</span>
+          <h3>Risk, Compliance, ESG &amp; Funding Advisory</h3>
+          <p>Strengthening governance, ensuring compliance, and integrating ESG into core strategy with funding readiness.</p>
+          <ul>
+            <li>Risk &amp; governance frameworks</li>
+            <li>ESG integration &amp; credibility</li>
+            <li>Investor positioning &amp; funding</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="br-svc">
+        <img src="assets/hero-branding-transformation.png" alt="Branding &amp; Transformation" class="br-svc__img"/>
+        <div class="br-svc__body">
+          <span class="br-svc__num">06</span>
+          <h3>Branding, Collaborations &amp; Transformation</h3>
+          <p>Building powerful brands and driving transformational growth through strategic alliances and market leadership.</p>
+          <ul>
+            <li>Brand strategy &amp; positioning</li>
+            <li>Strategic partnerships &amp; alliances</li>
+            <li>Organisational transformation</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- APPROACH -->
+<section class="br-section br-section--alt">
+  <div class="br-page">
+    <span class="br-eyebrow">How We Work</span>
+    <h2 class="br-h2">Our Approach</h2>
+    <div class="br-approach">
+      <p>At GreenApple Success Factors, we transform meaningful interventions into sustainable growth. Every organization and individual has unique challenges, and we design solutions that are tailored, purposeful, and impact-driven. By combining insight, strategy, and execution, we ensure every initiative delivers measurable results and long-term value.</p>
+      <p>We work closely with our clients, fostering collaboration, transparency, and trust at every step. Our approach is dynamic and adaptive — continuously assessing and refining strategies for maximum impact. Through thoughtful planning and effective implementation, we empower organizations and individuals to achieve lasting growth.</p>
+    </div>
+
+    <div class="br-outcomes">
+      <div class="br-outcome"><div class="br-outcome__num">20+</div><div class="br-outcome__label">Years Team Expertise</div></div>
+      <div class="br-outcome"><div class="br-outcome__num">6</div><div class="br-outcome__label">Core Specializations</div></div>
+      <div class="br-outcome"><div class="br-outcome__num">100%</div><div class="br-outcome__label">Result Focused</div></div>
+      <div class="br-outcome"><div class="br-outcome__num">Strategic</div><div class="br-outcome__label">Industry Insights</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- BOOK -->
+<section class="br-section">
+  <div class="br-page">
+    <div style="text-align:center;margin-bottom:2rem;">
+      <span class="br-eyebrow">Featured Publication</span>
+      <h2 class="br-h2">From Our Founder</h2>
+    </div>
+    <div class="br-book">
+      <img src="assets/why-mentor-matters-cover.webp" alt="Why Mentor Matters book cover"/>
+      <div>
+        <h3>Why Mentor Matters</h3>
+        <p class="br-book__sub">A must-read handbook for MSME Entrepreneurs and Startup Leadership</p>
+        <p>Authored by Dr. George V Antony, this handbook distils 28+ years of mentoring experience — helping founders avoid critical mistakes, collaborate effectively with mentors, and build resilient, future-ready businesses. Officially released by Union Minister Sushri Shobha Karandlaje on 28 June 2025.</p>
+        <a href="https://whymentormatters.com/" target="_blank" rel="noopener" class="br-book__buy">Visit whymentormatters.com</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONNECT -->
+<section class="br-section br-section--alt">
+  <div class="br-page">
+    <div class="br-connect">
+      <div>
+        <span class="br-eyebrow" style="color:var(--teal-300);">Get in Touch</span>
+        <h2>Let's Build Something Lasting</h2>
+        <p>Whether you're a board exploring strategic options, a founder shaping the next phase, or an institution charting a future-ready path — we'd be glad to start the conversation.</p>
+        <a href="reach-us.html" class="br-connect__cta">Schedule a Consultation</a>
+      </div>
+      <div class="br-connect__contact">
+        <p style="margin-bottom:1rem;"><strong>Email</strong><a href="mailto:mail@gasuccessfactors.com">mail@gasuccessfactors.com</a></p>
+        <p style="margin-bottom:1rem;"><strong>Phone</strong><a href="tel:+918330833330">+91 8330 833330</a></p>
+        <p style="margin-bottom:1rem;"><strong>Office</strong>7/26B, Karuchira Temple Rd,<br/>Karumaloore P.O., Kochi 683511, Kerala, India</p>
+        <p><strong>Web</strong><a href="https://www.gasuccessfactors.com/">www.gasuccessfactors.com</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOT -->
+<div class="br-foot">
+  <strong>GreenApple Success Factors Pvt Ltd</strong> &middot; Clarity. Intelligence. Growth.<br/>
+  &copy; 2025 All rights reserved.
+</div>
+
+</body>
+</html>

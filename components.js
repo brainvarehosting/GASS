@@ -196,6 +196,7 @@ function buildFooter() {
             <a href="gallery.html">Gallery</a>
             <a href="reach-us.html">Reach Us</a>
             <a href="registration.html">Register</a>
+            <a href="brochure.html">Brochure</a>
           </nav>
         </div>
       </div>

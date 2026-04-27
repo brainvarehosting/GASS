@@ -140,8 +140,7 @@ function buildHeader() {
     <header class="site-header" id="siteHeader">
       <div class="header-inner">
         <a href="index.html" class="logo">
-          <div class="logo-icon">&#127823;</div>
-          <span>GreenApple <em style="font-style:normal;color:var(--teal-600);">Success Factors</em></span>
+          <img src="assets/logo.png" alt="GreenApple Success Factors" class="logo-img"/>
         </a>
         <nav class="nav-links" id="navLinks">${navHTML}</nav>
         <button class="hamburger" id="hamburgerBtn" aria-label="Open menu"><span></span><span></span><span></span></button>
@@ -168,8 +167,7 @@ function buildFooter() {
       <div class="footer-grid">
         <div>
           <a href="index.html" class="logo" style="margin-bottom:1rem;">
-            <div class="logo-icon">&#127823;</div>
-            <span style="color:#fff;">GreenApple <em style="font-style:normal;color:var(--teal-300);">Success Factors</em></span>
+            <img src="assets/logo.png" alt="GreenApple Success Factors" class="logo-img logo-img--footer"/>
           </a>
           <p style="color:var(--teal-300);font-weight:600;font-size:.9rem;margin-bottom:.6rem;">Clarity. Intelligence. Growth.</p>
           <p>Enabling sustainable business growth and long-term value creation through strategic insight, decision intelligence, and empowered leadership.</p>

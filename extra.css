@@ -189,10 +189,12 @@
   display: block;
   object-fit: contain;
   transition: opacity var(--t-fast) var(--ease);
+  /* Tint logo to match site's teal-navy color scheme */
+  filter: brightness(0) saturate(100%) invert(28%) sepia(82%) saturate(420%) hue-rotate(156deg) brightness(88%) contrast(102%);
 }
-.logo:hover .logo-img { opacity: .85; }
+.logo:hover .logo-img { opacity: .82; }
 
-/* Footer logo — white background logo on dark bg needs a subtle treatment */
+/* Footer logo — white on dark background */
 .logo-img--footer {
   height: 52px;
   filter: brightness(0) invert(1);

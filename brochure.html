@@ -2,421 +2,1188 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="description" content="GreenApple Success Factors — Corporate Brochure. Consulting, mentoring and empowerment services for boards, founders and institutions."/>
-  <title>Brochure | GreenApple Success Factors</title>
-  <link rel="stylesheet" href="assets/components.css"/>
-  <link rel="stylesheet" href="extra.css"/>
+  <title>GreenApple Success Factors — Corporate Brochure</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet"/>
   <style>
-    /* ===== BROCHURE LAYOUT ===== */
-    .brochure-toolbar {
-      position: sticky; top: 0; z-index: 50;
-      background: rgba(255,255,255,.92); backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--gray-100);
-      padding: .8rem 1.2rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+    /* ============ TOKENS ============ */
+    :root {
+      --navy-950:#040a14; --navy-900:#0a1628; --navy-800:#0e1f38; --navy-700:#142c4a; --navy-600:#1a3a5c;
+      --teal-900:#063840; --teal-800:#0a4f5a; --teal-700:#0e6574; --teal-600:#148090;
+      --teal-500:#1a9bab; --teal-400:#2ab4c5; --teal-300:#5ccfdb; --teal-200:#99e2eb; --teal-100:#ccf1f5; --teal-50:#eaf9fb;
+      --gold-300:#fcd34d; --gold-400:#fbbf24; --gold-500:#f59e0b; --gold-600:#d97706;
+      --paper:#fefcf8; --cream:#faf6ed; --ink:#1a1d23;
+      --gray-50:#f0f4f5; --gray-100:#e1e8ea; --gray-200:#c5d0d4; --gray-400:#6d8089; --gray-500:#516068; --gray-600:#3d4a51; --gray-700:#2a3439;
+      --serif: "Playfair Display", Georgia, serif;
+      --display: "Outfit", system-ui, sans-serif;
+      --body: "Inter", system-ui, sans-serif;
     }
-    .brochure-toolbar__left { display: flex; align-items: center; gap: .8rem; }
-    .brochure-toolbar__left img { height: 36px; }
-    .brochure-toolbar__left strong { color: var(--navy-800); font-family: var(--font-heading); font-size: .95rem; }
-    .brochure-toolbar__actions { display: flex; gap: .6rem; flex-wrap: wrap; }
-    .brochure-toolbar .btn-ghost {
-      color: var(--gray-600); padding: .55rem 1rem; border-radius: var(--r-sm);
-      font-weight: 600; font-size: .85rem; border: 1px solid var(--gray-200); background: var(--white);
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background: var(--paper); }
+    body {
+      font-family: var(--body); color: var(--ink); line-height: 1.6;
+      -webkit-font-smoothing: antialiased; -webkit-print-color-adjust: exact; print-color-adjust: exact;
     }
-    .brochure-toolbar .btn-ghost:hover { color: var(--teal-700); border-color: var(--teal-300); }
-    .brochure-toolbar .btn-primary { padding: .55rem 1.2rem; font-size: .85rem; }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+    h1, h2, h3, h4 { font-family: var(--display); font-weight: 800; letter-spacing: -.02em; line-height: 1.1; }
 
-    .br-page {
-      max-width: 1000px; margin: 0 auto; padding: clamp(2rem, 5vw, 3.5rem) clamp(1.2rem, 4vw, 3rem);
+    /* ============ PAGE FRAME ============ */
+    .page {
+      width: 210mm; min-height: 297mm; max-height: 297mm;
+      margin: 0 auto; padding: 0; position: relative;
+      background: var(--paper); overflow: hidden;
+      page-break-after: always; break-after: page;
+    }
+    .page:last-of-type { page-break-after: auto; }
+    .page-num {
+      position: absolute; bottom: 12mm; right: 14mm;
+      font-family: var(--display); font-size: 9pt; color: var(--gray-400);
+      letter-spacing: .25em; font-weight: 600;
+    }
+    .page-num--left { right: auto; left: 14mm; }
+    .page-foot {
+      position: absolute; bottom: 12mm; left: 14mm; right: 14mm;
+      display: flex; justify-content: space-between; align-items: center;
+      font-family: var(--display); font-size: 8.5pt; color: var(--gray-400);
+      letter-spacing: .15em; text-transform: uppercase;
     }
 
-    /* Cover */
-    .br-cover {
-      position: relative; min-height: 92vh; padding: 0;
-      background: linear-gradient(135deg, var(--navy-900) 0%, var(--teal-900) 100%);
-      color: var(--white); overflow: hidden;
-      display: flex; align-items: center; justify-content: center;
+    /* ============ PAGE 1 — COVER ============ */
+    .cover {
+      position: relative; width: 100%; height: 297mm;
+      background: linear-gradient(135deg, #040a14 0%, #0a1628 35%, #063840 75%, #0a4f5a 100%);
+      color: #fff; overflow: hidden;
     }
-    .br-cover::before {
+    .cover::before {
       content: ""; position: absolute; inset: 0;
-      background: radial-gradient(circle at 20% 30%, rgba(26,155,171,.3), transparent 50%),
-                  radial-gradient(circle at 80% 70%, rgba(251,191,36,.08), transparent 50%);
-      pointer-events: none;
+      background:
+        radial-gradient(ellipse at 75% 10%, rgba(26,155,171,.35), transparent 55%),
+        radial-gradient(ellipse at 15% 85%, rgba(251,191,36,.10), transparent 50%),
+        radial-gradient(circle at 50% 50%, transparent 60%, rgba(0,0,0,.35) 100%);
     }
-    .br-cover__inner {
-      position: relative; z-index: 1; text-align: center; padding: 3rem 1.5rem; max-width: 720px;
+    .cover::after {
+      content: ""; position: absolute; inset: 0;
+      background-image:
+        repeating-linear-gradient(45deg, rgba(255,255,255,.015) 0 2px, transparent 2px 80px),
+        repeating-linear-gradient(-45deg, rgba(255,255,255,.015) 0 2px, transparent 2px 80px);
     }
-    .br-cover__logo { height: 72px; margin: 0 auto 2rem; filter: brightness(0) invert(1); }
-    .br-cover__brand { font-family: var(--font-heading); font-size: clamp(1.4rem,3vw,2rem); font-weight: 800; letter-spacing: .02em; margin-bottom: .4rem; }
-    .br-cover__sub { color: var(--teal-300); font-size: .82rem; letter-spacing: .25em; text-transform: uppercase; margin-bottom: 2.4rem; font-weight: 500; }
-    .br-cover h1 { font-size: clamp(1.8rem, 5vw, 3rem); line-height: 1.2; margin-bottom: 1.2rem; }
-    .br-cover h1 span { color: var(--teal-300); }
-    .br-cover__tagline {
-      display: inline-block; margin-top: 2rem; padding: .9rem 2rem;
-      border: 1px solid rgba(204,241,245,.3); border-radius: var(--r-full);
-      font-family: var(--font-heading); font-weight: 700; letter-spacing: .15em; text-transform: uppercase; font-size: .85rem;
-      color: var(--teal-200);
+    .cover__inner { position: relative; z-index: 2; height: 100%; padding: 22mm 18mm; display: flex; flex-direction: column; }
+    .cover__top { display: flex; justify-content: space-between; align-items: center; }
+    .cover__logo { height: 14mm; filter: brightness(0) invert(1); opacity: .95; }
+    .cover__edition {
+      text-align: right; font-family: var(--display); font-size: 9pt;
+      color: var(--teal-300); letter-spacing: .35em; text-transform: uppercase; font-weight: 600;
     }
-    .br-cover__meta { margin-top: 2.5rem; font-size: .82rem; color: rgba(255,255,255,.6); }
-
-    /* Section base */
-    .br-section { padding: clamp(2.5rem, 5vw, 4rem) 0; }
-    .br-section + .br-section { border-top: 1px solid var(--gray-100); }
-    .br-section--alt { background: var(--gray-50); }
-    .br-eyebrow {
-      display: inline-block; font-size: .75rem; font-weight: 700; letter-spacing: .15em;
-      text-transform: uppercase; color: var(--teal-700); margin-bottom: .6rem;
+    .cover__edition span { display: block; color: rgba(255,255,255,.55); font-size: 7.5pt; margin-top: 2mm; letter-spacing: .25em; }
+    .cover__rule {
+      width: 60mm; height: 1px; background: linear-gradient(90deg, var(--teal-400), transparent);
+      margin: 22mm 0 6mm;
     }
-    .br-h2 { color: var(--navy-800); font-size: clamp(1.5rem, 3.5vw, 2.2rem); margin-bottom: 1rem; line-height: 1.2; }
-    .br-lead { color: var(--gray-500); font-size: 1rem; line-height: 1.85; max-width: 760px; }
-
-    /* About split */
-    .br-about { display: grid; grid-template-columns: 1.2fr 1fr; gap: 3rem; align-items: center; }
-    .br-about img { border-radius: var(--r-lg); box-shadow: var(--shadow-md); width: 100%; }
-    @media(max-width:768px){ .br-about{ grid-template-columns:1fr; } }
-
-    /* Mission/Vision */
-    .br-mv { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-    .br-mv__card {
-      background: var(--white); border: 1px solid var(--teal-100); border-radius: var(--r-lg);
-      padding: 2rem 1.8rem; box-shadow: var(--shadow-sm);
+    .cover__eyebrow {
+      font-family: var(--display); font-size: 9.5pt; color: var(--teal-300);
+      letter-spacing: .4em; text-transform: uppercase; font-weight: 600; margin-bottom: 6mm;
     }
-    .br-mv__icon { font-size: 2.2rem; margin-bottom: .6rem; }
-    .br-mv__card h3 { color: var(--navy-800); margin-bottom: .6rem; font-size: 1.15rem; }
-    .br-mv__card p { color: var(--gray-600); font-size: .94rem; line-height: 1.75; }
-    @media(max-width:600px){ .br-mv{ grid-template-columns:1fr; } }
-
-    /* Services grid */
-    .br-services { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-top: 2rem; }
-    .br-svc {
-      background: var(--white); border: 1px solid var(--gray-100); border-radius: var(--r-md);
-      box-shadow: var(--shadow-xs); overflow: hidden; display: flex; flex-direction: column;
+    .cover__headline {
+      font-family: var(--serif); font-style: italic; font-weight: 400;
+      font-size: 78pt; line-height: .95; color: #fff; margin-bottom: 0;
+      max-width: 170mm; letter-spacing: -.03em;
     }
-    .br-svc__img { aspect-ratio: 16/8; object-fit: cover; width: 100%; }
-    .br-svc__body { padding: 1.4rem 1.4rem 1.6rem; flex: 1; display: flex; flex-direction: column; }
-    .br-svc__num {
-      width: 32px; height: 32px; border-radius: 50%;
-      background: var(--teal-50); color: var(--teal-700);
-      font-weight: 700; font-size: .82rem; display: inline-flex;
-      align-items: center; justify-content: center; margin-bottom: .8rem;
-      border: 1px solid var(--teal-100);
+    .cover__headline strong { font-style: normal; font-weight: 800; color: var(--teal-300); }
+    .cover__sub {
+      font-family: var(--body); font-size: 12pt; color: rgba(255,255,255,.78);
+      line-height: 1.65; max-width: 140mm; margin-top: 10mm; font-weight: 300;
     }
-    .br-svc h3 { color: var(--navy-800); font-size: 1.08rem; margin-bottom: .5rem; line-height: 1.35; }
-    .br-svc p { color: var(--gray-500); font-size: .9rem; line-height: 1.7; flex: 1; }
-    .br-svc ul { list-style: none; padding: 0; margin: .8rem 0 0; }
-    .br-svc li {
-      color: var(--gray-600); font-size: .85rem; line-height: 1.55;
-      padding: .25rem 0 .25rem 1.2rem; position: relative;
+    .cover__bottom { margin-top: auto; display: flex; justify-content: space-between; align-items: flex-end; }
+    .cover__brand {
+      font-family: var(--display); font-weight: 800; font-size: 16pt;
+      color: #fff; letter-spacing: .02em;
     }
-    .br-svc li::before {
-      content: "✓"; position: absolute; left: 0; color: var(--teal-600); font-weight: 700; font-size: .82rem;
-    }
-    @media(max-width:768px){ .br-services{ grid-template-columns:1fr; } }
-
-    /* Approach */
-    .br-approach {
-      background: linear-gradient(135deg, var(--teal-50), rgba(251,191,36,.04));
-      border-left: 4px solid var(--teal-500);
-      border-radius: 0 var(--r-lg) var(--r-lg) 0; padding: 2rem 2rem;
-    }
-    .br-approach p { color: var(--gray-600); font-size: .95rem; line-height: 1.8; margin-bottom: .8rem; }
-    .br-approach p:last-child { margin-bottom: 0; }
-
-    /* Book strip */
-    .br-book {
-      display: grid; grid-template-columns: 200px 1fr; gap: 2rem; align-items: center;
-      background: var(--white); border: 1px solid var(--teal-100);
-      border-radius: var(--r-lg); padding: 2rem; box-shadow: var(--shadow-sm);
-    }
-    .br-book img { width: 100%; border-radius: var(--r-sm); box-shadow: 0 14px 32px rgba(4,10,20,.18); }
-    .br-book h3 { color: var(--navy-800); font-size: 1.4rem; margin-bottom: .3rem; }
-    .br-book__sub { font-style: italic; color: var(--gray-500); font-size: .92rem; margin-bottom: .8rem; }
-    .br-book p { color: var(--gray-600); font-size: .92rem; line-height: 1.75; margin-bottom: 1rem; }
-    .br-book__buy { display: inline-block; background: var(--teal-700); color: var(--white); padding: .5rem 1.1rem; border-radius: var(--r-sm); font-size: .85rem; font-weight: 600; }
-    .br-book__buy:hover { background: var(--teal-800); color: var(--white); }
-    @media(max-width:600px){
-      .br-book{ grid-template-columns:1fr; text-align:center; }
-      .br-book img{ max-width:180px; margin:0 auto; }
+    .cover__brand span { display: block; font-size: 8.5pt; font-weight: 500; color: var(--teal-300); letter-spacing: .3em; text-transform: uppercase; margin-top: 1.5mm; }
+    .cover__tagline {
+      font-family: var(--display); font-size: 10pt; font-weight: 700;
+      color: var(--gold-400); letter-spacing: .35em; text-transform: uppercase;
+      border: 1px solid rgba(251,191,36,.4); padding: 3mm 6mm; border-radius: 999px;
     }
 
-    /* Outcomes */
-    .br-outcomes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 1.6rem; }
-    .br-outcome {
-      background: var(--white); border: 1px solid var(--gray-100); border-radius: var(--r-md);
-      padding: 1.4rem 1.2rem; text-align: center;
+    /* ============ PAGE 2 — WELCOME / TAGLINE SPREAD ============ */
+    .welcome { padding: 22mm 18mm; height: 297mm; display: flex; flex-direction: column; }
+    .welcome__top { display: grid; grid-template-columns: 60mm 1fr; gap: 12mm; align-items: start; }
+    .welcome__num {
+      font-family: var(--serif); font-style: italic; font-weight: 400;
+      font-size: 90pt; color: var(--teal-100); line-height: .8;
     }
-    .br-outcome__num {
-      font-family: var(--font-heading); font-weight: 800; font-size: 2rem;
-      color: var(--teal-700); line-height: 1; margin-bottom: .4rem;
+    .welcome__num small { display: block; font-family: var(--display); font-style: normal; font-size: 9pt; color: var(--teal-700); letter-spacing: .3em; font-weight: 700; margin-top: 4mm; }
+    .welcome__intro h2 {
+      font-family: var(--serif); font-style: italic; font-weight: 400;
+      font-size: 42pt; line-height: 1.05; color: var(--navy-900); letter-spacing: -.02em; margin-bottom: 6mm;
     }
-    .br-outcome__label { color: var(--gray-600); font-size: .82rem; line-height: 1.5; }
-    @media(max-width:768px){ .br-outcomes{ grid-template-columns:repeat(2,1fr); } }
+    .welcome__intro h2 em { font-style: normal; font-weight: 700; color: var(--teal-700); }
+    .welcome__intro p {
+      font-size: 11.5pt; line-height: 1.7; color: var(--gray-600); margin-bottom: 4mm; font-weight: 300;
+    }
+    .welcome__intro p.lead { font-size: 13pt; color: var(--navy-800); font-weight: 400; }
+    .welcome__intro p.lead::first-letter {
+      font-family: var(--serif); font-weight: 700; float: left;
+      font-size: 56pt; line-height: .85; padding: 4mm 4mm 0 0; color: var(--teal-700);
+    }
 
-    /* Connect */
-    .br-connect {
+    .welcome__pillars {
+      margin-top: auto; display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 0; border-top: 2px solid var(--navy-900); padding-top: 8mm;
+    }
+    .pillar { padding: 0 6mm; border-right: 1px solid var(--gray-200); }
+    .pillar:last-child { border-right: none; }
+    .pillar:first-child { padding-left: 0; }
+    .pillar__num {
+      font-family: var(--display); font-size: 8pt; color: var(--gold-500);
+      letter-spacing: .3em; font-weight: 700; margin-bottom: 3mm;
+    }
+    .pillar h3 {
+      font-family: var(--serif); font-style: italic; font-weight: 700;
+      font-size: 22pt; color: var(--navy-900); margin-bottom: 3mm; line-height: 1;
+    }
+    .pillar p { font-size: 9.5pt; line-height: 1.6; color: var(--gray-500); font-weight: 400; }
+
+    /* ============ PAGE 3 — CONTENTS ============ */
+    .contents { padding: 22mm 18mm; height: 297mm; display: grid; grid-template-columns: 1fr 80mm; gap: 14mm; align-items: start; }
+    .contents__head {
+      font-family: var(--display); font-size: 8.5pt; letter-spacing: .35em;
+      color: var(--gold-500); text-transform: uppercase; font-weight: 700; margin-bottom: 6mm;
+    }
+    .contents h2 {
+      font-family: var(--serif); font-style: italic; font-weight: 400;
+      font-size: 56pt; color: var(--navy-900); line-height: 1; margin-bottom: 10mm; letter-spacing: -.03em;
+    }
+    .contents__list { border-top: 2px solid var(--navy-900); }
+    .contents__row {
+      display: grid; grid-template-columns: 16mm 1fr 12mm;
+      align-items: baseline; padding: 5mm 0;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .contents__row .n {
+      font-family: var(--display); font-weight: 800; font-size: 11pt;
+      color: var(--gold-500); letter-spacing: .15em;
+    }
+    .contents__row .t {
+      font-family: var(--serif); font-size: 16pt; color: var(--navy-900); font-weight: 600; letter-spacing: -.01em;
+    }
+    .contents__row .t small {
+      display: block; font-family: var(--body); font-size: 9pt; font-weight: 400;
+      color: var(--gray-500); letter-spacing: 0; margin-top: 1.5mm; font-style: normal;
+    }
+    .contents__row .p {
+      font-family: var(--display); font-weight: 700; font-size: 11pt;
+      color: var(--navy-700); text-align: right; letter-spacing: .1em;
+    }
+    .contents__side {
+      background: linear-gradient(180deg, var(--navy-900), var(--teal-900));
+      padding: 14mm 10mm; color: #fff; border-radius: 4mm;
+      align-self: stretch; min-height: 220mm; display: flex; flex-direction: column;
+    }
+    .contents__side .label {
+      font-family: var(--display); font-size: 8pt; letter-spacing: .3em;
+      color: var(--gold-400); text-transform: uppercase; font-weight: 700; margin-bottom: 6mm;
+    }
+    .contents__side h3 {
+      font-family: var(--serif); font-style: italic; font-weight: 400;
+      font-size: 28pt; line-height: 1.1; margin-bottom: 8mm; color: #fff;
+    }
+    .contents__side h3 em { font-style: normal; font-weight: 700; color: var(--teal-300); }
+    .contents__side p { font-size: 9.5pt; line-height: 1.7; color: rgba(255,255,255,.78); margin-bottom: 4mm; font-weight: 300; }
+    .contents__side .stat-line {
+      margin-top: auto; padding-top: 8mm; border-top: 1px solid rgba(255,255,255,.15);
+      display: grid; grid-template-columns: 1fr 1fr; gap: 6mm;
+    }
+    .contents__side .sl-item .v {
+      font-family: var(--serif); font-style: italic; font-weight: 700;
+      font-size: 28pt; color: var(--teal-300); line-height: 1;
+    }
+    .contents__side .sl-item .l { font-size: 8pt; color: rgba(255,255,255,.6); letter-spacing: .15em; text-transform: uppercase; margin-top: 2mm; }
+
+    /* ============ PAGE 4 — FOREWORD ============ */
+    .foreword { padding: 22mm 18mm; height: 297mm; display: grid; grid-template-columns: 80mm 1fr; gap: 14mm; align-items: start; }
+    .foreword__photo {
+      background: linear-gradient(160deg, #0e1f38, #0a4f5a);
+      border-radius: 4mm; min-height: 130mm;
+      position: relative; overflow: hidden;
+      box-shadow: 0 8mm 24mm rgba(4,10,20,.18);
+    }
+    .foreword__photo::before {
+      content: ""; position: absolute; inset: 0;
+      background:
+        radial-gradient(circle at 40% 30%, rgba(26,155,171,.4), transparent 60%),
+        radial-gradient(circle at 70% 80%, rgba(251,191,36,.15), transparent 50%);
+    }
+    .foreword__photo .badge {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: rgba(4,10,20,.85); backdrop-filter: blur(10px);
+      padding: 6mm; color: #fff;
+    }
+    .foreword__photo .badge .name {
+      font-family: var(--serif); font-weight: 700; font-size: 16pt; color: #fff; line-height: 1.1;
+    }
+    .foreword__photo .badge .role {
+      font-family: var(--display); font-size: 8.5pt; letter-spacing: .25em;
+      color: var(--teal-300); text-transform: uppercase; font-weight: 600; margin-top: 2mm;
+    }
+    .foreword__photo .seal {
+      position: absolute; top: 8mm; right: 8mm; width: 22mm; height: 22mm;
+      border: 1.5px solid var(--gold-400); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--serif); font-style: italic; color: var(--gold-400);
+      font-size: 9pt; text-align: center; line-height: 1.1; padding: 2mm;
+    }
+    .foreword__body { padding-top: 4mm; }
+    .foreword__eyebrow {
+      font-family: var(--display); font-size: 8.5pt; letter-spacing: .35em;
+      color: var(--gold-500); text-transform: uppercase; font-weight: 700; margin-bottom: 4mm;
+    }
+    .foreword__body h2 {
+      font-family: var(--serif); font-style: italic; font-weight: 400;
+      font-size: 38pt; line-height: 1.05; color: var(--navy-900); margin-bottom: 8mm; letter-spacing: -.02em;
+    }
+    .foreword__body h2 em { font-style: normal; font-weight: 700; color: var(--teal-700); }
+    .foreword__body p {
+      font-size: 10.5pt; line-height: 1.75; color: var(--gray-700);
+      margin-bottom: 4mm; font-weight: 400;
+    }
+    .foreword__body p:first-of-type::first-letter {
+      font-family: var(--serif); font-weight: 700; float: left;
+      font-size: 48pt; line-height: .85; padding: 2mm 4mm 0 0; color: var(--teal-700);
+    }
+    .foreword__sig {
+      margin-top: 8mm; padding-top: 6mm; border-top: 1px solid var(--gray-200);
+    }
+    .foreword__sig .signed {
+      font-family: var(--serif); font-style: italic; font-weight: 600;
+      font-size: 18pt; color: var(--navy-900); letter-spacing: -.02em;
+    }
+    .foreword__sig .who { font-family: var(--display); font-size: 9pt; color: var(--gray-500); margin-top: 1.5mm; letter-spacing: .1em; }
+
+    /* ============ PAGE 5 — WHO WE ARE ============ */
+    .about { padding: 22mm 18mm; height: 297mm; display: flex; flex-direction: column; }
+    .about__head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 12mm; padding-bottom: 6mm; border-bottom: 2px solid var(--navy-900); }
+    .about__head h2 {
+      font-family: var(--serif); font-style: italic; font-weight: 400;
+      font-size: 52pt; line-height: 1; color: var(--navy-900); letter-spacing: -.02em;
+    }
+    .about__head h2 em { font-style: normal; font-weight: 700; color: var(--teal-700); }
+    .about__head .meta {
+      font-family: var(--display); font-size: 9pt; color: var(--gray-500);
+      letter-spacing: .3em; text-transform: uppercase; font-weight: 600; text-align: right;
+    }
+    .about__grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 12mm; }
+    .about__copy p {
+      font-size: 10.5pt; line-height: 1.75; color: var(--gray-700);
+      margin-bottom: 4mm; font-weight: 400;
+    }
+    .about__copy p.lead { font-size: 13pt; color: var(--navy-800); font-weight: 400; line-height: 1.6; font-family: var(--serif); margin-bottom: 6mm; }
+    .about__copy p.lead em { color: var(--teal-700); font-style: italic; }
+
+    .about__stats {
+      background: linear-gradient(160deg, var(--cream), var(--paper));
+      border: 1px solid var(--gray-100); padding: 10mm 8mm; border-radius: 3mm;
+    }
+    .about__stats .label {
+      font-family: var(--display); font-size: 8pt; letter-spacing: .3em;
+      color: var(--teal-700); text-transform: uppercase; font-weight: 700; margin-bottom: 6mm;
+    }
+    .stat-row { padding: 5mm 0; border-bottom: 1px dashed var(--gray-200); }
+    .stat-row:last-child { border-bottom: none; }
+    .stat-row .v {
+      font-family: var(--serif); font-style: italic; font-weight: 700;
+      font-size: 36pt; color: var(--navy-900); line-height: 1; letter-spacing: -.02em;
+    }
+    .stat-row .v sup { font-size: 14pt; color: var(--gold-500); font-style: normal; }
+    .stat-row .l {
+      font-family: var(--display); font-size: 8.5pt; color: var(--gray-500);
+      letter-spacing: .2em; text-transform: uppercase; font-weight: 600; margin-top: 1.5mm;
+    }
+
+    .pull-quote {
+      margin: 12mm 0 0; padding: 8mm 10mm;
+      background: var(--navy-900); color: #fff; border-radius: 3mm;
+      position: relative;
+    }
+    .pull-quote::before {
+      content: """; position: absolute; top: -8mm; left: 6mm;
+      font-family: var(--serif); font-size: 90pt; color: var(--gold-400); line-height: 1;
+    }
+    .pull-quote p {
+      font-family: var(--serif); font-style: italic; font-weight: 400;
+      font-size: 17pt; line-height: 1.45; color: #fff; padding-left: 16mm;
+    }
+
+    /* ============ PAGE 6 — MISSION & VISION ============ */
+    .mvpage { padding: 22mm 18mm; height: 297mm; display: flex; flex-direction: column; }
+    .mvpage__head { margin-bottom: 14mm; }
+    .mvpage__head .label {
+      font-family: var(--display); font-size: 8.5pt; letter-spacing: .35em;
+      color: var(--gold-500); text-transform: uppercase; font-weight: 700; margin-bottom: 4mm;
+    }
+    .mvpage__head h2 {
+      font-family: var(--serif); font-style: italic; font-weight: 400;
+      font-size: 56pt; line-height: 1; color: var(--navy-900); letter-spacing: -.02em;
+    }
+    .mvpage__head h2 em { font-style: normal; font-weight: 700; color: var(--teal-700); }
+
+    .mv-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; flex: 1; }
+    .mv-card {
+      padding: 14mm 10mm; border-radius: 4mm; display: flex; flex-direction: column;
+      position: relative; overflow: hidden;
+    }
+    .mv-card--mission { background: linear-gradient(160deg, var(--navy-900), var(--navy-800)); color: #fff; }
+    .mv-card--vision { background: linear-gradient(160deg, var(--cream), var(--paper)); border: 1px solid var(--gray-100); }
+    .mv-card .num {
+      font-family: var(--serif); font-style: italic; font-weight: 700;
+      font-size: 90pt; line-height: .8; opacity: .15; position: absolute;
+      top: 6mm; right: 8mm;
+    }
+    .mv-card--mission .num { color: var(--teal-300); }
+    .mv-card--vision .num { color: var(--teal-700); }
+    .mv-card .lab {
+      font-family: var(--display); font-size: 9pt; letter-spacing: .35em;
+      text-transform: uppercase; font-weight: 700; margin-bottom: 6mm;
+    }
+    .mv-card--mission .lab { color: var(--gold-400); }
+    .mv-card--vision .lab { color: var(--gold-500); }
+    .mv-card h3 {
+      font-family: var(--serif); font-style: italic; font-weight: 400;
+      font-size: 38pt; line-height: 1; margin-bottom: 8mm; letter-spacing: -.02em;
+    }
+    .mv-card--mission h3 { color: #fff; }
+    .mv-card--vision h3 { color: var(--navy-900); }
+    .mv-card p {
+      font-size: 11pt; line-height: 1.75; font-weight: 400;
+    }
+    .mv-card--mission p { color: rgba(255,255,255,.85); }
+    .mv-card--vision p { color: var(--gray-700); }
+    .mv-card .principles {
+      margin-top: auto; padding-top: 8mm; border-top: 1px solid;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4mm 6mm;
+    }
+    .mv-card--mission .principles { border-color: rgba(255,255,255,.18); }
+    .mv-card--vision .principles { border-color: var(--gray-200); }
+    .mv-card .principles .pi {
+      font-family: var(--display); font-size: 8pt; letter-spacing: .15em;
+      text-transform: uppercase; font-weight: 600;
+    }
+    .mv-card--mission .principles .pi { color: var(--teal-300); }
+    .mv-card--vision .principles .pi { color: var(--teal-700); }
+
+    /* ============ PAGE 7 — APPROACH ============ */
+    .approach { padding: 22mm 18mm; height: 297mm; display: flex; flex-direction: column; }
+    .approach__head { margin-bottom: 12mm; }
+    .approach__head .label {
+      font-family: var(--display); font-size: 8.5pt; letter-spacing: .35em;
+      color: var(--gold-500); text-transform: uppercase; font-weight: 700; margin-bottom: 4mm;
+    }
+    .approach__head h2 {
+      font-family: var(--serif); font-style: italic; font-weight: 400;
+      font-size: 52pt; line-height: 1; color: var(--navy-900); letter-spacing: -.02em;
+    }
+    .approach__head h2 em { font-style: normal; font-weight: 700; color: var(--teal-700); }
+    .approach__sub {
+      font-family: var(--serif); font-size: 14pt; color: var(--gray-700);
+      max-width: 145mm; line-height: 1.55; margin-top: 6mm; font-weight: 400;
+    }
+
+    .approach__steps {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 4mm;
+      margin-top: auto;
+    }
+    .step { padding: 8mm 6mm; border-radius: 3mm; background: var(--cream); border: 1px solid var(--gray-100); }
+    .step__num {
+      font-family: var(--serif); font-style: italic; font-weight: 700;
+      font-size: 32pt; color: var(--gold-500); line-height: 1; margin-bottom: 4mm;
+    }
+    .step h3 { font-family: var(--display); font-size: 12pt; color: var(--navy-900); margin-bottom: 3mm; line-height: 1.2; font-weight: 700; }
+    .step p { font-size: 9pt; line-height: 1.6; color: var(--gray-600); }
+
+    .approach__band {
+      margin-top: 10mm; padding: 10mm; background: linear-gradient(135deg, var(--teal-700), var(--navy-800));
+      border-radius: 4mm; color: #fff; display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 4mm;
+      text-align: center;
+    }
+    .approach__band .item .v {
+      font-family: var(--serif); font-style: italic; font-weight: 700;
+      font-size: 32pt; color: var(--gold-300); line-height: 1;
+    }
+    .approach__band .item .l {
+      font-family: var(--display); font-size: 8pt; letter-spacing: .2em;
+      text-transform: uppercase; font-weight: 600; margin-top: 2mm; color: rgba(255,255,255,.85);
+    }
+
+    /* ============ PAGE 8 — SERVICES OVERVIEW ============ */
+    .svcoverview { padding: 22mm 18mm; height: 297mm; display: flex; flex-direction: column; }
+    .svcoverview__head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10mm; padding-bottom: 5mm; border-bottom: 2px solid var(--navy-900); }
+    .svcoverview__head h2 {
+      font-family: var(--serif); font-style: italic; font-weight: 400;
+      font-size: 46pt; line-height: 1; color: var(--navy-900); letter-spacing: -.02em;
+    }
+    .svcoverview__head h2 em { font-style: normal; font-weight: 700; color: var(--teal-700); }
+    .svcoverview__head .label {
+      font-family: var(--display); font-size: 9pt; letter-spacing: .3em;
+      color: var(--gold-500); text-transform: uppercase; font-weight: 700;
+    }
+
+    .svcoverview__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; flex: 1; }
+    .svc-tile {
+      padding: 8mm 7mm; border-radius: 3mm; background: var(--paper);
+      border: 1px solid var(--gray-100); display: flex; flex-direction: column;
+      position: relative; overflow: hidden;
+    }
+    .svc-tile::before {
+      content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3mm;
+      background: linear-gradient(180deg, var(--teal-500), var(--teal-700));
+    }
+    .svc-tile .lt {
+      font-family: var(--serif); font-style: italic; font-weight: 700;
+      font-size: 28pt; color: var(--gold-500); line-height: 1; margin-bottom: 3mm;
+    }
+    .svc-tile h3 {
+      font-family: var(--display); font-weight: 700; font-size: 13pt;
+      color: var(--navy-900); line-height: 1.2; margin-bottom: 3mm;
+    }
+    .svc-tile p { font-size: 9pt; line-height: 1.6; color: var(--gray-600); flex: 1; }
+    .svc-tile .tags {
+      margin-top: 4mm; padding-top: 3mm; border-top: 1px dashed var(--gray-200);
+      font-family: var(--display); font-size: 7.5pt; letter-spacing: .15em;
+      color: var(--teal-700); text-transform: uppercase; font-weight: 600;
+    }
+
+    /* ============ PAGES 9–11 — SERVICE SPREADS ============ */
+    .svcdetail { padding: 22mm 18mm; height: 297mm; display: flex; flex-direction: column; }
+    .svcdetail__band {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8mm;
+      flex: 1;
+    }
+    .svcdetail__band .col { display: flex; flex-direction: column; }
+    .svcdetail__head {
+      display: flex; justify-content: space-between; align-items: flex-end;
+      padding-bottom: 4mm; border-bottom: 2px solid var(--navy-900); margin-bottom: 6mm;
+    }
+    .svcdetail__head h2 {
+      font-family: var(--serif); font-style: italic; font-weight: 400;
+      font-size: 32pt; line-height: 1; color: var(--navy-900); letter-spacing: -.02em;
+    }
+    .svcdetail__head h2 em { font-style: normal; font-weight: 700; color: var(--teal-700); }
+    .svcdetail__head .badge {
+      font-family: var(--display); font-size: 9pt; letter-spacing: .3em;
+      color: var(--gold-500); text-transform: uppercase; font-weight: 700;
+    }
+    .sd__num {
+      font-family: var(--serif); font-style: italic; font-weight: 700;
+      font-size: 60pt; color: var(--teal-100); line-height: .85; margin-bottom: 3mm;
+    }
+    .sd__title {
+      font-family: var(--display); font-weight: 800; font-size: 16pt;
+      color: var(--navy-900); margin-bottom: 4mm; line-height: 1.15;
+    }
+    .sd__lead {
+      font-family: var(--serif); font-size: 10.5pt; line-height: 1.65;
+      color: var(--gray-700); margin-bottom: 4mm; font-style: italic;
+    }
+    .sd__body p { font-size: 9.5pt; line-height: 1.7; color: var(--gray-600); margin-bottom: 3mm; }
+    .sd__split { display: grid; grid-template-columns: 1fr; gap: 4mm; margin-top: 4mm; }
+    .sd-block {
+      padding: 6mm 6mm; border-radius: 3mm;
+    }
+    .sd-block--what { background: var(--cream); border: 1px solid var(--gray-100); }
+    .sd-block--out { background: linear-gradient(160deg, var(--teal-700), var(--navy-800)); color: #fff; }
+    .sd-block .head {
+      font-family: var(--display); font-size: 8.5pt; letter-spacing: .3em;
+      text-transform: uppercase; font-weight: 700; margin-bottom: 4mm;
+    }
+    .sd-block--what .head { color: var(--teal-700); }
+    .sd-block--out .head { color: var(--gold-300); }
+    .sd-block ul { list-style: none; }
+    .sd-block li {
+      font-size: 9pt; line-height: 1.55; padding: 1.5mm 0 1.5mm 6mm;
+      position: relative;
+    }
+    .sd-block--what li { color: var(--gray-700); border-bottom: 1px dashed var(--gray-200); }
+    .sd-block--what li:last-child { border-bottom: none; }
+    .sd-block--out li { color: rgba(255,255,255,.92); border-bottom: 1px solid rgba(255,255,255,.12); }
+    .sd-block--out li:last-child { border-bottom: none; }
+    .sd-block--what li::before { content: ""; position: absolute; left: 0; top: 3.5mm; width: 3mm; height: 1px; background: var(--teal-600); }
+    .sd-block--out li::before { content: "✓"; position: absolute; left: 0; top: 1.4mm; color: var(--gold-300); font-weight: 700; font-size: 8pt; }
+
+    /* ============ PAGE 12 — BOOK ============ */
+    .bookpage {
+      height: 297mm; padding: 0; position: relative; overflow: hidden;
       background: linear-gradient(135deg, var(--navy-900), var(--teal-900));
-      color: var(--white); border-radius: var(--r-lg);
-      padding: clamp(2rem, 5vw, 3rem) clamp(1.5rem, 4vw, 2.5rem);
-      display: grid; grid-template-columns: 1.4fr 1fr; gap: 2.5rem; align-items: center;
+      color: #fff;
     }
-    .br-connect h2 { color: var(--white); margin-bottom: .8rem; }
-    .br-connect p { color: rgba(255,255,255,.78); font-size: .95rem; line-height: 1.8; margin-bottom: 1rem; }
-    .br-connect__contact { font-size: .9rem; line-height: 1.9; }
-    .br-connect__contact strong { color: var(--teal-300); display: block; font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; margin-bottom: .2rem; }
-    .br-connect__contact a { color: var(--teal-200); }
-    .br-connect__cta { display: inline-block; margin-top: .8rem; background: var(--teal-500); color: var(--white); padding: .8rem 1.8rem; border-radius: var(--r-full); font-weight: 700; font-size: .9rem; }
-    .br-connect__cta:hover { background: var(--teal-400); color: var(--white); }
-    @media(max-width:768px){ .br-connect{ grid-template-columns:1fr; } }
+    .bookpage::before {
+      content: ""; position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse at 80% 20%, rgba(251,191,36,.18), transparent 50%),
+        radial-gradient(ellipse at 20% 80%, rgba(26,155,171,.25), transparent 50%);
+    }
+    .bookpage__inner {
+      position: relative; z-index: 2; padding: 22mm 18mm; height: 100%;
+      display: grid; grid-template-columns: 75mm 1fr; gap: 14mm; align-items: center;
+    }
+    .bookpage__cover {
+      position: relative;
+      filter: drop-shadow(0 20mm 30mm rgba(0,0,0,.5));
+    }
+    .bookpage__cover img { width: 100%; border-radius: 2mm; }
+    .bookpage__seal {
+      position: absolute; top: -8mm; right: -8mm;
+      width: 28mm; height: 28mm; border-radius: 50%;
+      background: var(--gold-400); color: var(--navy-900);
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; text-align: center;
+      font-family: var(--display); font-weight: 800; font-size: 8pt;
+      letter-spacing: .15em; line-height: 1.1; padding: 4mm;
+      transform: rotate(8deg);
+    }
+    .bookpage__seal small { display: block; font-size: 6pt; margin-top: 1mm; letter-spacing: .2em; }
+    .bookpage__body .label {
+      font-family: var(--display); font-size: 8.5pt; letter-spacing: .35em;
+      color: var(--gold-400); text-transform: uppercase; font-weight: 700; margin-bottom: 5mm;
+    }
+    .bookpage__body h2 {
+      font-family: var(--serif); font-style: italic; font-weight: 400;
+      font-size: 48pt; line-height: 1; color: #fff; margin-bottom: 4mm; letter-spacing: -.02em;
+    }
+    .bookpage__sub {
+      font-family: var(--serif); font-size: 13pt; color: var(--teal-300);
+      font-style: italic; margin-bottom: 6mm; line-height: 1.4;
+    }
+    .bookpage__author {
+      font-family: var(--display); font-size: 10pt; color: rgba(255,255,255,.75);
+      letter-spacing: .15em; text-transform: uppercase; margin-bottom: 8mm; font-weight: 600;
+    }
+    .bookpage__body p {
+      font-size: 10.5pt; line-height: 1.7; color: rgba(255,255,255,.85);
+      margin-bottom: 4mm; font-weight: 300;
+    }
+    .bookpage__feats { margin-top: 6mm; display: grid; grid-template-columns: 1fr 1fr; gap: 4mm 8mm; }
+    .bookpage__feats .f {
+      padding: 3mm 0 3mm 6mm; border-left: 2px solid var(--gold-400);
+      font-size: 9.5pt; line-height: 1.55; color: rgba(255,255,255,.85);
+    }
+    .bookpage__feats .f strong { display: block; color: var(--teal-300); font-family: var(--display); font-size: 9pt; letter-spacing: .15em; text-transform: uppercase; margin-bottom: 1mm; font-weight: 700; }
+    .bookpage__cta {
+      margin-top: 8mm; display: inline-block;
+      background: var(--gold-400); color: var(--navy-900);
+      padding: 4mm 8mm; border-radius: 999px;
+      font-family: var(--display); font-weight: 700; font-size: 10pt; letter-spacing: .15em; text-transform: uppercase;
+    }
 
-    /* Footer line */
-    .br-foot {
-      text-align: center; padding: 2rem 1.5rem;
-      color: var(--gray-400); font-size: .82rem; border-top: 1px solid var(--gray-100);
+    /* ============ PAGE 13 — BACK COVER / CONNECT ============ */
+    .backcover {
+      height: 297mm; padding: 0; position: relative; overflow: hidden;
+      background: var(--paper);
+      display: flex; flex-direction: column;
     }
-    .br-foot strong { color: var(--navy-800); }
+    .backcover__top {
+      padding: 22mm 18mm 14mm; flex: 1;
+      display: flex; flex-direction: column; justify-content: center;
+    }
+    .backcover__label {
+      font-family: var(--display); font-size: 9pt; letter-spacing: .35em;
+      color: var(--gold-500); text-transform: uppercase; font-weight: 700; margin-bottom: 6mm;
+    }
+    .backcover h2 {
+      font-family: var(--serif); font-style: italic; font-weight: 400;
+      font-size: 64pt; line-height: 1; color: var(--navy-900); letter-spacing: -.03em; max-width: 160mm;
+    }
+    .backcover h2 em { font-style: normal; font-weight: 700; color: var(--teal-700); }
+    .backcover__sub {
+      font-family: var(--serif); font-size: 14pt; color: var(--gray-700);
+      margin-top: 8mm; max-width: 145mm; line-height: 1.55; font-weight: 400;
+    }
+    .backcover__contacts {
+      margin-top: 14mm; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6mm;
+      padding-top: 8mm; border-top: 2px solid var(--navy-900);
+    }
+    .bc-card .lab {
+      font-family: var(--display); font-size: 8pt; letter-spacing: .3em;
+      color: var(--gold-500); text-transform: uppercase; font-weight: 700; margin-bottom: 3mm;
+    }
+    .bc-card .v {
+      font-family: var(--serif); font-size: 13pt; color: var(--navy-900);
+      font-weight: 600; line-height: 1.4; letter-spacing: -.01em;
+    }
+    .bc-card .v small { display: block; font-family: var(--body); font-size: 9pt; font-weight: 400; color: var(--gray-500); margin-top: 1mm; line-height: 1.5; }
 
-    /* ===== PRINT STYLES ===== */
-    @media print {
-      @page { size: A4; margin: 12mm; }
-      body { background: var(--white); }
-      .brochure-toolbar { display: none !important; }
-      .br-cover { min-height: auto; padding: 4rem 2rem; page-break-after: always; }
-      .br-cover__logo { height: 60px; }
-      .br-section { padding: 2rem 0; page-break-inside: avoid; }
-      .br-page { padding: 1rem 1.5rem; }
-      .br-services, .br-mv, .br-outcomes { gap: .8rem; }
-      .br-svc, .br-mv__card, .br-outcome, .br-book, .br-approach { box-shadow: none !important; }
-      .br-connect { page-break-before: avoid; }
-      a { color: var(--navy-800) !important; text-decoration: none !important; }
-      .br-cover a, .br-connect a { color: inherit !important; }
+    .backcover__bottom {
+      background: linear-gradient(135deg, var(--navy-900), var(--teal-900));
+      color: #fff; padding: 14mm 18mm; position: relative; overflow: hidden;
     }
+    .backcover__bottom::before {
+      content: ""; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 90% 50%, rgba(26,155,171,.3), transparent 60%);
+    }
+    .backcover__bottom-inner {
+      position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: center;
+    }
+    .backcover__brand {
+      display: flex; align-items: center; gap: 6mm;
+    }
+    .backcover__brand img { height: 16mm; filter: brightness(0) invert(1); }
+    .backcover__brand .text {
+      font-family: var(--display); font-weight: 800; font-size: 14pt; color: #fff; line-height: 1.1;
+    }
+    .backcover__brand .text small {
+      display: block; font-family: var(--display); font-weight: 500; font-size: 8.5pt;
+      color: var(--teal-300); letter-spacing: .3em; text-transform: uppercase; margin-top: 1.5mm;
+    }
+    .backcover__tag {
+      font-family: var(--serif); font-style: italic; font-weight: 400;
+      font-size: 22pt; color: var(--gold-400); letter-spacing: -.01em;
+    }
+
+    /* ============ PRINT ============ */
+    @page { size: A4; margin: 0; }
+    @media print { body { background: var(--paper); } .page { margin: 0; box-shadow: none; } }
   </style>
 </head>
 <body>
 
-<!-- Toolbar (hidden on print) -->
-<div class="brochure-toolbar">
-  <div class="brochure-toolbar__left">
-    <img src="assets/logo.png" alt="GreenApple Success Factors"/>
-    <strong>Corporate Brochure</strong>
-  </div>
-  <div class="brochure-toolbar__actions">
-    <a href="index.html" class="btn-ghost">&larr; Back to Site</a>
-    <button type="button" class="btn-primary" onclick="window.print()">Download / Print PDF</button>
-  </div>
-</div>
-
-<!-- COVER -->
-<section class="br-cover">
-  <div class="br-cover__inner">
-    <img src="assets/logo.png" alt="GreenApple Success Factors" class="br-cover__logo"/>
-    <div class="br-cover__brand">GreenApple Success Factors</div>
-    <div class="br-cover__sub">Corporate Profile &amp; Services</div>
-    <h1>Empowering <span>Business Growth</span> &amp; Sustainability</h1>
-    <p style="opacity:.85;line-height:1.85;font-size:1rem;max-width:560px;margin:0 auto;">We partner with boards, entrepreneurs and academic institutions to deliver visible, measurable outcomes through focused involvement and innovative strategy.</p>
-    <div class="br-cover__tagline">Clarity &middot; Intelligence &middot; Growth</div>
-    <div class="br-cover__meta">www.gasuccessfactors.com &middot; mail@gasuccessfactors.com &middot; +91 8330 833330</div>
-  </div>
-</section>
-
-<!-- ABOUT -->
-<section class="br-section">
-  <div class="br-page">
-    <div class="br-about">
-      <div>
-        <span class="br-eyebrow">About Us</span>
-        <h2 class="br-h2">Enabling Leadership to Think Beyond the Obvious</h2>
-        <p class="br-lead" style="margin-bottom:1rem;">At GreenApple Success Factors Pvt Ltd, we believe that true success is not accidental — it is designed through clarity, shaped by insight, and sustained through disciplined execution.</p>
-        <p class="br-lead" style="margin-bottom:1rem;">GreenApple was founded with a clear purpose: to bridge the gap between strategy and execution, vision and result. We partner with boards, entrepreneurs, and institutions to shape future-ready organizations through strategic insight, decision intelligence, and empowered leadership.</p>
-        <p class="br-lead">With over two decades of combined experience spanning industry, academia, research, and consulting, our team brings a distinctive blend of strategic foresight and execution excellence.</p>
+<!-- ====== PAGE 1 — COVER ====== -->
+<section class="page">
+  <div class="cover">
+    <div class="cover__inner">
+      <div class="cover__top">
+        <img src="assets/logo.png" class="cover__logo" alt="GreenApple Success Factors"/>
+        <div class="cover__edition">2026 Edition<span>Corporate Profile</span></div>
       </div>
-      <img src="assets/office-minimal.png" alt="GreenApple Success Factors office"/>
+      <div class="cover__rule"></div>
+      <div class="cover__eyebrow">Consulting · Mentoring · Empowerment</div>
+      <h1 class="cover__headline">Empowering<br/><strong>Business Growth</strong><br/>&amp; Sustainability.</h1>
+      <p class="cover__sub">We partner with boards, entrepreneurs and academic institutions to deliver visible, measurable outcomes through focused involvement and innovative strategy.</p>
+      <div class="cover__bottom">
+        <div class="cover__brand">GreenApple Success Factors<span>Pvt. Ltd. · Kochi · India</span></div>
+        <div class="cover__tagline">Clarity · Intelligence · Growth</div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- MISSION & VISION -->
-<section class="br-section br-section--alt">
-  <div class="br-page">
-    <div style="text-align:center;margin-bottom:2rem;">
-      <span class="br-eyebrow">Purpose</span>
-      <h2 class="br-h2">Mission &amp; Vision</h2>
+<!-- ====== PAGE 2 — WELCOME ====== -->
+<section class="page">
+  <div class="welcome">
+    <div class="welcome__top">
+      <div class="welcome__num">01<small>Welcome</small></div>
+      <div class="welcome__intro">
+        <h2>True success is not <em>accidental</em> — it is designed.</h2>
+        <p class="lead">Designed through clarity, shaped by insight, and sustained through disciplined execution. In an increasingly complex business environment, organisations need more than advice. They need a partner who can translate ambition into structured, measurable outcomes.</p>
+        <p>GreenApple Success Factors was founded with a clear purpose — to bridge the gap between strategy and execution, vision and result. We work alongside boards, founders, and institutions to shape future-ready organisations through strategic insight, decision intelligence, and empowered leadership.</p>
+        <p>What follows is a brief introduction to who we are, the work we do, and the philosophy that guides every engagement we take on.</p>
+      </div>
     </div>
-    <div class="br-mv">
-      <div class="br-mv__card">
-        <div class="br-mv__icon">&#127919;</div>
-        <h3>Our Mission</h3>
+
+    <div class="welcome__pillars">
+      <div class="pillar">
+        <div class="pillar__num">PILLAR · I</div>
+        <h3>Clarity</h3>
+        <p>Cutting through complexity to surface what truly matters — sharpening focus, sequencing priorities, and aligning intent with action.</p>
+      </div>
+      <div class="pillar">
+        <div class="pillar__num">PILLAR · II</div>
+        <h3>Intelligence</h3>
+        <p>Bringing structured thinking, decision-ready insight, and disciplined analysis to every challenge — translating data into direction.</p>
+      </div>
+      <div class="pillar">
+        <div class="pillar__num">PILLAR · III</div>
+        <h3>Growth</h3>
+        <p>Designing for outcomes that endure — building organisations that are resilient, competitive, and ready to compound value over time.</p>
+      </div>
+    </div>
+    <div class="page-foot"><span>GreenApple Success Factors</span><span>Welcome — Page 02</span></div>
+  </div>
+</section>
+
+<!-- ====== PAGE 3 — CONTENTS ====== -->
+<section class="page">
+  <div class="contents">
+    <div>
+      <div class="contents__head">In This Issue</div>
+      <h2>Contents.</h2>
+      <div class="contents__list">
+        <div class="contents__row"><span class="n">02</span><span class="t">Welcome<small>An introduction to our purpose and pillars</small></span><span class="p">PG · 02</span></div>
+        <div class="contents__row"><span class="n">03</span><span class="t">From the Founder<small>A note from Dr. George V Antony</small></span><span class="p">PG · 04</span></div>
+        <div class="contents__row"><span class="n">04</span><span class="t">Who We Are<small>Our story, expertise, and credentials</small></span><span class="p">PG · 05</span></div>
+        <div class="contents__row"><span class="n">05</span><span class="t">Mission &amp; Vision<small>The principles that guide our work</small></span><span class="p">PG · 06</span></div>
+        <div class="contents__row"><span class="n">06</span><span class="t">Our Approach<small>How we engage, design, and deliver</small></span><span class="p">PG · 07</span></div>
+        <div class="contents__row"><span class="n">07</span><span class="t">Six Core Practices<small>An overview of every service we offer</small></span><span class="p">PG · 08</span></div>
+        <div class="contents__row"><span class="n">08</span><span class="t">Practice Spreads<small>Detailed look at what we do and the outcomes</small></span><span class="p">PG · 09</span></div>
+        <div class="contents__row"><span class="n">09</span><span class="t">Featured Publication<small>Why Mentor Matters — by our founder</small></span><span class="p">PG · 12</span></div>
+        <div class="contents__row"><span class="n">10</span><span class="t">Connect With Us<small>Begin a conversation</small></span><span class="p">PG · 13</span></div>
+      </div>
+    </div>
+
+    <aside class="contents__side">
+      <div class="label">Quick Read</div>
+      <h3>Our work, <em>in short.</em></h3>
+      <p>We engage as strategic partners, bringing structured thinking, objective perspective and execution focus.</p>
+      <p>From boards charting strategy to founders shaping the next phase, our role extends beyond advisory — we act as trusted partners in decision-making and transformation.</p>
+      <div class="stat-line">
+        <div class="sl-item"><div class="v">20<sup>+</sup></div><div class="l">Years Combined Expertise</div></div>
+        <div class="sl-item"><div class="v">06</div><div class="l">Core Practice Areas</div></div>
+      </div>
+    </aside>
+  </div>
+  <div class="page-num">PAGE · 03</div>
+</section>
+
+<!-- ====== PAGE 4 — FOREWORD ====== -->
+<section class="page">
+  <div class="foreword">
+    <div class="foreword__photo">
+      <div class="seal">Founder<br/>&amp; Director</div>
+      <div class="badge">
+        <div class="name">Dr. George V Antony</div>
+        <div class="role">Founder · Mentor · Author</div>
+      </div>
+    </div>
+    <div class="foreword__body">
+      <div class="foreword__eyebrow">From the Founder</div>
+      <h2>A note on <em>why</em> we do this work.</h2>
+      <p>Across nearly three decades of working alongside boards, founders, and institutions, one observation has stayed with me: the gap between a good idea and a lasting outcome is rarely closed by strategy alone. It is closed by clarity of thought, quality of decisions, and the discipline to execute through difficulty.</p>
+      <p>GreenApple Success Factors exists to help leaders close that gap. Whether it is a family-led enterprise charting succession, a first-time founder navigating early scale, or an institution rethinking its place in a changing world — our role is to bring perspective, structure, and a steady partner through critical inflection points.</p>
+      <p>We treat every engagement as a relationship rather than a transaction. We listen first, challenge respectfully, and stay close to the work until results are visible and durable. The pages that follow set out our practices and philosophy — but the heart of what we do is always the same: to enable people and organisations to think beyond the obvious, act with clarity, and create lasting impact.</p>
+      <div class="foreword__sig">
+        <div class="signed">Dr. George V Antony</div>
+        <div class="who">FOUNDER · GREENAPPLE SUCCESS FACTORS PVT LTD</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-foot"><span>GreenApple Success Factors</span><span>Foreword — Page 04</span></div>
+</section>
+
+<!-- ====== PAGE 5 — WHO WE ARE ====== -->
+<section class="page">
+  <div class="about">
+    <div class="about__head">
+      <h2>Who <em>we are.</em></h2>
+      <div class="meta">CHAPTER 04 · ABOUT</div>
+    </div>
+    <div class="about__grid">
+      <div class="about__copy">
+        <p class="lead">A consulting and mentoring practice built around <em>decision-ready intelligence</em> and disciplined execution.</p>
+        <p>GreenApple Success Factors Pvt Ltd was founded with a clear purpose — to bridge the gap between strategy and execution, vision and result. We partner with boards, entrepreneurs and academic institutions to shape future-ready organisations through strategic insight, decision intelligence, and empowered leadership.</p>
+        <p>With over two decades of combined experience spanning industry, academia, research, and consulting, our team brings a distinctive blend of strategic foresight and execution excellence. This enables us to partner closely with organisations in achieving their goals with clarity, precision, and timeliness.</p>
+        <p>Our approach is client-centric and outcome-focused, ensuring that every engagement delivers measurable and meaningful impact. We emphasise deep collaboration, a strong understanding of business dynamics, and a disciplined focus on translating strategy into tangible results.</p>
+        <p>Our advisory extends to financial growth and wealth management — supporting individuals and organisations in wealth creation, asset optimisation, corporate funding, and long-term financial stability.</p>
+
+        <div class="pull-quote">
+          <p>The bridge between strategy and execution is built one clear decision at a time.</p>
+        </div>
+      </div>
+
+      <aside class="about__stats">
+        <div class="label">By the Numbers</div>
+        <div class="stat-row"><div class="v">20<sup>+</sup></div><div class="l">Years Team Expertise</div></div>
+        <div class="stat-row"><div class="v">06</div><div class="l">Core Specialisations</div></div>
+        <div class="stat-row"><div class="v">100<sup>%</sup></div><div class="l">Outcome Focused</div></div>
+        <div class="stat-row"><div class="v">3</div><div class="l">Audiences We Serve</div></div>
+        <div class="stat-row"><div class="v"><em style="font-size:18pt;font-style:italic;">Boards · Founders · Institutions</em></div><div class="l">Who We Partner With</div></div>
+      </aside>
+    </div>
+  </div>
+  <div class="page-foot"><span>GreenApple Success Factors</span><span>Who We Are — Page 05</span></div>
+</section>
+
+<!-- ====== PAGE 6 — MISSION & VISION ====== -->
+<section class="page">
+  <div class="mvpage">
+    <div class="mvpage__head">
+      <div class="label">Chapter 05 · Compass</div>
+      <h2>The principles that <em>guide every</em> engagement.</h2>
+    </div>
+
+    <div class="mv-cards">
+      <div class="mv-card mv-card--mission">
+        <div class="num">M</div>
+        <div class="lab">Our Mission</div>
+        <h3>Enabling decision-ready intelligence.</h3>
         <p>To enable decision-ready intelligence, strategic clarity, and disciplined execution through integrated consulting, mentoring, and capability building.</p>
-      </div>
-      <div class="br-mv__card">
-        <div class="br-mv__icon">&#127793;</div>
-        <h3>Our Vision</h3>
-        <p>To shape future-ready leadership and organizations that define sustainable growth and lasting impact.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- SERVICES -->
-<section class="br-section">
-  <div class="br-page">
-    <div style="text-align:center;margin-bottom:.5rem;">
-      <span class="br-eyebrow">What We Do</span>
-      <h2 class="br-h2">Our Core Services</h2>
-      <p class="br-lead" style="margin:0 auto;">Six integrated practice areas designed to support organizations and individuals at every stage of growth.</p>
-    </div>
-
-    <div class="br-services">
-      <div class="br-svc">
-        <img src="assets/building-modern.png" alt="Business Consulting" class="br-svc__img"/>
-        <div class="br-svc__body">
-          <span class="br-svc__num">01</span>
-          <h3>Business Consulting &amp; Growth</h3>
-          <p>Strengthening business fundamentals, unlocking growth, and navigating complexity with clarity and control.</p>
-          <ul>
-            <li>Performance assessment &amp; growth levers</li>
-            <li>Strategy &amp; competitive positioning</li>
-            <li>Operational efficiency &amp; execution</li>
-          </ul>
+        <div class="principles">
+          <div class="pi">— Strategic Clarity</div>
+          <div class="pi">— Disciplined Execution</div>
+          <div class="pi">— Decision Intelligence</div>
+          <div class="pi">— Capability Building</div>
         </div>
       </div>
 
-      <div class="br-svc">
-        <img src="assets/abstract-pattern.png" alt="Startup Mentoring" class="br-svc__img"/>
-        <div class="br-svc__body">
-          <span class="br-svc__num">02</span>
-          <h3>Startup &amp; Entrepreneurial Mentoring</h3>
-          <p>Translating ideas into structured, scalable enterprises through rigorous thinking and experience-led guidance.</p>
-          <ul>
-            <li>Validate ideas &amp; refine business models</li>
-            <li>Go-to-market &amp; growth pathways</li>
-            <li>Investor readiness &amp; scale systems</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="br-svc">
-        <img src="assets/office-minimal.png" alt="Academic Empowerment" class="br-svc__img"/>
-        <div class="br-svc__body">
-          <span class="br-svc__num">03</span>
-          <h3>Academic &amp; Institutional Empowerment</h3>
-          <p>Helping institutions enhance relevance, strengthen outcomes, and align with evolving industry expectations.</p>
-          <ul>
-            <li>Align academia with industry needs</li>
-            <li>Faculty development &amp; excellence</li>
-            <li>Industry–academia collaboration</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="br-svc">
-        <img src="assets/gallery-meetings.webp" alt="Corporate Training" class="br-svc__img"/>
-        <div class="br-svc__body">
-          <span class="br-svc__num">04</span>
-          <h3>Corporate Training &amp; Professional Development</h3>
-          <p>High-impact learning interventions focused on behavioural shift, decision-making, and real-world application.</p>
-          <ul>
-            <li>Customised leadership programmes</li>
-            <li>Decision-making &amp; execution focus</li>
-            <li>Succession &amp; bench strength</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="br-svc">
-        <img src="assets/hero-risk-compliance.png" alt="Risk &amp; Funding" class="br-svc__img"/>
-        <div class="br-svc__body">
-          <span class="br-svc__num">05</span>
-          <h3>Risk, Compliance, ESG &amp; Funding Advisory</h3>
-          <p>Strengthening governance, ensuring compliance, and integrating ESG into core strategy with funding readiness.</p>
-          <ul>
-            <li>Risk &amp; governance frameworks</li>
-            <li>ESG integration &amp; credibility</li>
-            <li>Investor positioning &amp; funding</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="br-svc">
-        <img src="assets/hero-branding-transformation.png" alt="Branding &amp; Transformation" class="br-svc__img"/>
-        <div class="br-svc__body">
-          <span class="br-svc__num">06</span>
-          <h3>Branding, Collaborations &amp; Transformation</h3>
-          <p>Building powerful brands and driving transformational growth through strategic alliances and market leadership.</p>
-          <ul>
-            <li>Brand strategy &amp; positioning</li>
-            <li>Strategic partnerships &amp; alliances</li>
-            <li>Organisational transformation</li>
-          </ul>
+      <div class="mv-card mv-card--vision">
+        <div class="num">V</div>
+        <div class="lab">Our Vision</div>
+        <h3>Future-ready leadership and organisations.</h3>
+        <p>To shape future-ready leadership and organisations that define sustainable growth and lasting impact — across boards, founders, and institutions.</p>
+        <div class="principles">
+          <div class="pi">— Sustainable Growth</div>
+          <div class="pi">— Lasting Impact</div>
+          <div class="pi">— Empowered Leaders</div>
+          <div class="pi">— Resilient Institutions</div>
         </div>
       </div>
     </div>
   </div>
+  <div class="page-foot"><span>GreenApple Success Factors</span><span>Mission &amp; Vision — Page 06</span></div>
 </section>
 
-<!-- APPROACH -->
-<section class="br-section br-section--alt">
-  <div class="br-page">
-    <span class="br-eyebrow">How We Work</span>
-    <h2 class="br-h2">Our Approach</h2>
-    <div class="br-approach">
-      <p>At GreenApple Success Factors, we transform meaningful interventions into sustainable growth. Every organization and individual has unique challenges, and we design solutions that are tailored, purposeful, and impact-driven. By combining insight, strategy, and execution, we ensure every initiative delivers measurable results and long-term value.</p>
-      <p>We work closely with our clients, fostering collaboration, transparency, and trust at every step. Our approach is dynamic and adaptive — continuously assessing and refining strategies for maximum impact. Through thoughtful planning and effective implementation, we empower organizations and individuals to achieve lasting growth.</p>
+<!-- ====== PAGE 7 — APPROACH ====== -->
+<section class="page">
+  <div class="approach">
+    <div class="approach__head">
+      <div class="label">Chapter 06 · Method</div>
+      <h2>Our <em>approach.</em></h2>
+      <p class="approach__sub">We transform meaningful interventions into sustainable growth — combining insight, strategy, and execution so every initiative delivers measurable, durable value.</p>
     </div>
 
-    <div class="br-outcomes">
-      <div class="br-outcome"><div class="br-outcome__num">20+</div><div class="br-outcome__label">Years Team Expertise</div></div>
-      <div class="br-outcome"><div class="br-outcome__num">6</div><div class="br-outcome__label">Core Specializations</div></div>
-      <div class="br-outcome"><div class="br-outcome__num">100%</div><div class="br-outcome__label">Result Focused</div></div>
-      <div class="br-outcome"><div class="br-outcome__num">Strategic</div><div class="br-outcome__label">Industry Insights</div></div>
+    <div class="approach__steps">
+      <div class="step">
+        <div class="step__num">I.</div>
+        <h3>Listen &amp; Diagnose</h3>
+        <p>We start by understanding context, constraints, and ambition — separating signal from noise and surfacing the questions that actually matter.</p>
+      </div>
+      <div class="step">
+        <div class="step__num">II.</div>
+        <h3>Design &amp; Align</h3>
+        <p>We design solutions that are tailored, purposeful, and impact-driven — building shared alignment among leadership, boards, and stakeholders.</p>
+      </div>
+      <div class="step">
+        <div class="step__num">III.</div>
+        <h3>Execute &amp; Adapt</h3>
+        <p>We work shoulder-to-shoulder through implementation — adapting strategy as conditions evolve, holding focus on the outcomes that count.</p>
+      </div>
+      <div class="step">
+        <div class="step__num">IV.</div>
+        <h3>Sustain &amp; Compound</h3>
+        <p>We build capability and rhythm so improvements stick — ensuring the value we create together compounds well after the engagement ends.</p>
+      </div>
     </div>
+
+    <div class="approach__band">
+      <div class="item"><div class="v">Tailored</div><div class="l">Every Engagement</div></div>
+      <div class="item"><div class="v">Collaborative</div><div class="l">By Design</div></div>
+      <div class="item"><div class="v">Adaptive</div><div class="l">In Execution</div></div>
+      <div class="item"><div class="v">Outcome-Led</div><div class="l">Always</div></div>
+    </div>
+  </div>
+  <div class="page-foot"><span>GreenApple Success Factors</span><span>Approach — Page 07</span></div>
+</section>
+
+<!-- ====== PAGE 8 — SERVICES OVERVIEW ====== -->
+<section class="page">
+  <div class="svcoverview">
+    <div class="svcoverview__head">
+      <h2>Six <em>core practices.</em></h2>
+      <div class="label">Chapter 07 · Services</div>
+    </div>
+
+    <div class="svcoverview__grid">
+      <div class="svc-tile">
+        <div class="lt">A.</div>
+        <h3>Business Consulting &amp; Growth</h3>
+        <p>Strengthening business fundamentals, unlocking growth, and navigating complexity with clarity and control.</p>
+        <div class="tags">Strategy · Performance · Execution</div>
+      </div>
+      <div class="svc-tile">
+        <div class="lt">B.</div>
+        <h3>Startup &amp; Entrepreneurial Mentoring</h3>
+        <p>Translating ideas into structured, scalable enterprises through rigorous thinking and experience-led guidance.</p>
+        <div class="tags">Mentorship · Funding · Scale</div>
+      </div>
+      <div class="svc-tile">
+        <div class="lt">C.</div>
+        <h3>Academic &amp; Institutional Empowerment</h3>
+        <p>Enhancing relevance, strengthening outcomes, and aligning institutions with evolving industry expectations.</p>
+        <div class="tags">Strategy · Faculty · Industry Connect</div>
+      </div>
+      <div class="svc-tile">
+        <div class="lt">D.</div>
+        <h3>Corporate Training &amp; Development</h3>
+        <p>High-impact learning interventions that drive behavioural shift, decision-making, and real-world application.</p>
+        <div class="tags">Leadership · Capability · Change</div>
+      </div>
+      <div class="svc-tile">
+        <div class="lt">E.</div>
+        <h3>Risk, Compliance, ESG &amp; Funding</h3>
+        <p>Strengthening governance, ensuring compliance, integrating ESG, and building investor-ready narratives.</p>
+        <div class="tags">Governance · ESG · Investor Readiness</div>
+      </div>
+      <div class="svc-tile">
+        <div class="lt">F.</div>
+        <h3>Branding, Collaborations &amp; Transformation</h3>
+        <p>Articulating brand, building meaningful partnerships, and driving transformation initiatives with intent.</p>
+        <div class="tags">Brand · Alliance · Transformation</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-foot"><span>GreenApple Success Factors</span><span>Practices — Page 08</span></div>
+</section>
+
+<!-- ====== PAGE 9 — SERVICE SPREAD A & B ====== -->
+<section class="page">
+  <div class="svcdetail">
+    <div class="svcdetail__head"><h2>Practice <em>spreads.</em></h2><div class="badge">Chapter 08 · Detail · I</div></div>
+    <div class="svcdetail__band">
+      <div class="col">
+        <div class="sd__num">A.</div>
+        <div class="sd__title">Business Consulting &amp; Growth</div>
+        <p class="sd__lead">Sustained performance is the result of deliberate strategy, disciplined execution, and continuous alignment with market realities.</p>
+        <div class="sd__body"><p>We engage as strategic partners — bringing structured thinking, objective perspective, and execution focus. From performance improvement to growth acceleration, our work is anchored in building organisations that are resilient, competitive, and future-ready.</p></div>
+        <div class="sd__split">
+          <div class="sd-block sd-block--what">
+            <div class="head">What We Do</div>
+            <ul>
+              <li>Assess business performance &amp; identify growth levers</li>
+              <li>Refine strategy &amp; strengthen competitive positioning</li>
+              <li>Improve operational efficiency &amp; execution discipline</li>
+              <li>Support leadership in high-stakes decisions and transitions</li>
+            </ul>
+          </div>
+          <div class="sd-block sd-block--out">
+            <div class="head">Outcomes You Can Expect</div>
+            <ul>
+              <li>Improved profitability and operational efficiency</li>
+              <li>Stronger competitive positioning</li>
+              <li>Faster, more confident decision-making</li>
+              <li>Sustainable, long-term growth</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="sd__num">B.</div>
+        <div class="sd__title">Startup &amp; Entrepreneurial Mentoring</div>
+        <p class="sd__lead">Enduring ventures are shaped by clarity of thought, quality of decisions, and disciplined execution.</p>
+        <div class="sd__body"><p>Acting as trusted advisors, we challenge assumptions, refine direction, and support founders through critical inflection points. From early validation to scale, the focus remains on building ventures with strong fundamentals and long-term viability.</p></div>
+        <div class="sd__split">
+          <div class="sd-block sd-block--what">
+            <div class="head">What We Do</div>
+            <ul>
+              <li>Validate ideas &amp; refine business models</li>
+              <li>Define go-to-market &amp; growth pathways</li>
+              <li>Support founders in high-stakes decision-making</li>
+              <li>Prepare ventures for investor engagement</li>
+            </ul>
+          </div>
+          <div class="sd-block sd-block--out">
+            <div class="head">Outcomes You Can Expect</div>
+            <ul>
+              <li>Clear roadmap from idea to execution</li>
+              <li>Strong investor readiness &amp; funding access</li>
+              <li>Faster growth with reduced risk</li>
+              <li>Scalable and sustainable business models</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-foot"><span>GreenApple Success Factors</span><span>Spreads I — Page 09</span></div>
+</section>
+
+<!-- ====== PAGE 10 — SERVICE SPREAD C & D ====== -->
+<section class="page">
+  <div class="svcdetail">
+    <div class="svcdetail__head"><h2>Practice <em>spreads.</em></h2><div class="badge">Chapter 08 · Detail · II</div></div>
+    <div class="svcdetail__band">
+      <div class="col">
+        <div class="sd__num">C.</div>
+        <div class="sd__title">Academic &amp; Institutional Empowerment</div>
+        <p class="sd__lead">Institutions play a defining role in shaping future capability — relevance, outcomes, and alignment matter more than ever.</p>
+        <div class="sd__body"><p>Our approach combines strategic insight with practical frameworks — enabling institutions to elevate quality, improve engagement, and build ecosystems that foster employability, leadership, and innovation.</p></div>
+        <div class="sd__split">
+          <div class="sd-block sd-block--what">
+            <div class="head">What We Do</div>
+            <ul>
+              <li>Align academic frameworks with industry expectations</li>
+              <li>Design capability-building &amp; employability initiatives</li>
+              <li>Strengthen institutional strategy &amp; positioning</li>
+              <li>Enable faculty development &amp; academic excellence</li>
+            </ul>
+          </div>
+          <div class="sd-block sd-block--out">
+            <div class="head">Outcomes You Can Expect</div>
+            <ul>
+              <li>Enhanced institutional relevance &amp; credibility</li>
+              <li>Improved student outcomes &amp; employability</li>
+              <li>Stronger industry partnerships &amp; collaborations</li>
+              <li>Future-ready academic programmes &amp; faculty</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="sd__num">D.</div>
+        <div class="sd__title">Corporate Training &amp; Development</div>
+        <p class="sd__lead">Capability building, when approached with intent, becomes a strategic advantage — not a cost line.</p>
+        <div class="sd__body"><p>We design and deliver learning interventions that go beyond knowledge transfer — focusing on behavioural shift, decision-making, and real-world application aligned to business priorities.</p></div>
+        <div class="sd__split">
+          <div class="sd-block sd-block--what">
+            <div class="head">What We Do</div>
+            <ul>
+              <li>Design customised leadership &amp; capability programmes</li>
+              <li>Deliver high-impact training aligned to business needs</li>
+              <li>Focus on decision-making, execution &amp; behavioural change</li>
+              <li>Support leadership development &amp; succession readiness</li>
+            </ul>
+          </div>
+          <div class="sd-block sd-block--out">
+            <div class="head">Outcomes You Can Expect</div>
+            <ul>
+              <li>Improved individual and team performance</li>
+              <li>Stronger leadership capability &amp; bench strength</li>
+              <li>Better decision-making &amp; execution quality</li>
+              <li>Measurable impact on business outcomes</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-foot"><span>GreenApple Success Factors</span><span>Spreads II — Page 10</span></div>
+</section>
+
+<!-- ====== PAGE 11 — SERVICE SPREAD E & F ====== -->
+<section class="page">
+  <div class="svcdetail">
+    <div class="svcdetail__head"><h2>Practice <em>spreads.</em></h2><div class="badge">Chapter 08 · Detail · III</div></div>
+    <div class="svcdetail__band">
+      <div class="col">
+        <div class="sd__num">E.</div>
+        <div class="sd__title">Risk, Compliance, ESG &amp; Funding</div>
+        <p class="sd__lead">In an environment of heightened scrutiny, organisations must manage risk with precision while remaining growth-oriented.</p>
+        <div class="sd__body"><p>We support businesses in strengthening governance, ensuring compliance, and integrating ESG considerations into core strategy — and our advisory extends to funding readiness and investor positioning.</p></div>
+        <div class="sd__split">
+          <div class="sd-block sd-block--what">
+            <div class="head">What We Do</div>
+            <ul>
+              <li>Strengthen risk management &amp; governance frameworks</li>
+              <li>Ensure regulatory compliance &amp; control effectiveness</li>
+              <li>Integrate ESG into strategy &amp; operations</li>
+              <li>Support funding readiness &amp; investor positioning</li>
+            </ul>
+          </div>
+          <div class="sd-block sd-block--out">
+            <div class="head">Outcomes You Can Expect</div>
+            <ul>
+              <li>Enhanced governance &amp; risk visibility</li>
+              <li>Improved compliance &amp; regulatory confidence</li>
+              <li>Stronger ESG alignment &amp; credibility</li>
+              <li>Increased investor trust &amp; funding readiness</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="sd__num">F.</div>
+        <div class="sd__title">Branding, Collaborations &amp; Transformation</div>
+        <p class="sd__lead">Sustained relevance demands more than visibility — it requires clarity of identity, strength of partnerships, and the ability to evolve with purpose.</p>
+        <div class="sd__body"><p>From positioning to execution, we bring structure and perspective — enabling organisations to remain distinctive, adaptive, and aligned with long-term objectives.</p></div>
+        <div class="sd__split">
+          <div class="sd-block sd-block--what">
+            <div class="head">What We Do</div>
+            <ul>
+              <li>Define and refine brand positioning &amp; narrative</li>
+              <li>Enable strategic partnerships &amp; collaborations</li>
+              <li>Support business and organisational transformation</li>
+              <li>Align brand, strategy, and execution</li>
+            </ul>
+          </div>
+          <div class="sd-block sd-block--out">
+            <div class="head">Outcomes You Can Expect</div>
+            <ul>
+              <li>Strong brand recognition &amp; credibility</li>
+              <li>Expanded market reach &amp; partnerships</li>
+              <li>Improved organisational alignment &amp; agility</li>
+              <li>Long-term competitive advantage</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-foot"><span>GreenApple Success Factors</span><span>Spreads III — Page 11</span></div>
+</section>
+
+<!-- ====== PAGE 12 — FEATURED BOOK ====== -->
+<section class="page">
+  <div class="bookpage">
+    <div class="bookpage__inner">
+      <div class="bookpage__cover">
+        <img src="assets/why-mentor-matters-cover.webp" alt="Why Mentor Matters book cover"/>
+        <div class="bookpage__seal">FEATURED<small>2025 RELEASE</small></div>
+      </div>
+      <div class="bookpage__body">
+        <div class="label">Featured Publication · Chapter 09</div>
+        <h2>Why Mentor <em>Matters.</em></h2>
+        <div class="bookpage__sub">A must-read handbook for MSME entrepreneurs and startup leadership.</div>
+        <div class="bookpage__author">By Dr. George V Antony · Founder, GreenApple</div>
+        <p>A cornerstone of our mentoring philosophy. Drawing on 28+ years of mentoring experience, this handbook helps founders avoid critical mistakes, collaborate effectively with mentors, and build resilient, future-ready businesses.</p>
+        <p>Officially released on 28 June 2025 by Union Minister Sushri Shobha Karandlaje. Endorsed by leaders across law, banking, civil services, and academia.</p>
+
+        <div class="bookpage__feats">
+          <div class="f"><strong>Strategic</strong>Wisdom drawn from real mentoring engagements across decades.</div>
+          <div class="f"><strong>Practical</strong>Frameworks for effective mentor–mentee collaboration.</div>
+          <div class="f"><strong>Honest</strong>Critical mistakes founders most often make — and how to avoid them.</div>
+          <div class="f"><strong>Measurable</strong>Tools for assessing and measuring a mentor's contribution.</div>
+        </div>
+
+        <a class="bookpage__cta" href="https://whymentormatters.com/">Visit whymentormatters.com</a>
+      </div>
+    </div>
+    <div class="page-num" style="color: rgba(255,255,255,.4);">PAGE · 12</div>
   </div>
 </section>
 
-<!-- BOOK -->
-<section class="br-section">
-  <div class="br-page">
-    <div style="text-align:center;margin-bottom:2rem;">
-      <span class="br-eyebrow">Featured Publication</span>
-      <h2 class="br-h2">From Our Founder</h2>
+<!-- ====== PAGE 13 — BACK COVER / CONNECT ====== -->
+<section class="page">
+  <div class="backcover">
+    <div class="backcover__top">
+      <div class="backcover__label">Chapter 10 · Connect</div>
+      <h2>Let's build something <em>that lasts.</em></h2>
+      <p class="backcover__sub">Whether you are a board exploring strategic options, a founder shaping the next phase, or an institution charting a future-ready path — we'd be glad to start the conversation.</p>
+
+      <div class="backcover__contacts">
+        <div class="bc-card">
+          <div class="lab">Email</div>
+          <div class="v">mail@gasuccessfactors.com<small>For all engagement enquiries</small></div>
+        </div>
+        <div class="bc-card">
+          <div class="lab">Phone</div>
+          <div class="v">+91 8330 833330<small>+91 7293 729 729 (Mentoring)</small></div>
+        </div>
+        <div class="bc-card">
+          <div class="lab">Web</div>
+          <div class="v">gasuccessfactors.com<small>whymentormatters.com</small></div>
+        </div>
+      </div>
+
+      <div class="backcover__contacts" style="margin-top:6mm;border:none;padding-top:0;">
+        <div class="bc-card" style="grid-column: span 3;">
+          <div class="lab">Office</div>
+          <div class="v">7/26B, Karuchira Temple Road, Karumaloore P.O., Kochi 683511, Kerala, India</div>
+        </div>
+      </div>
     </div>
-    <div class="br-book">
-      <img src="assets/why-mentor-matters-cover.webp" alt="Why Mentor Matters book cover"/>
-      <div>
-        <h3>Why Mentor Matters</h3>
-        <p class="br-book__sub">A must-read handbook for MSME Entrepreneurs and Startup Leadership</p>
-        <p>Authored by Dr. George V Antony, this handbook distils 28+ years of mentoring experience — helping founders avoid critical mistakes, collaborate effectively with mentors, and build resilient, future-ready businesses. Officially released by Union Minister Sushri Shobha Karandlaje on 28 June 2025.</p>
-        <a href="https://whymentormatters.com/" target="_blank" rel="noopener" class="br-book__buy">Visit whymentormatters.com</a>
+
+    <div class="backcover__bottom">
+      <div class="backcover__bottom-inner">
+        <div class="backcover__brand">
+          <img src="assets/logo.png" alt="GreenApple"/>
+          <div class="text">GreenApple Success Factors<small>Pvt. Ltd. · Established in Kochi</small></div>
+        </div>
+        <div class="backcover__tag">Clarity · Intelligence · Growth</div>
       </div>
     </div>
   </div>
 </section>
-
-<!-- CONNECT -->
-<section class="br-section br-section--alt">
-  <div class="br-page">
-    <div class="br-connect">
-      <div>
-        <span class="br-eyebrow" style="color:var(--teal-300);">Get in Touch</span>
-        <h2>Let's Build Something Lasting</h2>
-        <p>Whether you're a board exploring strategic options, a founder shaping the next phase, or an institution charting a future-ready path — we'd be glad to start the conversation.</p>
-        <a href="reach-us.html" class="br-connect__cta">Schedule a Consultation</a>
-      </div>
-      <div class="br-connect__contact">
-        <p style="margin-bottom:1rem;"><strong>Email</strong><a href="mailto:mail@gasuccessfactors.com">mail@gasuccessfactors.com</a></p>
-        <p style="margin-bottom:1rem;"><strong>Phone</strong><a href="tel:+918330833330">+91 8330 833330</a></p>
-        <p style="margin-bottom:1rem;"><strong>Office</strong>7/26B, Karuchira Temple Rd,<br/>Karumaloore P.O., Kochi 683511, Kerala, India</p>
-        <p><strong>Web</strong><a href="https://www.gasuccessfactors.com/">www.gasuccessfactors.com</a></p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- FOOT -->
-<div class="br-foot">
-  <strong>GreenApple Success Factors Pvt Ltd</strong> &middot; Clarity. Intelligence. Growth.<br/>
-  &copy; 2025 All rights reserved.
-</div>
 
 </body>
 </html>

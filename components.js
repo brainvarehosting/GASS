@@ -79,14 +79,12 @@ function buildConsultingModal() {
     </div>
   `);
 
-  const fab = document.getElementById('consultFab');
   const modal = document.getElementById('consultModal');
   const overlay = document.getElementById('consultOverlay');
   const closeBtn = document.getElementById('consultClose');
   const openModal = () => { modal.classList.add('open'); overlay.classList.add('open'); document.body.style.overflow = 'hidden'; };
   const closeModal = () => { modal.classList.remove('open'); overlay.classList.remove('open'); document.body.style.overflow = ''; };
 
-  fab.addEventListener('click', openModal);
   closeBtn.addEventListener('click', closeModal);
   overlay.addEventListener('click', closeModal);
   window._openConsultModal = openModal;

@@ -34,86 +34,14 @@ async function postForm(endpoint, data) {
   }
 }
 
-// ── Consulting modal ────────────────────────────────────────────────────────────
+// ── Consulting FAB ─────────────────────────────────────────────────────────────
 function buildConsultingModal() {
   document.body.insertAdjacentHTML('beforeend', `
-    <a href="registration.html" class="consult-fab" id="consultFab" aria-label="Connect for Consulting">
+    <a href="registration.html" class="consult-fab" aria-label="Connect for Consulting">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       <span>Connect for Consulting</span>
     </a>
-    <div class="consult-overlay" id="consultOverlay"></div>
-    <div class="consult-modal" id="consultModal" role="dialog" aria-modal="true">
-      <div class="consult-modal__header">
-        <div><h3>Connect for Consulting</h3><p>Tell us your need — we respond within 24 hours.</p></div>
-        <button class="consult-modal__close" id="consultClose" aria-label="Close">&#10005;</button>
-      </div>
-      <form id="consultForm" class="consult-modal__body">
-        <div class="form-row">
-          <div class="form-group"><label for="c-name">Full Name *</label><input type="text" id="c-name" placeholder="Your full name" required/></div>
-          <div class="form-group"><label for="c-org">Organisation</label><input type="text" id="c-org" placeholder="Company / Institution"/></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label for="c-email">Email *</label><input type="email" id="c-email" placeholder="your@email.com" required/></div>
-          <div class="form-group"><label for="c-phone">Mobile *</label><input type="tel" id="c-phone" placeholder="+91 XXXXX XXXXX" required/></div>
-        </div>
-        <div class="form-group">
-          <label for="c-service">Area of Interest</label>
-          <select id="c-service">
-            <option value="">Select a Service</option>
-            <option>Business Consulting &amp; Growth</option>
-            <option>Startup &amp; Entrepreneurial Mentoring</option>
-            <option>Academic Institution Building &amp; Empowerment</option>
-            <option>Corporate Training &amp; Professional Development</option>
-            <option>Risk, Compliance, ESG &amp; Funding Advisory</option>
-            <option>Branding, Collaborations &amp; Transformation</option>
-            <option>General Enquiry</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="c-message">Your Message / Requirement *</label>
-          <textarea id="c-message" placeholder="Briefly describe your need..." required></textarea>
-        </div>
-        <div id="consult-msg" style="display:none;padding:.7rem 1rem;border-radius:8px;font-size:.88rem;margin-bottom:.8rem;"></div>
-        <button type="submit" class="btn-submit" id="consultSubmitBtn">SEND ENQUIRY</button>
-      </form>
-    </div>
   `);
-
-  const modal = document.getElementById('consultModal');
-  const overlay = document.getElementById('consultOverlay');
-  const closeBtn = document.getElementById('consultClose');
-  const openModal = () => { modal.classList.add('open'); overlay.classList.add('open'); document.body.style.overflow = 'hidden'; };
-  const closeModal = () => { modal.classList.remove('open'); overlay.classList.remove('open'); document.body.style.overflow = ''; };
-
-  closeBtn.addEventListener('click', closeModal);
-  overlay.addEventListener('click', closeModal);
-  window._openConsultModal = openModal;
-
-  document.getElementById('consultForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const btn = document.getElementById('consultSubmitBtn');
-    const msgEl = document.getElementById('consult-msg');
-    btn.textContent = 'Sending...'; btn.disabled = true;
-    try {
-      await postForm('/api/enquiry', {
-        name:         document.getElementById('c-name').value,
-        organisation: document.getElementById('c-org').value,
-        email:        document.getElementById('c-email').value,
-        phone:        document.getElementById('c-phone').value,
-        service:      document.getElementById('c-service').value,
-        message:      document.getElementById('c-message').value,
-      });
-      msgEl.style.cssText = 'display:block;background:#d4edda;color:#155724;padding:.7rem 1rem;border-radius:8px;font-size:.88rem;margin-bottom:.8rem;';
-      msgEl.textContent = '✓ Enquiry received! We will get back to you within 24 hours.';
-      e.target.reset();
-      setTimeout(closeModal, 2500);
-    } catch {
-      msgEl.style.cssText = 'display:block;background:#f8d7da;color:#721c24;padding:.7rem 1rem;border-radius:8px;font-size:.88rem;margin-bottom:.8rem;';
-      msgEl.textContent = 'Something went wrong. Please email us at mail@gasuccessfactors.com';
-    } finally {
-      btn.textContent = 'SEND ENQUIRY'; btn.disabled = false;
-    }
-  });
 }
 
 // ── Header ─────────────────────────────────────────────────────────────────────

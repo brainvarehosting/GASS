@@ -37,10 +37,10 @@ async function postForm(endpoint, data) {
 // ── Consulting modal ────────────────────────────────────────────────────────────
 function buildConsultingModal() {
   document.body.insertAdjacentHTML('beforeend', `
-    <button class="consult-fab" id="consultFab" aria-label="Connect for Consulting">
+    <a href="registration.html" class="consult-fab" id="consultFab" aria-label="Connect for Consulting">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       <span>Connect for Consulting</span>
-    </button>
+    </a>
     <div class="consult-overlay" id="consultOverlay"></div>
     <div class="consult-modal" id="consultModal" role="dialog" aria-modal="true">
       <div class="consult-modal__header">
@@ -213,7 +213,7 @@ function buildRegisterCTA() {
       <h2 style="color:#fff;margin-bottom:.8rem;">Ready to Begin Your Growth Journey?</h2>
       <p style="color:rgba(255,255,255,.82);max-width:620px;margin:0 auto 2rem;font-size:.98rem;line-height:1.8;">Enabling leadership to think beyond the obvious, act with clarity, and create lasting impact.</p>
       <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
-        <button onclick="window._openConsultModal&&window._openConsultModal()" class="btn-primary">Connect for Consulting</button>
+        <a href="registration.html" class="btn-primary">Connect for Consulting</a>
         <a href="registration.html" class="btn-outline">Register for a Programme</a>
       </div>
     </section>`;

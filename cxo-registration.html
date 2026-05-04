@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="GreenApple Success Factors - Registration Form for programmes and certifications."/>
+  <title>Registration Form | GreenApple Success Factors</title>
+  <link rel="stylesheet" href="assets/components.css"/>
+  <link rel="stylesheet" href="extra.css"/>
+</head>
+<body>
+  <div id="header-mount"></div>
+
+  <section class="hero" style="background:linear-gradient(135deg,var(--navy-900),var(--teal-900));">
+    <h1>CXO Conclave Registration</h1>
+    <p>On Boardroom Intelligence: Strategy, Governance and Impact</p>
+  </section>
+
+  <section class="section">
+    <div class="reg-form-container fade-up">
+      <div id="regSuccess" style="display:none;background:linear-gradient(135deg,#eaf9fb,#f0fdf4);border:1px solid #6ee7b7;border-radius:var(--r-sm);padding:1rem 1.2rem;margin-bottom:1.2rem;color:#065f46;font-size:.92rem;font-weight:600;">
+        ✅ Registration submitted successfully! We will contact you shortly.
+      </div>
+      <div id="regError" style="display:none;background:#fff5f5;border:1px solid #fca5a5;border-radius:var(--r-sm);padding:1rem 1.2rem;margin-bottom:1.2rem;color:#991b1b;font-size:.92rem;font-weight:600;">
+        ❌ Submission failed. Please try again or email us at mail@gasuccessfactors.com.
+      </div>
+
+      <form id="registrationForm">
+
+        <!-- Registration Type -->
+        <div class="form-group">
+          <label>Registration Type</label>
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="reg-type" value="individual" checked/> <span>Individual</span></label>
+            <label class="radio-label"><input type="radio" name="reg-type" value="business"/> <span>Business</span></label>
+          </div>
+        </div>
+
+        <!-- Nomination Type & Package -->
+        <div class="form-group">
+          <label for="reg-programme">Nomination Type & Package</label>
+          <select id="reg-programme" required onchange="updateAmount()">
+            <option value="">Select Package</option>
+            <option value="Individual Nomination">Individual Nomination - ₹68,000</option>
+            <option value="Corporate - 3 Participants">Corporate (3 Participants) - ₹1,95,000</option>
+            <option value="Corporate - 5 Participants">Corporate (5 Participants) - ₹3,10,000</option>
+            <option value="Corporate - 10 Participants">Corporate (10 Participants) - ₹5,80,000</option>
+          </select>
+        </div>
+
+        <!-- Title + First Name -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reg-title">Title</label>
+            <select id="reg-title">
+              <option value="Mr.">Mr.</option>
+              <option value="Mrs.">Mrs.</option>
+              <option value="Ms.">Ms.</option>
+              <option value="Dr.">Dr.</option>
+              <option value="Prof.">Prof.</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="reg-firstname">First Name</label>
+            <input type="text" id="reg-firstname" placeholder="First Name" required/>
+          </div>
+        </div>
+
+        <!-- Middle + Last Name -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reg-middlename">Middle Name</label>
+            <input type="text" id="reg-middlename" placeholder="Middle Name"/>
+          </div>
+          <div class="form-group">
+            <label for="reg-lastname">Last Name</label>
+            <input type="text" id="reg-lastname" placeholder="Last Name" required/>
+          </div>
+        </div>
+
+        <!-- DOB -->
+        <div class="form-group">
+          <label for="reg-dob">Date of Birth</label>
+          <input type="date" id="reg-dob"/>
+        </div>
+
+        <!-- Designation & Company -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reg-designation">Designation</label>
+            <input type="text" id="reg-designation" placeholder="Designation"/>
+          </div>
+          <div class="form-group">
+            <label for="reg-company">Company</label>
+            <input type="text" id="reg-company" placeholder="Company"/>
+          </div>
+        </div>
+
+        <!-- Industry & Specialization -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reg-industry">Industry</label>
+            <input type="text" id="reg-industry" placeholder="Industry"/>
+          </div>
+          <div class="form-group">
+            <label for="reg-specialization">Specialization</label>
+            <input type="text" id="reg-specialization" placeholder="Specialization"/>
+          </div>
+        </div>
+
+        <!-- Office Address -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reg-addr-office">Address - Office</label>
+            <input type="text" id="reg-addr-office" placeholder="Office Address"/>
+          </div>
+          <div class="form-group">
+            <label for="reg-pin-office">PIN</label>
+            <input type="text" id="reg-pin-office" placeholder="PIN Code"/>
+          </div>
+        </div>
+
+        <!-- Residence Address -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reg-addr-residence">Address - Residence</label>
+            <input type="text" id="reg-addr-residence" placeholder="Residence Address"/>
+          </div>
+          <div class="form-group">
+            <label for="reg-pin-residence">PIN</label>
+            <input type="text" id="reg-pin-residence" placeholder="PIN Code"/>
+          </div>
+        </div>
+
+        <!-- Tel & Mobile -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reg-tel">Tel</label>
+            <input type="tel" id="reg-tel" placeholder="Telephone"/>
+          </div>
+          <div class="form-group">
+            <label for="reg-mobile">Mobile</label>
+            <input type="tel" id="reg-mobile" placeholder="Mobile Number" required/>
+          </div>
+        </div>
+
+        <!-- Emails -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reg-email-office">Email - Office</label>
+            <input type="email" id="reg-email-office" placeholder="Office Email"/>
+          </div>
+          <div class="form-group">
+            <label for="reg-email-permanent">Email - Permanent</label>
+            <input type="email" id="reg-email-permanent" placeholder="Permanent Email" required/>
+          </div>
+        </div>
+
+        <!-- IOD Membership -->
+        <div class="form-group">
+          <label>Are you a member of IOD?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="iod" value="yes"/> Yes</label>
+            <label><input type="radio" name="iod" value="no" checked/> No</label>
+          </div>
+        </div>
+
+        <!-- Amount Payable -->
+        <div class="form-group">
+          <label for="reg-amount">Amount Payable (Excl. GST)</label>
+          <input type="text" id="reg-amount" placeholder="Select a package above" readonly style="font-weight: 700; color: var(--navy-800); background: var(--gray-50);"/>
+        </div>
+        
+        <script>
+          function updateAmount() {
+            const select = document.getElementById('reg-programme');
+            const amountInput = document.getElementById('reg-amount');
+            const value = select.value;
+            
+            if (value.includes('Individual')) amountInput.value = '₹68,000';
+            else if (value.includes('3 Participants')) amountInput.value = '₹1,95,000';
+            else if (value.includes('5 Participants')) amountInput.value = '₹3,10,000';
+            else if (value.includes('10 Participants')) amountInput.value = '₹5,80,000';
+            else amountInput.value = '';
+          }
+        </script>
+
+        <!-- Payment Tabs -->
+        <div class="tabs">
+          <button type="button" class="tab-btn active" data-tab="bank">Bank Details</button>
+          <button type="button" class="tab-btn" data-tab="gpay">Google-Pay Number</button>
+        </div>
+
+        <div class="tab-content active" id="tab-bank">
+          <div class="bank-details">
+            <strong>Account Number:</strong> 0098073000009916<br/>
+            <strong>Name:</strong> Green Apple Success Factors Pvt. Ltd.<br/>
+            <strong>Bank:</strong> South Indian Bank, Banerji Road, Ernakulam, Kerala<br/>
+            <strong>IFSC Code:</strong> SIBL0000098
+          </div>
+        </div>
+
+        <div class="tab-content" id="tab-gpay">
+          <div class="bank-details">
+            <strong>Google-Pay Number:</strong> +91 8330 833330<br/>
+            <strong>Name:</strong> Green Apple Success Factors Pvt. Ltd.
+          </div>
+        </div>
+
+        <!-- Date -->
+        <div class="form-group mt-2">
+          <label for="reg-date">Date</label>
+          <input type="date" id="reg-date"/>
+        </div>
+
+        <!-- IOD Address -->
+        <div class="address-block">
+          <p>Kindly return the filled up application form to the IOD National Nodal Office, Kochi in the following address:</p>
+          <p style="margin-top:.5rem;">
+            <strong>Dr. George V Antony</strong><br/>
+            Honorary Regional Director<br/>
+            Institute of Directors (IOD)<br/>
+            7/26B, Karuchira Temple Rd, Karumaloore P.O., Kochi 683511, Kerala<br/>
+            Mobile: +91 7293729729, 8330833330<br/>
+            E-mail: <a href="mailto:rd.kerala@iodglobal.com" style="color:var(--teal-700);">rd.kerala@iodglobal.com</a>
+          </p>
+        </div>
+
+        <div class="text-center mt-2">
+          <button type="submit" class="btn-submit">SUBMIT FORM</button>
+        </div>
+
+      </form>
+    </div>
+  </section>
+
+  <div id="footer-mount"></div>
+  <script src="components.js?v=4"></script>
+  <script src="content-loader.js?v=4"></script>
+  <script>
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    // Form submission
+    document.getElementById('registrationForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const btn = this.querySelector('.btn-submit');
+      const successEl = document.getElementById('regSuccess');
+      const errorEl   = document.getElementById('regError');
+      successEl.style.display = 'none';
+      errorEl.style.display   = 'none';
+      btn.disabled = true;
+      btn.textContent = 'Submitting…';
+
+      const get = id => (document.getElementById(id)?.value || '').trim();
+      const regType = document.querySelector('input[name="reg-type"]:checked')?.value || '';
+      const iod     = document.querySelector('input[name="iod"]:checked')?.value || 'no';
+
+      const data = {
+        registration_type : regType,
+        programme         : get('reg-programme'),
+        title             : get('reg-title'),
+        first_name        : get('reg-firstname'),
+        middle_name       : get('reg-middlename'),
+        last_name         : get('reg-lastname'),
+        date_of_birth     : get('reg-dob'),
+        designation       : get('reg-designation'),
+        company           : get('reg-company'),
+        industry          : get('reg-industry'),
+        specialization    : get('reg-specialization'),
+        office_address    : get('reg-addr-office'),
+        office_pin        : get('reg-pin-office'),
+        residence_address : get('reg-addr-residence'),
+        residence_pin     : get('reg-pin-residence'),
+        telephone         : get('reg-tel'),
+        mobile            : get('reg-mobile'),
+        email_office      : get('reg-email-office'),
+        email_permanent   : get('reg-email-permanent'),
+        iod_member        : iod,
+        amount_payable    : get('reg-amount'),
+        submission_date   : get('reg-date'),
+      };
+
+      try {
+        await postForm('/api/registration', data);
+        successEl.style.display = 'block';
+        successEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        this.reset();
+      } catch (err) {
+        errorEl.style.display = 'block';
+        errorEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'SUBMIT FORM';
+      }
+    });
+  </script>
+</body>
+</html>

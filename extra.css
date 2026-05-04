@@ -439,20 +439,79 @@
   line-height: 1.8;
   margin-bottom: .6rem;
 }
-@media(max-width:992px){ .expertise-grid { grid-template-columns: repeat(2,1fr); } }
-@media(max-width:600px){ .expertise-grid { grid-template-columns: 1fr; } }
+/* ======================================================
+   GLOBAL RESPONSIVE SYSTEM — 4 breakpoints
+   992px  tablet landscape
+   768px  tablet portrait
+   600px  large phone
+   480px  small phone
+   ====================================================== */
 
-/* ===== COMPREHENSIVE MOBILE FIXES ===== */
+/* ── 992px — Tablet Landscape ── */
+@media(max-width: 992px) {
+  .expertise-grid       { grid-template-columns: repeat(2, 1fr); }
+  .courses-grid         { --grid-cols: 2; }
+  .quick-services       { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* ── 768px — Tablet Portrait ── */
+@media(max-width: 768px) {
+  /* Layout grids */
+  .service-details-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+  .expertise-grid       { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+  .ideal-for-section ul { grid-template-columns: 1fr 1fr; }
+  .about-image-section  { grid-template-columns: 1fr; gap: 1.5rem; }
+
+  /* Hero */
+  .hero-course          { padding: 2.5rem 1.2rem; }
+  .hero-course h1       { font-size: clamp(1.6rem, 5vw, 2.4rem); }
+  .hero-course p        { max-width: 100%; font-size: .92rem; }
+
+  /* Content */
+  .content-block        { max-width: 100%; padding: 0 .2rem; }
+  .lead-text            { font-size: 1rem; }
+
+  /* Sections */
+  .section              { padding: 2.5rem 1.2rem; }
+  .section-title        { font-size: clamp(1.3rem, 4vw, 1.8rem); }
+}
+
+/* ── 600px — Large Phone ── */
 @media(max-width: 600px) {
+  /* Prevent ALL horizontal overflow */
+  body                  { overflow-x: hidden; }
+  *                     { max-width: 100%; box-sizing: border-box; }
+  img                   { width: 100%; height: auto; }
 
-  /* Content block — full width with padding */
-  .content-block { max-width: 100%; }
+  /* Container */
+  .container            { padding: 0 1rem; }
+  .section              { padding: 2rem 1rem; }
 
-  /* Hero buttons — stack vertically */
+  /* Content block */
+  .content-block        { max-width: 100%; padding: 0; }
+
+  /* Typography */
+  h1                    { font-size: clamp(1.5rem, 7vw, 2.2rem) !important; }
+  h2                    { font-size: clamp(1.25rem, 5.5vw, 1.8rem) !important; }
+  h3                    { font-size: clamp(1.05rem, 4vw, 1.3rem); }
+  .lead-text            { font-size: .95rem; line-height: 1.8; }
+  .section-title        { font-size: 1.25rem; }
+
+  /* Hero — all types */
+  .hero                 { padding: 2.5rem 1rem; }
+  .hero-course          { padding: 2.2rem 1rem; }
+  .hero-course h1       { font-size: clamp(1.4rem, 6vw, 2rem) !important; line-height: 1.2; }
+  .hero-course p        { font-size: .87rem; line-height: 1.7; }
+  .corp-hero__content   { padding: 2rem 1rem; }
+  .corp-hero__text h1   { font-size: clamp(1.6rem, 7vw, 2.2rem) !important; }
+  .corp-hero__text p    { font-size: .87rem; max-width: 100%; }
+
+  /* Hero buttons — stack full width */
   .corp-hero__actions {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
     gap: .7rem;
+    width: 100%;
   }
   .corp-hero__actions .btn-primary,
   .corp-hero__actions .btn-outline {
@@ -461,34 +520,61 @@
     text-align: center;
   }
 
-  /* Service detail grid — single column */
-  .service-details-grid {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
+  /* All grids → single column */
+  .service-details-grid { grid-template-columns: 1fr; gap: 1.2rem; }
+  .expertise-grid       { grid-template-columns: 1fr; gap: .9rem; }
+  .ideal-for-section ul { grid-template-columns: 1fr; }
+  .courses-grid         { --grid-cols: 1; }
+  .quick-services       { grid-template-columns: repeat(2, 1fr); gap: .75rem; }
+  .mv-grid              { grid-template-columns: 1fr; }
+  .form-row             { grid-template-columns: 1fr; }
+  .footer-grid          { grid-template-columns: 1fr; gap: 1.5rem; }
+
+  /* Cards */
+  .expertise-card       { padding: 1.3rem 1.1rem; }
+  .ideal-for-section    { padding: 1.3rem 1.1rem; }
+  .outcome-card         { padding: 1rem 1.1rem; }
+  .qs-card              { padding: 1.2rem .8rem; }
+
+  /* CTA blocks */
+  .cta-block            { padding: 2rem 1.1rem; margin-top: 2rem; }
+  .cta-block h3         { font-size: 1.1rem; }
+  .cta-block p          { font-size: .87rem; margin-bottom: 1.4rem; }
+
+  /* Register CTA section */
+  #register-cta-mount section { padding: 2.5rem 1rem !important; }
+  #register-cta-mount div[style] {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: .75rem !important;
+  }
+  #register-cta-mount .btn-primary,
+  #register-cta-mount .btn-outline {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
   }
 
-  /* Ideal For — single column on phone */
-  .ideal-for-section ul { grid-template-columns: 1fr; }
-  .ideal-for-section { padding: 1.4rem 1.2rem; }
+  /* Inline flex button groups (homepage about section) */
+  [style*="display:flex"][style*="flex-wrap:wrap"] {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: .75rem !important;
+  }
+  [style*="display:flex"][style*="flex-wrap:wrap"] a,
+  [style*="display:flex"][style*="flex-wrap:wrap"] button {
+    width: 100% !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
 
-  /* Lead text — readable size */
-  .lead-text { font-size: .97rem; }
-
-  /* CTA block */
-  .cta-block { padding: 2rem 1.2rem; }
-  .cta-block h3 { font-size: 1.1rem; }
-
-  /* Outcome card */
-  .outcome-card { padding: 1.1rem 1.2rem; }
-
-  /* Hero course left-aligned pages */
-  .hero-course h1 { font-size: clamp(1.5rem, 6vw, 2rem); }
-  .hero-course p { font-size: .88rem; }
-
-  /* Book feature actions — stack */
+  /* Book feature */
+  .book-feature         { grid-template-columns: 1fr; padding: 1.5rem 1.1rem; gap: 1.2rem; text-align: center; }
+  .book-feature__cover  { max-width: 200px; margin: 0 auto; }
   .book-feature__actions {
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
+    gap: .7rem;
   }
   .book-feature__actions .btn-primary,
   .book-feature__actions .btn-outline-dark {
@@ -497,30 +583,33 @@
     justify-content: center;
   }
 
-  /* Inline button groups on homepage */
-  [style*="display:flex"][style*="flex-wrap:wrap"] {
-    flex-direction: column !important;
-    align-items: stretch !important;
-  }
+  /* Navigation top-bar — hide on very small screens */
+  .top-bar              { display: none; }
 
-  /* Section title */
-  .section-title { font-size: 1.4rem; }
+  /* Stats bar */
+  .stats-bar__inner     { grid-template-columns: repeat(2, 1fr); }
 
-  /* Profile tagline */
-  [style*="clamp(1.6rem,4vw,2.5rem)"] { font-size: 1.5rem !important; }
-
-  /* Expertise grid */
-  .expertise-grid { grid-template-columns: 1fr; gap: 1rem; }
-  .expertise-card { padding: 1.4rem 1.2rem; }
+  /* Profile section */
+  .about-image-section  { grid-template-columns: 1fr; }
 }
 
-@media(max-width: 768px) {
-  /* Service grid */
-  .service-details-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+/* ── 480px — Small Phone ── */
+@media(max-width: 480px) {
+  .hero                 { padding: 2rem .9rem; }
+  .hero-course          { padding: 2rem .9rem; }
+  .corp-hero__content   { padding: 1.8rem .9rem; }
+  .container            { padding: 0 .9rem; }
+  .section              { padding: 1.8rem .9rem; }
 
-  /* Ideal For */
-  .ideal-for-section ul { grid-template-columns: 1fr 1fr; }
+  h1                    { font-size: clamp(1.3rem, 7vw, 1.9rem) !important; }
 
-  /* Profile core expertise block */
-  .expertise-grid { grid-template-columns: 1fr 1fr; }
+  /* Quick services — 2 col stays fine */
+  .quick-services       { gap: .6rem; }
+  .qs-card              { padding: 1rem .7rem; }
+  .qs-icon              { width: 46px; height: 46px; font-size: 1.6rem; }
+  .qs-card h4           { font-size: .8rem; }
+
+  /* FAB on tiny screens */
+  .consult-fab          { bottom: 16px; right: 12px; width: 48px; height: 48px; }
 }
+

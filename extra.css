@@ -170,7 +170,26 @@
 /* ===== CONSULTING FAB ===== */
 .consult-fab { position:fixed; bottom:28px; right:28px; z-index:900; background:linear-gradient(135deg,var(--teal-600),var(--navy-700)); color:var(--white); border:none; border-radius:var(--r-full); padding:.85rem 1.4rem; font-family:var(--font-body); font-weight:700; font-size:.88rem; cursor:pointer; display:flex; align-items:center; gap:.6rem; box-shadow:0 4px 24px rgba(26,155,171,.45); transition:all var(--t-base) var(--ease-spring); }
 .consult-fab:hover { transform:translateY(-3px); box-shadow:0 8px 32px rgba(26,155,171,.55); }
-@media(max-width:500px){.consult-fab span{display:none;}.consult-fab{border-radius:50%;width:52px;height:52px;padding:0;justify-content:center;}}
+@media(max-width:500px){
+  .consult-fab span{display:none;}
+  .consult-fab{border-radius:50%;width:52px;height:52px;padding:0;justify-content:center;bottom:20px;right:16px;}
+  /* Prevent FAB from blocking page content */
+  body { padding-bottom: 80px; }
+}
+
+/* Fix mobile nav overlay — components.css sets display:none which blocks the .show opacity change */
+.mobile-nav-overlay {
+  display: block !important;
+  visibility: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--t-base) ease, visibility var(--t-base) ease;
+}
+.mobile-nav-overlay.show {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+}
 
 /* ===== CONSULTING MODAL ===== */
 .consult-overlay { position:fixed; inset:0; background:rgba(4,10,20,.65); z-index:1100; opacity:0; pointer-events:none; transition:opacity var(--t-base) var(--ease); backdrop-filter:blur(4px); }

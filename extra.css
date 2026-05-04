@@ -422,3 +422,86 @@
 }
 @media(max-width:992px){ .expertise-grid { grid-template-columns: repeat(2,1fr); } }
 @media(max-width:600px){ .expertise-grid { grid-template-columns: 1fr; } }
+
+/* ===== COMPREHENSIVE MOBILE FIXES ===== */
+@media(max-width: 600px) {
+
+  /* Content block — full width with padding */
+  .content-block { max-width: 100%; }
+
+  /* Hero buttons — stack vertically */
+  .corp-hero__actions {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: .7rem;
+  }
+  .corp-hero__actions .btn-primary,
+  .corp-hero__actions .btn-outline {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  /* Service detail grid — single column */
+  .service-details-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  /* Ideal For — single column on phone */
+  .ideal-for-section ul { grid-template-columns: 1fr; }
+  .ideal-for-section { padding: 1.4rem 1.2rem; }
+
+  /* Lead text — readable size */
+  .lead-text { font-size: .97rem; }
+
+  /* CTA block */
+  .cta-block { padding: 2rem 1.2rem; }
+  .cta-block h3 { font-size: 1.1rem; }
+
+  /* Outcome card */
+  .outcome-card { padding: 1.1rem 1.2rem; }
+
+  /* Hero course left-aligned pages */
+  .hero-course h1 { font-size: clamp(1.5rem, 6vw, 2rem); }
+  .hero-course p { font-size: .88rem; }
+
+  /* Book feature actions — stack */
+  .book-feature__actions {
+    flex-direction: column;
+    align-items: center;
+  }
+  .book-feature__actions .btn-primary,
+  .book-feature__actions .btn-outline-dark {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+
+  /* Inline button groups on homepage */
+  [style*="display:flex"][style*="flex-wrap:wrap"] {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  /* Section title */
+  .section-title { font-size: 1.4rem; }
+
+  /* Profile tagline */
+  [style*="clamp(1.6rem,4vw,2.5rem)"] { font-size: 1.5rem !important; }
+
+  /* Expertise grid */
+  .expertise-grid { grid-template-columns: 1fr; gap: 1rem; }
+  .expertise-card { padding: 1.4rem 1.2rem; }
+}
+
+@media(max-width: 768px) {
+  /* Service grid */
+  .service-details-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+
+  /* Ideal For */
+  .ideal-for-section ul { grid-template-columns: 1fr 1fr; }
+
+  /* Profile core expertise block */
+  .expertise-grid { grid-template-columns: 1fr 1fr; }
+}

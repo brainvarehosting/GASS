@@ -36,6 +36,9 @@ async function postForm(endpoint, data) {
 
 // ── Consulting FAB ─────────────────────────────────────────────────────────────
 function buildConsultingModal() {
+  // Don't show FAB on form pages — user is already there
+  const page = location.pathname.split('/').pop() || 'index.html';
+  if (page === 'registration.html' || page === 'reach-us.html') return;
   document.body.insertAdjacentHTML('beforeend', `
     <a href="registration.html" class="consult-fab" aria-label="Connect for Consulting">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>

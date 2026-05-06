@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="GreenApple Success Factors - Registration Form for programmes and certifications."/>
+  <title>Registration Form | GreenApple Success Factors</title>
+  <link rel="stylesheet" href="assets/components.css"/>
+  <link rel="stylesheet" href="extra.css"/>
+</head>
+<body>
+  <div id="header-mount"></div>
+
+  <section class="hero" style="background:linear-gradient(135deg,var(--navy-900),var(--teal-900));">
+    <h1>Connect With Us</h1>
+    <p>Get in touch with us for Mentoring and Consulting</p>
+  </section>
+
+  <section class="section">
+    <div class="reg-form-container fade-up">
+      <div id="regSuccess" style="display:none;background:linear-gradient(135deg,#eaf9fb,#f0fdf4);border:1px solid #6ee7b7;border-radius:var(--r-sm);padding:1rem 1.2rem;margin-bottom:1.2rem;color:#065f46;font-size:.92rem;font-weight:600;">
+        ✅ Registration submitted successfully! We will contact you shortly.
+      </div>
+      <div id="regError" style="display:none;background:#fff5f5;border:1px solid #fca5a5;border-radius:var(--r-sm);padding:1rem 1.2rem;margin-bottom:1.2rem;color:#991b1b;font-size:.92rem;font-weight:600;">
+        ❌ Submission failed. Please try again or email us at mail@gasuccessfactors.com.
+      </div>
+
+      <form id="registrationForm">
+
+        <!-- First + Last Name -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reg-firstname">First name</label>
+            <input type="text" id="reg-firstname" placeholder="First name" required/>
+          </div>
+          <div class="form-group">
+            <label for="reg-lastname">Last name</label>
+            <input type="text" id="reg-lastname" placeholder="Last name" required/>
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label for="reg-email">Email</label>
+          <input type="email" id="reg-email" placeholder="you@mail.com" required/>
+        </div>
+
+        <!-- Phone number -->
+        <div class="form-group">
+          <label for="reg-mobile">Phone number</label>
+          <input type="tel" id="reg-mobile" placeholder="Phone number" required/>
+        </div>
+
+        <!-- Designation -->
+        <div class="form-group">
+          <label for="reg-designation">Designation</label>
+          <input type="text" id="reg-designation" placeholder="Designation"/>
+        </div>
+
+        <!-- Organisation -->
+        <div class="form-group">
+          <label for="reg-organisation">Organisation</label>
+          <input type="text" id="reg-organisation" placeholder="Organisation"/>
+        </div>
+
+        <!-- Organisation type -->
+        <div class="form-group">
+          <label for="reg-orgtype">Organisation type</label>
+          <select id="reg-orgtype" required>
+            <option value="">Select type</option>
+            <option value="MSME">MSME</option>
+            <option value="Startup">Startup</option>
+            <option value="Others">Others</option>
+          </select>
+        </div>
+
+        <!-- Your message -->
+        <div class="form-group">
+          <label for="reg-message">Your message</label>
+          <textarea id="reg-message" placeholder="Your message" required></textarea>
+        </div>
+
+        <div class="text-center mt-2">
+          <button type="submit" class="btn-submit">Send message</button>
+        </div>
+
+      </form>
+    </div>
+  </section>
+
+  <div id="footer-mount"></div>
+  <script src="components.js?v=4"></script>
+  <script src="content-loader.js?v=4"></script>
+  <script>
+    // Form submission
+    document.getElementById('registrationForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const btn = this.querySelector('.btn-submit');
+      const successEl = document.getElementById('regSuccess');
+      const errorEl   = document.getElementById('regError');
+      successEl.style.display = 'none';
+      errorEl.style.display   = 'none';
+      btn.disabled = true;
+      btn.textContent = 'Submitting…';
+
+      const get = id => (document.getElementById(id)?.value || '').trim();
+
+      const data = {
+        first_name        : get('reg-firstname'),
+        last_name         : get('reg-lastname'),
+        email             : get('reg-email'),
+        phone             : get('reg-mobile'),
+        designation       : get('reg-designation'),
+        organisation      : get('reg-organisation'),
+        organisation_type : get('reg-orgtype'),
+        message           : get('reg-message')
+      };
+
+      try {
+        await postForm('/api/registration', data);
+        successEl.style.display = 'block';
+        successEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        this.reset();
+      } catch (err) {
+        errorEl.style.display = 'block';
+        errorEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'SUBMIT FORM';
+      }
+    });
+  </script>
+</body>
+</html>

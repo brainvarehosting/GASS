@@ -3,3 +3,5 @@ submissions.db
 .env
 *.log
 .DS_Store
+venv/
+venv_rembg/

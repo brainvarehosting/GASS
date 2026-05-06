@@ -2,458 +2,71 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="description" content="CXO Conclave on Boardroom Intelligence: Strategy, Governance and Impact."/>
-  <title>CXO Conclave | GreenApple Success Factors</title>
-  <link rel="stylesheet" href="assets/components.css"/>
-  <link rel="stylesheet" href="extra.css"/>
-  <style>
-    /* Conclave specific styles */
-    .conclave-hero {
-      background: linear-gradient(135deg, var(--navy-900) 0%, var(--teal-900) 100%);
-      color: white;
-      padding: clamp(4rem, 8vw, 6rem) 1.5rem;
-      text-align: center;
-      position: relative;
-    }
-    .conclave-hero::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: url('assets/gallery-corporate-1.jpg') center/cover;
-      opacity: 0.15;
-      mix-blend-mode: overlay;
-    }
-    .conclave-hero-inner {
-      position: relative;
-      z-index: 2;
-      max-width: 900px;
-      margin: 0 auto;
-    }
-    .cxo-logo {
-      font-size: clamp(3rem, 8vw, 5rem);
-      font-weight: 900;
-      font-family: var(--font-heading);
-      background: linear-gradient(135deg, #fbbf24, #d97706);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      line-height: 1;
-      margin-bottom: 0.5rem;
-    }
-    .cxo-subtitle {
-      color: var(--teal-300);
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      font-size: .9rem;
-      font-weight: 600;
-      margin-bottom: 2rem;
-    }
-    .event-details-bar {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 1.5rem;
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: var(--r-full);
-      padding: 1rem 2.5rem;
-      margin: 2rem auto 0;
-      max-width: fit-content;
-    }
-    .event-detail-item {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      font-weight: 500;
-      font-size: .95rem;
-    }
-    .event-highlight-strip {
-      background: var(--navy-800);
-      color: var(--accent-400);
-      text-align: center;
-      padding: 1rem 1.5rem;
-      font-weight: 600;
-      font-size: 1.05rem;
-      border-bottom: 1px solid var(--teal-800);
-    }
-    .conclave-section {
-      padding: clamp(3rem, 6vw, 5rem) 1.2rem;
-    }
-    .speaker-card {
-      background: var(--white);
-      border-radius: var(--r-lg);
-      box-shadow: var(--shadow-md);
-      padding: 2rem;
-      display: grid;
-      grid-template-columns: 120px 1fr;
-      gap: 2rem;
-      margin-bottom: 1.5rem;
-      align-items: start;
-    }
-    .speaker-card img {
-      width: 120px;
-      height: 120px;
-      border-radius: var(--r-md);
-      object-fit: cover;
-      box-shadow: var(--shadow-sm);
-    }
-    .speaker-info h3 {
-      color: var(--teal-700);
-      margin-bottom: 0.3rem;
-      font-size: 1.25rem;
-    }
-    .speaker-info .speaker-title {
-      color: var(--navy-800);
-      font-weight: 600;
-      font-size: .95rem;
-      margin-bottom: 1rem;
-    }
-    .speaker-info p {
-      color: var(--gray-600);
-      font-size: .92rem;
-      line-height: 1.7;
-    }
-    
-    @media(max-width: 768px) {
-      .speaker-card { grid-template-columns: 1fr; text-align: center; gap: 1.5rem; }
-      .speaker-card img { margin: 0 auto; }
-      .event-details-bar { border-radius: var(--r-md); flex-direction: column; text-align: center; padding: 1.5rem; }
-    }
-    
-    .pricing-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-      margin-top: 2rem;
-    }
-    .price-card {
-      background: var(--gray-50);
-      border: 1px solid var(--gray-200);
-      border-radius: var(--r-lg);
-      padding: 2rem;
-    }
-    .price-card.featured {
-      background: linear-gradient(135deg, var(--teal-50), white);
-      border-color: var(--teal-200);
-    }
-    .price-card h4 {
-      color: var(--teal-800);
-      font-size: 1.2rem;
-      margin-bottom: 1rem;
-    }
-    .price-row {
-      display: flex;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--gray-200);
-      padding: 0.8rem 0;
-      font-size: .95rem;
-    }
-    .price-row:last-child { border: none; }
-    
-    @media(max-width: 768px) {
-      .pricing-grid { grid-template-columns: 1fr; }
-    }
-    
-    .target-audience-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-    }
-    .audience-box {
-      background: var(--white);
-      border: 1px solid var(--gray-100);
-      border-radius: var(--r-md);
-      padding: 1.5rem;
-      box-shadow: var(--shadow-sm);
-    }
-    .audience-box h4 {
-      color: var(--teal-700);
-      margin-bottom: 0.5rem;
-      font-size: 1.05rem;
-    }
-  </style>
+  <meta name="description" content="Corporate Training & Professional Development — Capability building that becomes a strategic advantage. GreenApple Success Factors."/>
+  <title>Corporate Training & Professional Development | GreenApple Success Factors</title>
+  <link rel="stylesheet" href="assets/components.css"/><link rel="stylesheet" href="extra.css"/>
 </head>
 <body>
 <div id="header-mount"></div>
-
-<section class="conclave-hero">
-  <div class="conclave-hero-inner">
-    <div class="cxo-logo">CXO</div>
-    <div class="cxo-subtitle">C O N C L A V E</div>
-    <h1 style="font-size: clamp(1.8rem, 5vw, 2.8rem); line-height: 1.2; margin-bottom: 1rem;">ON <span style="color: var(--accent-400);">BOARDROOM</span> INTELLIGENCE:</h1>
-    <h2 style="font-size: clamp(1.2rem, 3vw, 1.8rem); font-weight: 500; margin-bottom: 1.5rem;">STRATEGY, GOVERNANCE AND IMPACT:</h2>
-    <p style="font-size: 1.1rem; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.1em; max-width: 600px; margin: 0 auto;">Decoding Boards Expectations From Executive Leaders</p>
-    
-    <div class="event-details-bar">
-      <div class="event-detail-item">
-        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-        July 18, 2026
-      </div>
-      <div class="event-detail-item">
-        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.243-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-        The Grand Hotel, MG Road, Kochi
-      </div>
-      <div class="event-detail-item">
-        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-        9.30AM – 6.00PM
-      </div>
-    </div>
+<section class="hero hero-course hero--has-bg" style="background-image:url('assets/hero-training.png');">
+  <div class="hero-inner">
+    <span class="corp-hero__badge">Professional Development</span>
+    <h1 style="margin-top:1rem;">Corporate Training &amp; Professional Development</h1>
+    <p style="margin-top:.8rem;">Capability building, when approached with intent, becomes a strategic advantage.</p>
   </div>
 </section>
-
-<div class="event-highlight-strip">
-  An Exclusive CXO Leadership Forum &nbsp;|&nbsp; Limited to 50 Senior Leaders &nbsp;|&nbsp; Keynote + 4 High-Impact Executive Sessions
-</div>
-
-<section class="conclave-section" style="background: var(--off-white);">
+<section class="section">
   <div class="container fade-up">
-    <div class="content-block" style="max-width: 1000px;">
-      <h2 class="section-title">About The Conclave</h2>
-      <h3 style="text-align: center; color: var(--teal-800); margin-bottom: 1.5rem; font-size: 1.3rem;">Beyond Compliance: What High-Performing Boards Expect from Senior Leadership in BFSI</h3>
-      <p class="lead-text" style="text-align: center; margin-bottom: 3rem;">
-        In today's BFSI landscape, boards are not constrained by lack of information—they are constrained by the absence of clear, decision-ready intelligence from senior management. Data is abundant, but insight is scarce. Strategy discussions are frequent, but alignment is often missing. As board expectations intensify, the role of senior leadership is evolving—from functional excellence to boardroom relevance, clarity, and influence.
-      </p>
+    <div class="content-block">
+      <p class="lead-text">We design and deliver learning interventions that go beyond knowledge transfer—focusing on behavioural shift, decision-making, and real-world application.</p>
+      <p style="color:var(--gray-500);font-size:.94rem;line-height:1.85;margin-bottom:1.5rem;">Working closely with organisations, we align programmes to business priorities—equipping professionals to perform with greater clarity, confidence, and effectiveness in increasingly complex environments.</p>
 
-      <div class="mv-grid" style="grid-template-columns: 1fr 1fr; gap: 2rem;">
-        <div class="mv-card" style="text-align: left; padding: 2rem;">
-          <h3 style="color: var(--teal-700); margin-bottom: 1rem;">Why this Programme Matters Now</h3>
-          <ul class="feature-list" style="margin-left: 0; padding-left: 1rem;">
-            <li style="margin-bottom: 0.8rem;">Boards need <strong>clarity</strong>, not complexity</li>
-            <li style="margin-bottom: 0.8rem;">Decisions demand <strong>judgment</strong>, not just data</li>
-            <li style="margin-bottom: 0.8rem;">Leadership is evaluated on <strong>insight</strong>, not reporting</li>
-            <li style="margin-bottom: 0.8rem;">Alignment at the top defines <strong>institutional success</strong></li>
+      <div class="service-details-grid">
+        <div class="details-column">
+          <h3>What We Do</h3>
+          <ul class="feature-list">
+            <li>Design customised leadership and capability programmes</li>
+            <li>Deliver high-impact training aligned to business needs</li>
+            <li>Focus on decision-making, execution, and behavioural change</li>
+            <li>Support leadership development and succession readiness</li>
+            <li>Enable continuous professional growth frameworks</li>
           </ul>
         </div>
-        <div class="mv-card" style="text-align: left; padding: 2rem;">
-          <h3 style="color: var(--teal-700); margin-bottom: 1rem;">Is Your Input Decision-Ready?</h3>
-          <p style="font-size: .95rem; margin-bottom: 1rem;">The CXO Conclave on Boardroom Intelligence is a high-impact leadership masterclass designed to bridge this critical gap.</p>
-          <p style="font-size: .95rem; margin-bottom: 0.5rem;">It enables senior professionals to:</p>
-          <ul class="feature-list" style="margin-left: 0; padding-left: 1rem; margin-bottom: 1rem;">
-            <li>Understand how boards think</li>
-            <li>Decode what boards truly expect</li>
-            <li>Translate complexity into sharp, actionable insights</li>
-          </ul>
-          <p style="font-weight: 600; color: var(--navy-800);">This is not about compliance. It is about engaging where strategic direction is shaped.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="conclave-section">
-  <div class="container fade-up">
-    <div class="content-block" style="max-width: 1000px;">
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-bottom: 3rem;">
-        <div>
-          <h3 style="color: var(--teal-600); margin-bottom: 1rem; font-size: 1.4rem;">For Organisations:<br>A Strategic Leadership Investment</h3>
-          <p style="margin-bottom: 1rem; font-size: .95rem;">Nominating your leaders is an investment in building board-aligned leadership capability.</p>
-          <p style="font-weight: 600; margin-bottom: 0.5rem; font-size: .95rem;">Participants return with the ability to:</p>
-          <ul class="feature-list" style="padding-left: 1rem;">
-            <li>Present with precision</li>
-            <li>Think beyond silos</li>
-            <li>Influence high-stakes decisions</li>
-          </ul>
-          
-          <h3 style="color: var(--teal-600); margin-bottom: 1rem; font-size: 1.4rem; margin-top: 2.5rem;">For Participants:<br>Step Into Boardroom Relevance</h3>
-          <ul class="feature-list" style="padding-left: 1rem;">
-            <li>Learn how high-performing boards evaluate and decide</li>
-            <li>Deliver concise, decision-ready intelligence</li>
-            <li>Strengthen strategic thinking and risk judgment</li>
-            <li>Elevate executive presence and influence</li>
-          </ul>
-        </div>
-        
-        <div style="background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--r-lg); padding: 2rem;">
-          <h3 style="color: var(--navy-800); margin-bottom: 1rem; font-size: 1.4rem;">Participant Profile</h3>
-          <p style="margin-bottom: 1.5rem; font-style: italic; color: var(--gray-500);">A carefully curated cohort of:</p>
-          <ul style="list-style: none; padding: 0;">
-            <li style="margin-bottom: 0.8rem;"><strong>Executive Management:</strong> MDs, EDs, CEOs</li>
-            <li style="margin-bottom: 0.8rem;"><strong>C-Suite Leaders:</strong> CFOs, CROs, CIOs, CMOs, CSOs</li>
-            <li style="margin-bottom: 0.8rem;"><strong>Business Heads:</strong> Senior Functional Leaders</li>
-            <li style="margin-bottom: 0.8rem;"><strong>Legal & Secretariat:</strong> Company Secretaries, CLOs</li>
-            <li style="margin-bottom: 0.8rem;"><strong>Digital & Data Leaders:</strong> CIOs, CTOs, Analytics Heads</li>
-            <li style="margin-bottom: 0.8rem;"><strong>Directors:</strong> Independent & Non-Executive Directors</li>
-            <li style="margin-bottom: 1.5rem;"><strong>Emerging Leaders:</strong> High-potential board-ready talent</li>
-          </ul>
-          <p style="font-size: .9rem; color: var(--gray-600); border-top: 1px solid var(--gray-200); padding-top: 1rem;">
-            <em>representing:</em><br>
-            <strong style="color: var(--teal-700);">Banks | NBFCs | MFIs | Fintechs | Financial Ecosystem Players</strong>
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="conclave-section" style="background: var(--navy-900); color: white;">
-  <div class="container fade-up">
-    <div class="content-block" style="max-width: 1000px;">
-      <h2 class="section-title" style="color: white;">Programme Objectives & Format</h2>
-      
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
-        <div style="background: rgba(255,255,255,0.05); padding: 2rem; border-radius: var(--r-md); border: 1px solid rgba(255,255,255,0.1);">
-          <h3 style="color: var(--teal-300); margin-bottom: 1rem;">Programme Objectives</h3>
-          <p style="margin-bottom: 1rem; color: var(--gray-100); opacity: 0.95; font-size: 1rem;">To equip senior BFSI leaders to deliver clear, decision-ready intelligence that:</p>
-          <ul style="list-style: none; padding-left: 0; color: var(--gray-100); font-size: 1rem;">
-            <li style="margin-bottom: 0.8rem; display: flex; align-items: flex-start; gap: 0.5rem; color: white;">
-              <span style="color: var(--accent-400);">✓</span> Strengthens board decisions
-            </li>
-            <li style="margin-bottom: 0.8rem; display: flex; align-items: flex-start; gap: 0.5rem; color: white;">
-              <span style="color: var(--accent-400);">✓</span> Enhances governance
-            </li>
-            <li style="margin-bottom: 0.8rem; display: flex; align-items: flex-start; gap: 0.5rem; color: white;">
-              <span style="color: var(--accent-400);">✓</span> Drives long-term institutional value
-            </li>
-          </ul>
-        </div>
-        
-        <div style="background: rgba(255,255,255,0.05); padding: 2rem; border-radius: var(--r-md); border: 1px solid rgba(255,255,255,0.1);">
-          <h3 style="color: var(--teal-300); margin-bottom: 1rem;">Why Organisations are Nominating Teams?</h3>
-          <ul style="list-style: none; padding-left: 0; color: var(--gray-100); font-size: 1rem;">
-            <li style="margin-bottom: 0.8rem; display: flex; align-items: flex-start; gap: 0.5rem; color: white;">
-              <span style="color: var(--accent-400);">✓</span> Build consistent boardroom thinking
-            </li>
-            <li style="margin-bottom: 0.8rem; display: flex; align-items: flex-start; gap: 0.5rem; color: white;">
-              <span style="color: var(--accent-400);">✓</span> Improve quality of insights
-            </li>
-            <li style="margin-bottom: 0.8rem; display: flex; align-items: flex-start; gap: 0.5rem; color: white;">
-              <span style="color: var(--accent-400);">✓</span> Strengthen governance and risk alignment
-            </li>
-            <li style="margin-bottom: 0.8rem; display: flex; align-items: flex-start; gap: 0.5rem; color: white;">
-              <span style="color: var(--accent-400);">✓</span> Accelerate CXO readiness
-            </li>
-          </ul>
-        </div>
-      </div>
-      
-      <div style="text-align: center; margin-top: 3rem;">
-        <h3 style="color: var(--teal-300); margin-bottom: 1rem;">Programme Format</h3>
-        <p style="font-size: 1.1rem; color: var(--gray-100); opacity: 0.95; line-height: 1.8;">
-          High-impact keynote &nbsp;|&nbsp; 4 focused executive sessions &nbsp;|&nbsp; Real-world boardroom perspectives<br>
-          CXO-level peer interaction &nbsp;|&nbsp; Practical frameworks for immediate application
-        </p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="conclave-section">
-  <div class="container fade-up">
-    <div class="content-block" style="max-width: 1000px;">
-      <h2 class="section-title">Distinguished Speakers</h2>
-      
-      <div class="speaker-card">
-        <img src="assets/speaker-ganesh.png" alt="S. Ganesh Kumar" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZTFlOGVhIi8+PGNpcmNsZSBjeD0iNTAiIGN5PSI0MCIgcj0iMjAiIGZpbGw9IiM5N2E4YWUiLz48cGF0aCBkPSJNMjAgMTAwQzIwIDYwIDgwIDYwIDgwIDEwMEgyMHoiIGZpbGw9IiM5N2E4YWUiLz48L3N2Zz4='"/>
-        <div class="speaker-info">
-          <h3>Mr. S. GANESH KUMAR</h3>
-          <div class="speaker-title">Former Executive Director, Reserve Bank of India | Independent Director on Multiple Boards</div>
-          <p>A key architect of India's modern financial infrastructure, S. Ganesh Kumar brings over three decades of leadership at the Reserve Bank of India, where he led the entire spectrum of Payment and Settlement Systems and contributed to strategic policy, foreign exchange reserve management, and long-term institutional planning. He played an instrumental role in establishing foundational institutions such as the National Payments Corporation of India, Reserve Bank Information Technology Private Limited, and Indian Financial Technology and Allied Services. Currently, he serves as Independent Director at IDFC First Bank and Public Interest Director at Multi Commodity Exchange Clearing Corporation Limited.</p>
-        </div>
-      </div>
-
-      <div class="speaker-card">
-        <img src="assets/speaker-ashutosh.png" alt="Ashutosh Khajuria" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZTFlOGVhIi8+PGNpcmNsZSBjeD0iNTAiIGN5PSI0MCIgcj0iMjAiIGZpbGw9IiM5N2E4YWUiLz48cGF0aCBkPSJNMjAgMTAwQzIwIDYwIDgwIDYwIDgwIDEwMEgyMHoiIGZpbGw9IiM5N2E4YWUiLz48L3N2Zz4='"/>
-        <div class="speaker-info">
-          <h3>Mr. ASHUTOSH KHAJURIA</h3>
-          <div class="speaker-title">Boardroom Strategist | Independent Director, Dhanlaxmi Bank | Former ED, Federal Bank</div>
-          <p>Mr. Ashutosh Khajuria is a seasoned banking and financial markets leader with over four decades of experience across treasury, credit, risk management, and strategic finance. He has held senior leadership roles at Federal Bank, including Executive Director, where he played a key role in strengthening the bank's financial architecture and risk frameworks. Earlier in his career, he held leadership positions at IDBI Bank, Edelweiss Asset Management, and UPL Limited, along with over two decades at State Bank of India. A respected voice in financial markets, Mr. Khajuria brings deep insights into governance, capital management, and board-level decision-making.</p>
-        </div>
-      </div>
-      
-      <div class="speaker-card">
-        <img src="assets/speaker-nagesh.png" alt="Nagesh Pinge" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZTFlOGVhIi8+PGNpcmNsZSBjeD0iNTAiIGN5PSI0MCIgcj0iMjAiIGZpbGw9IiM5N2E4YWUiLz48cGF0aCBkPSJNMjAgMTAwQzIwIDYwIDgwIDYwIDgwIDEwMEgyMHoiIGZpbGw9IiM5N2E4YWUiLz48L3N2Zz4='"/>
-        <div class="speaker-info">
-          <h3>Mr. NAGESH PINGE</h3>
-          <div class="speaker-title">Independent Director on Multiple Boards | Former Chief Risk Officer & Group Head - Internal Audit, ICICI Bank & its Group companies | Chief Internal Auditor & Chief Ethics Officer, TATA Motors</div>
-          <p>Nagesh Pinge is an accomplished Independent Director and former Chief Internal Auditor & Chief Ethics Officer at Tata Motors, bringing nearly four decades of distinguished experience in ethics, corporate governance, risk management, and internal audit. A Chartered Accountant and Law Graduate, he has further strengthened his global perspective through executive education at the University of Michigan, USA. Currently, he mentors and advises the boards of leading companies such as Aditya Birla Capital and Arvind Limited, among others.</p>
-        </div>
-      </div>
-      
-      <div class="speaker-card">
-        <img src="assets/speaker-ravindra.png" alt="Ravindra Pandey" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZTFlOGVhIi8+PGNpcmNsZSBjeD0iNTAiIGN5PSI0MCIgcj0iMjAiIGZpbGw9IiM5N2E4YWUiLz48cGF0aCBkPSJNMjAgMTAwQzIwIDYwIDgwIDYwIDgwIDEwMEgyMHoiIGZpbGw9IiM5N2E4YWUiLz48L3N2Zz4='"/>
-        <div class="speaker-info">
-          <h3>Mr. RAVINDRA PANDEY</h3>
-          <div class="speaker-title">Independent Director on Multiple Boards | Former Deputy Managing Director, State Bank of India</div>
-          <p>Ravindra Pandey brings over 37 years of distinguished leadership experience with State Bank of India, where he held several critical roles across domestic and international operations. As Deputy Managing Director, and previously as Chief Digital Officer and CIO (Global Head of IT), he played a pivotal role in driving large-scale transformation, digital innovation, and enterprise-wide strategic initiatives. Currently, he serves as an Independent Director across diverse sectors including financial services, steel, logistics, and investments. Renowned for his governance excellence and strategic foresight.</p>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<section class="conclave-section" style="background: var(--off-white);">
-  <div class="container fade-up">
-    <div class="content-block" style="max-width: 1000px;">
-      <h2 class="section-title">Programme Investment</h2>
-      <p style="text-align: center; margin-bottom: 2rem; font-size: 1.05rem;">
-        <strong>Build Leaders the Board Trusts. This is not a cost.</strong><br>
-        It is an investment in leadership that directly impacts board-level decisions, risk oversight, and strategic outcomes.
-      </p>
-      
-      <div class="pricing-grid">
-        <div class="price-card">
-          <h4>Individual Nomination</h4>
-          <div class="price-row" style="font-size: 1.2rem; font-weight: 700; color: var(--navy-800); border: none;">
-            ₹68,000 per participant
-          </div>
-          <p style="font-size: .95rem; color: var(--gray-600); margin-top: 0.5rem;">For CXOs and senior leaders ready to elevate their boardroom impact.</p>
-          
-          <h4 style="margin-top: 2rem;">Corporate Nomination Packages</h4>
-          <p style="font-size: .95rem; color: var(--gray-600); margin-bottom: 1rem;">Designed for organizations building a board-aligned leadership bench.</p>
-          
-          <div class="price-row">
-            <span><strong>3 Participants</strong><br><em style="font-size: 0.9rem; color: var(--gray-600);">Strengthen your core leadership alignment</em></span>
-            <span style="font-weight: 700; color: var(--navy-800);">₹1,95,000</span>
-          </div>
-          <div class="price-row">
-            <span><strong>5 Participants</strong><br><em style="font-size: 0.9rem; color: var(--gray-600);">Equip your key functional heads</em></span>
-            <span style="font-weight: 700; color: var(--navy-800);">₹3,10,000</span>
-          </div>
-          <div class="price-row">
-            <span><strong>10 Participants</strong><br><em style="font-size: 0.9rem; color: var(--gray-600);">Build a future-ready pipeline</em></span>
-            <span style="font-weight: 700; color: var(--navy-800);">₹5,80,000</span>
+        <div class="details-column">
+          <h3>Outcomes You Can Expect</h3>
+          <div class="outcome-card">
+            <ul class="check-list">
+              <li>Improved individual and team performance</li>
+              <li>Stronger leadership capability and bench strength</li>
+              <li>Better decision-making and execution quality</li>
+              <li>Higher engagement and professional confidence</li>
+              <li>Measurable impact on business outcomes</li>
+            </ul>
           </div>
         </div>
-        
-        <div class="price-card featured" style="background: var(--navy-800); color: white; border: none;">
-          <h4 style="color: var(--teal-300);">Payment Option: Bank Transfer</h4>
-          <p style="margin-bottom: 1.5rem; font-size: .9rem; color: white; opacity: 0.95;">Payments can be made via NEFT / RTGS / IMPS to the following account:</p>
-          
-          <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: var(--r-sm); margin-bottom: 1.5rem;">
-            <p style="margin-bottom: 0.5rem; font-size: .95rem; color: white;"><strong>Account Number:</strong> 0098073000009916</p>
-            <p style="margin-bottom: 0.5rem; font-size: .95rem; color: white;"><strong>Name:</strong> Green Apple Success Factors Pvt. Ltd.</p>
-            <p style="margin-bottom: 0.5rem; font-size: .95rem; color: white;"><strong>Bank:</strong> South Indian Bank, Banerji Road, Ernakulam, Kerala</p>
-            <p style="font-size: .95rem; color: white;"><strong>IFSC Code:</strong> SIBL0000098</p>
-          </div>
-          
-          <p style="font-size: .95rem; color: var(--gray-100); margin-bottom: 0.5rem;">Kindly share the transaction details post-payment for confirmation and invoice processing.</p>
-          <p style="font-size: .95rem; color: var(--gray-100); margin-bottom: 0.5rem;"><strong>Invoice & GST Billing:</strong> GST invoice will be issued upon request. Early confirmation is recommended due to limited seats.</p>
-          <p style="font-size: .95rem; color: var(--gray-100);"><strong>Confirmation Process:</strong> Your seat is confirmed upon receipt of payment and registration details.</p>
-        </div>
       </div>
-      
-      <div style="margin-top: 3rem; text-align: center;">
-        <h3 style="color: var(--navy-800); margin-bottom: 1rem;">For Registrations, Please Contact</h3>
-        <p style="font-weight: 600; font-size: 1.1rem; color: var(--teal-800);">Dr. George V Antony</p>
-        <p style="font-size: .95rem; color: var(--gray-600); margin-bottom: 1rem;">Programme Director - CXO Conclave on Boardroom Intelligence<br>Director, GreenApple Success Factors</p>
-        <p style="font-size: 1.05rem;">
-          <a href="tel:+919072000996" style="color: var(--navy-800); font-weight: 600; text-decoration: none;">&#128222; 9072000996</a> &nbsp;|&nbsp; 
-          <a href="tel:+919072004596" style="color: var(--navy-800); font-weight: 600; text-decoration: none;">9072004596</a><br>
-          <a href="mailto:ga@gasuccessfactors.com" style="color: var(--teal-600); font-weight: 600; text-decoration: none;">&#9993; ga@gasuccessfactors.com</a>
-        </p>
-        
-        <div style="margin-top: 2rem;">
-          <a href="cxo-registration.html" class="btn-primary" style="font-size: 1.1rem; padding: 1rem 3rem;">Register Now</a>
-        </div>
+
+      <div class="ideal-for-section">
+        <h3>Ideal For</h3>
+        <ul>
+          <li><span>&#10004;</span> Organisations investing in leadership development</li>
+          <li><span>&#10004;</span> Companies seeking performance-driven training</li>
+          <li><span>&#10004;</span> Teams navigating change or increased complexity</li>
+          <li><span>&#10004;</span> Professionals aiming for accelerated growth</li>
+        </ul>
+      </div>
+
+      <div class="cta-block">
+        <h3>Ready to elevate your team's capability?</h3>
+        <p>Let's build a performance-driven training programme tailored to your goals.</p>
+        <a href="registration.html" class="btn-primary">Connect for Consulting →</a>
       </div>
     </div>
   </div>
 </section>
-
 <div id="register-cta-mount"></div>
 <div id="footer-mount"></div>
 <script src="components.js?v=4"></script>
-<script src="content-loader.js?v=4"></script>
+  <script src="content-loader.js?v=4"></script>
 </body>
 </html>

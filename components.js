@@ -54,7 +54,7 @@ function buildHeader() {
     { href: 'index.html', label: 'Home' },
     { href: 'services.html', label: 'Services' },
     { href: 'profile.html', label: 'Profile' },
-    { href: 'training-programs.html', label: 'Upcoming Event' },
+    { href: 'cxo-conclave.html', label: 'Upcoming Event' },
     { href: 'gallery.html', label: 'Gallery' },
     { href: 'reach-us.html', label: 'Reach Us', cta: true },
   ];
@@ -111,7 +111,7 @@ function buildFooter() {
             <a href="business-consulting.html">Business Consulting & Growth</a>
             <a href="startup-mentoring.html">Startup & Entrepreneurial Mentoring</a>
             <a href="academic-empowerment.html">Academic & Institutional Empowerment</a>
-            <a href="training-programs.html">Training Programs</a>
+            <a href="training-programs.html">Corporate Training & Professional Development</a>
             <a href="risk-compliance-funding.html">Risk &amp; Funding</a>
             <a href="branding-transformation.html">Branding &amp; Transformation</a>
           </nav>

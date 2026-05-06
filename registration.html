@@ -228,7 +228,6 @@
 
       const get = id => (document.getElementById(id)?.value || '').trim();
       const regType = document.querySelector('input[name="reg-type"]:checked')?.value || '';
-      const iod     = document.querySelector('input[name="iod"]:checked')?.value || 'no';
 
       const data = {
         registration_type : regType,
@@ -250,7 +249,7 @@
         mobile            : get('reg-mobile'),
         email_office      : get('reg-email-office'),
         email_permanent   : get('reg-email-permanent'),
-        iod_member        : iod,
+
         amount_payable    : get('reg-amount'),
         submission_date   : get('reg-date'),
       };

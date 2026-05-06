@@ -125,7 +125,7 @@ function buildFooter() {
             <a href="gallery.html">Gallery</a>
             <a href="reach-us.html">Reach Us</a>
             <a href="registration.html">Register</a>
-            <a href="brochure.pdf" target="_blank" rel="noopener" style="color:var(--teal-300);font-weight:700;">&#8659; Download Brochure</a>
+            <a href="brochure.html" style="color:var(--teal-300);font-weight:700;">&#128065; View Brochure</a>
           </nav>
         </div>
       </div>

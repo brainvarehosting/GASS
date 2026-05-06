@@ -110,7 +110,7 @@ function buildFooter() {
           <nav class="footer-links">
             <a href="business-consulting.html">Business Consulting & Growth</a>
             <a href="startup-mentoring.html">Startup & Entrepreneurial Mentoring</a>
-            <a href="academic-empowerment.html">Academic Empowerment</a>
+            <a href="academic-empowerment.html">Academic & Institutional Empowerment</a>
             <a href="training-programs.html">Training Programs</a>
             <a href="risk-compliance-funding.html">Risk &amp; Funding</a>
             <a href="branding-transformation.html">Branding &amp; Transformation</a>

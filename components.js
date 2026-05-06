@@ -108,7 +108,7 @@ function buildFooter() {
         <div>
           <h4>Our Services</h4>
           <nav class="footer-links">
-            <a href="business-consulting.html">Business Consulting</a>
+            <a href="business-consulting.html">Business Consulting & Growth</a>
             <a href="startup-mentoring.html">Startup Mentoring</a>
             <a href="academic-empowerment.html">Academic Empowerment</a>
             <a href="training-programs.html">Training Programs</a>

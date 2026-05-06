@@ -112,7 +112,7 @@ function buildFooter() {
             <a href="startup-mentoring.html">Startup & Entrepreneurial Mentoring</a>
             <a href="academic-empowerment.html">Academic & Institutional Empowerment</a>
             <a href="training-programs.html">Corporate Training & Professional Development</a>
-            <a href="risk-compliance-funding.html">Risk &amp; Funding</a>
+            <a href="risk-compliance-funding.html">Risk, Compliance, ESG & Funding Advisory</a>
             <a href="branding-transformation.html">Branding, Collaborations & Transformation</a>
           </nav>
         </div>

@@ -109,7 +109,7 @@ function buildFooter() {
           <h4>Our Services</h4>
           <nav class="footer-links">
             <a href="business-consulting.html">Business Consulting & Growth</a>
-            <a href="startup-mentoring.html">Startup Mentoring</a>
+            <a href="startup-mentoring.html">Startup & Entrepreneurial Mentoring</a>
             <a href="academic-empowerment.html">Academic Empowerment</a>
             <a href="training-programs.html">Training Programs</a>
             <a href="risk-compliance-funding.html">Risk &amp; Funding</a>

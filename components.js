@@ -184,7 +184,9 @@ const AMOUNTS = {career:'Rs. 5,000',icwim:'Rs. 15,000',institution:'Rs. 10,000',
 function initRegistrationForm() {
   const sel = document.getElementById('reg-programme');
   const amt = document.getElementById('reg-amount');
-  if (sel && amt) sel.addEventListener('change', () => { amt.value = AMOUNTS[sel.value] || ''; });
+  if (sel && amt) sel.addEventListener('change', () => {
+    if (AMOUNTS[sel.value] !== undefined) amt.value = AMOUNTS[sel.value];
+  });
 
   const form = document.getElementById('registrationForm');
   if (!form) return;

@@ -5,7 +5,7 @@ pages_build_output_dir = "."
 [[d1_databases]]
 binding = "DB"
 database_name = "gasf-cms"
-database_id = "REPLACE_WITH_D1_ID_FROM_DASHBOARD"
+database_id = "464b85fc-653a-4886-90c0-44754e6ba592"
 
 [[r2_buckets]]
 binding = "MEDIA"

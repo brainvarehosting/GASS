@@ -119,9 +119,23 @@
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg>
         Blog / Insights
       </div>
-      <div class="nav-section">Coming next</div>
-      <div class="nav-item opacity-50 cursor-not-allowed">SEO &amp; Redirects</div>
-      <div class="nav-item opacity-50 cursor-not-allowed">Page builder</div>
+      <div class="nav-item" data-route="cmspages">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
+        Page Builder
+      </div>
+      <div class="nav-section">SEO &amp; Site</div>
+      <div class="nav-item" data-route="seo">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        SEO Manager
+      </div>
+      <div class="nav-item" data-route="redirects">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        Redirects
+      </div>
+      <div class="nav-item" data-route="settings">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        Site Settings
+      </div>
     </nav>
     <div class="p-3 border-t border-white/10">
       <button id="logoutBtn" class="nav-item w-full">
@@ -1792,6 +1806,682 @@ async function openBlog(id) {
 }
 
 function safeJsonArr(s) { try { const a = JSON.parse(s||'[]'); return Array.isArray(a)?a:[]; } catch { return []; } }
+
+// ---------- SEO MANAGER ----------
+// Per-entity SEO. Pick (entity_type, entity_id) — for blogs we list them;
+// for static pages we use a fixed list of slugs.
+const STATIC_PAGE_SLUGS = ['index','services','profile','business-consulting','startup-mentoring','academic-empowerment','training-programs','risk-compliance-funding','branding-transformation','cxo-conclave','cxo-brochure','cxo-registration','reach-us','brochure','gallery','blog'];
+
+routes.seo = {
+  title: 'SEO Manager',
+  state: { entityType: 'page', entityId: 'index' },
+  async render(root) {
+    const s = routes.seo.state;
+    let blogs = [];
+    try { const res = await api.get('/api/admin/blogs?limit=200'); blogs = res.items || []; } catch {}
+
+    root.innerHTML = `
+      <div class="card p-4 mb-4">
+        <div class="flex flex-wrap gap-2 items-center">
+          <select id="seoType" class="input w-auto">
+            <option value="page" ${s.entityType==='page'?'selected':''}>Static page</option>
+            <option value="blog" ${s.entityType==='blog'?'selected':''}>Blog post</option>
+            <option value="cms_page" ${s.entityType==='cms_page'?'selected':''}>CMS page</option>
+          </select>
+          <select id="seoEntity" class="input flex-1 min-w-[200px]"></select>
+          <button id="seoLoad" class="btn btn-primary">Load</button>
+        </div>
+      </div>
+      <div id="seoForm"></div>`;
+
+    function fillEntities() {
+      const el = $('#seoEntity'); el.innerHTML = '';
+      const type = $('#seoType').value;
+      const items = type === 'page'
+        ? STATIC_PAGE_SLUGS.map((x) => ({ id: x, label: x + '.html' }))
+        : type === 'blog'
+          ? blogs.map((b) => ({ id: String(b.id), label: `${b.title} (/${b.slug})` }))
+          : []; // cms_page list will need its own fetch — placeholder
+      items.forEach((i) => { const o = document.createElement('option'); o.value = i.id; o.textContent = i.label; el.appendChild(o); });
+      if (s.entityId && [...el.options].some((o) => o.value === s.entityId)) el.value = s.entityId;
+    }
+    fillEntities();
+    $('#seoType').addEventListener('change', () => fillEntities());
+
+    async function loadForm() {
+      s.entityType = $('#seoType').value;
+      s.entityId = $('#seoEntity').value;
+      if (!s.entityId) { $('#seoForm').innerHTML = '<div class="card p-6 text-slate-500 text-sm">Pick an entity above.</div>'; return; }
+      let item = null;
+      try { const res = await api.get(`/api/admin/seo/${encodeURIComponent(s.entityType)}/${encodeURIComponent(s.entityId)}`); item = res.item; }
+      catch (e) { toast(e.message, 'error'); return; }
+      const v = item || {};
+      $('#seoForm').innerHTML = `
+        <form id="seoF" class="card p-5 space-y-3">
+          <div class="text-xs text-slate-500 uppercase tracking-wider font-semibold">${escape(s.entityType)} · ${escape(s.entityId)}</div>
+          <label class="block">
+            <span class="block text-xs font-semibold text-slate-700 mb-1">Meta title</span>
+            <input class="input sf" name="meta_title" value="${escape(v.meta_title||'')}"/>
+          </label>
+          <label class="block">
+            <span class="block text-xs font-semibold text-slate-700 mb-1">Meta description</span>
+            <textarea class="input sf auto" name="meta_description" rows="2">${escape(v.meta_description||'')}</textarea>
+          </label>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <label class="block">
+              <span class="block text-xs font-semibold text-slate-700 mb-1">Focus keyword</span>
+              <input class="input sf" name="focus_keyword" value="${escape(v.focus_keyword||'')}"/>
+            </label>
+            <label class="block">
+              <span class="block text-xs font-semibold text-slate-700 mb-1">Canonical URL</span>
+              <input class="input sf" name="canonical_url" value="${escape(v.canonical_url||'')}"/>
+            </label>
+            <label class="block">
+              <span class="block text-xs font-semibold text-slate-700 mb-1">OG title</span>
+              <input class="input sf" name="og_title" value="${escape(v.og_title||'')}"/>
+            </label>
+            <label class="block">
+              <span class="block text-xs font-semibold text-slate-700 mb-1">OG description</span>
+              <input class="input sf" name="og_description" value="${escape(v.og_description||'')}"/>
+            </label>
+            <div class="flex gap-2 items-end">
+              <label class="block flex-1">
+                <span class="block text-xs font-semibold text-slate-700 mb-1">OG image URL</span>
+                <input class="input sf" name="og_image_url" value="${escape(v.og_image_url||'')}"/>
+              </label>
+              <button type="button" class="btn btn-ghost text-xs h-[38px] seoPick" data-target="og_image_url">Pick</button>
+            </div>
+            <label class="block">
+              <span class="block text-xs font-semibold text-slate-700 mb-1">Twitter image URL</span>
+              <input class="input sf" name="twitter_image_url" value="${escape(v.twitter_image_url||'')}"/>
+            </label>
+            <label class="block">
+              <span class="block text-xs font-semibold text-slate-700 mb-1">Index status</span>
+              <select class="input sf" name="index_status">
+                <option value="index" ${v.index_status==='index'?'selected':''}>Index (allow search engines)</option>
+                <option value="noindex" ${v.index_status==='noindex'?'selected':''}>No-index</option>
+              </select>
+            </label>
+            <label class="block">
+              <span class="block text-xs font-semibold text-slate-700 mb-1">Schema type</span>
+              <input class="input sf" name="schema_type" value="${escape(v.schema_type||'')}" placeholder="Article, Service, Organization…"/>
+            </label>
+          </div>
+          <div class="flex justify-end pt-2">
+            <button type="submit" class="btn btn-primary text-xs">Save SEO</button>
+          </div>
+        </form>`;
+      root.querySelectorAll('.seoPick').forEach((b) => b.addEventListener('click', async () => {
+        const url = await pickMedia({});
+        if (!url) return;
+        root.querySelector(`input[name="${b.dataset.target}"]`).value = url;
+      }));
+      root.querySelector('#seoF').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const data = {};
+        root.querySelectorAll('.sf').forEach((el) => { data[el.name] = el.value; });
+        try {
+          await api.put(`/api/admin/seo/${encodeURIComponent(s.entityType)}/${encodeURIComponent(s.entityId)}`, data);
+          toast('SEO saved');
+        } catch (e) { toast(e.message, 'error'); }
+      });
+    }
+    $('#seoLoad').addEventListener('click', loadForm);
+    loadForm();
+  }
+};
+
+// ---------- REDIRECTS ----------
+routes.redirects = {
+  title: 'Redirects',
+  async render(root) {
+    let res;
+    try { res = await api.get('/api/admin/redirects'); }
+    catch (e) { root.innerHTML = `<div class="card p-6 text-red-600">${e.message}</div>`; return; }
+
+    root.innerHTML = `
+      <div class="mb-4 flex items-center justify-between">
+        <p class="text-sm text-slate-600">Redirect old URLs to new ones (301/302). <span class="text-amber-700">Note:</span> redirects only apply when the source URL doesn't exist as a static file.</p>
+        <button id="rAdd" class="btn btn-primary">+ New redirect</button>
+      </div>
+      <div class="card overflow-hidden">
+        <table class="min-w-full text-left">
+          <thead class="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
+            <tr>
+              <th class="px-4 py-3">Source</th>
+              <th class="px-4 py-3">Target</th>
+              <th class="px-4 py-3">Status</th>
+              <th class="px-4 py-3">Active</th>
+              <th class="px-4 py-3">Hits</th>
+              <th class="px-4 py-3 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y" id="rBody"></tbody>
+        </table>
+      </div>`;
+    renderRows(res.items);
+
+    function renderRows(items) {
+      $('#rBody').innerHTML = items.length
+        ? items.map((r) => `
+          <tr class="hover:bg-slate-50">
+            <td class="px-4 py-3 font-mono text-xs">${escape(r.source_path)}</td>
+            <td class="px-4 py-3 font-mono text-xs truncate max-w-xs">${escape(r.target_url)}</td>
+            <td class="px-4 py-3 text-sm">${r.status_code}</td>
+            <td class="px-4 py-3"><span class="pill ${r.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}">${r.is_active ? 'Active' : 'Off'}</span></td>
+            <td class="px-4 py-3 text-sm">${r.hits || 0}</td>
+            <td class="px-4 py-3 text-right">
+              <div class="inline-flex gap-1">
+                <button class="btn btn-ghost text-xs py-1" data-edit="${r.id}">Edit</button>
+                <button class="btn btn-ghost text-xs py-1" data-toggle="${r.id}" data-active="${r.is_active}">${r.is_active?'Off':'On'}</button>
+                <button class="btn btn-danger text-xs py-1" data-del="${r.id}">Del</button>
+              </div>
+            </td>
+          </tr>`).join('')
+        : '<tr><td colspan="6" class="px-4 py-12 text-center text-slate-500 text-sm">No redirects yet.</td></tr>';
+
+      $$('#rBody [data-edit]').forEach((b) => b.addEventListener('click', () => openRedirect(items.find((x) => x.id == b.dataset.edit))));
+      $$('#rBody [data-toggle]').forEach((b) => b.addEventListener('click', async () => {
+        try { await api.put('/api/admin/redirects/' + b.dataset.toggle, { is_active: b.dataset.active === '1' ? 0 : 1 }); navigate('redirects'); }
+        catch (e) { toast(e.message, 'error'); }
+      }));
+      $$('#rBody [data-del]').forEach((b) => b.addEventListener('click', async () => {
+        if (!confirm('Delete this redirect?')) return;
+        try { await api.del('/api/admin/redirects/' + b.dataset.del); toast('Deleted'); navigate('redirects'); }
+        catch (e) { toast(e.message, 'error'); }
+      }));
+    }
+    $('#rAdd').addEventListener('click', () => openRedirect(null));
+  }
+};
+
+function openRedirect(r) {
+  const isNew = !r;
+  const v = r || { source_path: '', target_url: '', status_code: 301, is_active: 1 };
+  const overlay = document.createElement('div');
+  overlay.className = 'fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4';
+  overlay.innerHTML = `
+    <form class="card max-w-md w-full">
+      <div class="px-5 py-3 border-b flex items-center justify-between">
+        <h3 class="font-semibold text-ink-900">${isNew?'New redirect':'Edit redirect'}</h3>
+        <button type="button" class="text-slate-400 hover:text-slate-700 text-xl leading-none close-x">×</button>
+      </div>
+      <div class="p-5 space-y-3">
+        <label class="block">
+          <span class="block text-xs font-semibold text-slate-700 mb-1">Source path (must start with /)</span>
+          <input class="input rf" name="source_path" required value="${escape(v.source_path)}" placeholder="/old-page.html"/>
+        </label>
+        <label class="block">
+          <span class="block text-xs font-semibold text-slate-700 mb-1">Target URL (relative or absolute)</span>
+          <input class="input rf" name="target_url" required value="${escape(v.target_url)}" placeholder="/new-page.html or https://…"/>
+        </label>
+        <label class="block">
+          <span class="block text-xs font-semibold text-slate-700 mb-1">Status code</span>
+          <select class="input rf" name="status_code">
+            <option value="301" ${v.status_code==301?'selected':''}>301 (Permanent)</option>
+            <option value="302" ${v.status_code==302?'selected':''}>302 (Temporary)</option>
+            <option value="307" ${v.status_code==307?'selected':''}>307 (Temporary, preserve method)</option>
+            <option value="308" ${v.status_code==308?'selected':''}>308 (Permanent, preserve method)</option>
+          </select>
+        </label>
+        <label class="flex items-center gap-2 text-sm">
+          <input type="checkbox" class="rf" name="is_active" ${v.is_active?'checked':''}/> Active
+        </label>
+      </div>
+      <div class="px-5 py-3 border-t flex justify-end gap-2 bg-slate-50">
+        <button type="button" class="btn btn-ghost text-xs close-x">Cancel</button>
+        <button type="submit" class="btn btn-primary text-xs">${isNew?'Create':'Save'}</button>
+      </div>
+    </form>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay || e.target.classList.contains('close-x')) overlay.remove(); });
+
+  overlay.querySelector('form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = {};
+    overlay.querySelectorAll('.rf').forEach((el) => {
+      data[el.name] = el.type === 'checkbox' ? (el.checked ? 1 : 0) : el.value;
+    });
+    try {
+      if (isNew) await api.post('/api/admin/redirects', data);
+      else        await api.put ('/api/admin/redirects/' + r.id, data);
+      toast('Saved');
+      overlay.remove();
+      navigate('redirects');
+    } catch (err) { toast(err.message, 'error'); }
+  });
+}
+
+// ---------- SITE SETTINGS ----------
+routes.settings = {
+  title: 'Site Settings',
+  async render(root) {
+    let res;
+    try { res = await api.get('/api/admin/site-settings'); }
+    catch (e) { root.innerHTML = `<div class="card p-6 text-red-600">${e.message}</div>`; return; }
+
+    const m = {};
+    for (const it of res.items) m[it.key] = it.value;
+
+    const groups = [
+      ['Site identity', [
+        ['site.name', 'Site name', 'text'],
+        ['site.tagline', 'Tagline', 'text'],
+        ['site.canonical_base', 'Canonical base URL (e.g. https://gasuccessfactors.com)', 'text'],
+      ]],
+      ['Default SEO', [
+        ['site.default_meta_description', 'Default meta description', 'textarea'],
+        ['site.default_og_image_url', 'Default OG image URL', 'media'],
+        ['site.favicon_url', 'Favicon URL', 'media'],
+      ]],
+      ['Tracking & analytics', [
+        ['seo.google_analytics_id', 'Google Analytics ID (G-…)', 'text'],
+        ['seo.google_tag_manager_id', 'Google Tag Manager ID (GTM-…)', 'text'],
+        ['seo.meta_pixel_id', 'Meta Pixel ID', 'text'],
+        ['seo.search_console_verification', 'Search Console verification meta', 'text'],
+      ]],
+    ];
+
+    root.innerHTML = `
+      <form id="ssForm" class="space-y-5">
+        ${groups.map(([title, items]) => `
+          <div class="card overflow-hidden">
+            <div class="px-5 py-3 bg-slate-50 border-b">
+              <h3 class="font-semibold text-ink-900 text-sm">${title}</h3>
+            </div>
+            <div class="p-5 space-y-3">
+              ${items.map(([key, label, type]) => `
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">${escape(label)}</label>
+                  ${type === 'textarea'
+                    ? `<textarea class="input ssf auto" data-key="${key}" rows="2">${escape(m[key]||'')}</textarea>`
+                    : type === 'media'
+                      ? `<div class="flex gap-2"><input class="input ssf flex-1" data-key="${key}" value="${escape(m[key]||'')}"/><button type="button" class="btn btn-ghost text-xs ssPick" data-target="${key}">Pick</button></div>`
+                      : `<input class="input ssf" data-key="${key}" value="${escape(m[key]||'')}"/>`}
+                </div>`).join('')}
+            </div>
+          </div>`).join('')}
+        <div class="flex justify-end">
+          <button type="submit" class="btn btn-primary">Save all</button>
+        </div>
+      </form>`;
+    root.querySelectorAll('.ssPick').forEach((b) => b.addEventListener('click', async () => {
+      const url = await pickMedia({});
+      if (!url) return;
+      root.querySelector(`.ssf[data-key="${b.dataset.target}"]`).value = url;
+    }));
+    root.querySelector('#ssForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const settings = {};
+      root.querySelectorAll('.ssf').forEach((el) => { settings[el.dataset.key] = el.value; });
+      try { await api.put('/api/admin/site-settings', { settings }); toast('Settings saved'); }
+      catch (err) { toast(err.message, 'error'); }
+    });
+  }
+};
+
+// ---------- PAGE BUILDER ----------
+// Section types and their default data shapes. Add more here + matching
+// renderers in page-renderer.js to extend the widget library.
+const WIDGETS = [
+  { type:'hero',         label:'Hero banner',   icon:'⬛', defaults:{ eyebrow:'', heading:'Heading', heading_accent:'', description:'', btn1_text:'', btn1_link:'', btn2_text:'', btn2_link:'', bg_image_url:'', overlay_opacity:0.55, text_align:'left', text_color:'#ffffff' } },
+  { type:'rich_text',    label:'Rich text',     icon:'¶', defaults:{ html:'<p>Write here…</p>' } },
+  { type:'image_text',   label:'Image + text',  icon:'▦', defaults:{ image_url:'', side:'left', heading:'', body_html:'<p>Text…</p>', btn_text:'', btn_link:'' } },
+  { type:'stats',        label:'Stats counter', icon:'#', defaults:{ items:[ {value:'20+', label:'Years'}, {value:'100%', label:'Result'}, {value:'6', label:'Specialisations'} ] } },
+  { type:'cta',          label:'CTA banner',    icon:'!', defaults:{ heading:'Ready to get started?', subtext:'', btn_text:'Talk to us', btn_link:'reach-us.html', bg_color:'#0a7575' } },
+  { type:'faq',          label:'FAQ accordion', icon:'?', defaults:{ items:[ {q:'Question?', a:'Answer.'} ] } },
+  { type:'service_grid', label:'Service grid',  icon:'▤', defaults:{ items:[ {icon:'📊', title:'Service one', link:'#'}, {icon:'🚀', title:'Service two', link:'#'} ] } },
+  { type:'custom_html',  label:'Custom HTML',   icon:'<>', defaults:{ html:'<!-- Paste any HTML --><div></div>' } },
+];
+const WIDGETS_BY_TYPE = Object.fromEntries(WIDGETS.map((w) => [w.type, w]));
+
+routes.cmspages = {
+  title: 'Page Builder',
+  async render(root) {
+    let res;
+    try { res = await api.get('/api/admin/cms-pages'); }
+    catch (e) { root.innerHTML = `<div class="card p-6 text-red-600">${e.message}</div>`; return; }
+
+    root.innerHTML = `
+      <div class="mb-4 flex items-center justify-between">
+        <p class="text-sm text-slate-600">Build dynamic pages from widgets. Published pages live at <code class="bg-slate-100 px-1.5 py-0.5 rounded text-xs">/p/your-slug</code>.</p>
+        <button id="cpAdd" class="btn btn-primary">+ New page</button>
+      </div>
+      <div id="cpList"></div>`;
+
+    const list = $('#cpList');
+    if (!res.items.length) {
+      list.innerHTML = '<div class="card p-12 text-center text-slate-500 text-sm">No CMS pages yet.</div>';
+    } else {
+      list.innerHTML = `<div class="card overflow-hidden"><div class="divide-y">${res.items.map(cmsPageRow).join('')}</div></div>`;
+      $$('#cpList [data-edit]').forEach((b) => b.addEventListener('click', () => openCmsPage(parseInt(b.dataset.edit, 10))));
+      $$('#cpList [data-del]').forEach((b) => b.addEventListener('click', async () => {
+        if (!confirm('Delete this page and all its sections?')) return;
+        try { await api.del('/api/admin/cms-pages/' + b.dataset.del); toast('Deleted'); navigate('cmspages'); }
+        catch (e) { toast(e.message, 'error'); }
+      }));
+    }
+    $('#cpAdd').addEventListener('click', () => openCmsPage(null));
+  }
+};
+
+function cmsPageRow(p) {
+  const pill = { draft:'bg-slate-100 text-slate-600', published:'bg-emerald-100 text-emerald-700', archived:'bg-amber-100 text-amber-700' }[p.status] || '';
+  return `
+    <div class="px-4 py-3 flex items-center gap-3 hover:bg-slate-50">
+      <div class="flex-1 min-w-0">
+        <div class="text-sm font-semibold text-ink-900 truncate">${escape(p.title)}</div>
+        <div class="text-xs text-slate-500">/p/${escape(p.slug)}</div>
+      </div>
+      <span class="pill ${pill}">${p.status}</span>
+      <div class="text-xs text-slate-400">${formatDate(p.updated_at)}</div>
+      <div class="inline-flex gap-1">
+        <a href="/p/${encodeURIComponent(p.slug)}" target="_blank" class="btn btn-ghost text-xs py-1">View</a>
+        <button class="btn btn-ghost text-xs py-1" data-edit="${p.id}">Edit</button>
+        <button class="btn btn-danger text-xs py-1" data-del="${p.id}">Del</button>
+      </div>
+    </div>`;
+}
+
+async function openCmsPage(id) {
+  const isNew = !id;
+  let item = { slug:'', title:'', description:'', status:'draft', sections: [] };
+  if (!isNew) {
+    try { const res = await api.get('/api/admin/cms-pages/' + id); item = res.item; item.sections = item.sections || []; }
+    catch (e) { toast(e.message, 'error'); return; }
+  }
+
+  const overlay = document.createElement('div');
+  overlay.className = 'fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-3';
+  overlay.innerHTML = `
+    <div class="card max-w-6xl w-full h-[94vh] overflow-hidden flex flex-col">
+      <div class="px-5 py-3 border-b flex items-center justify-between">
+        <h3 class="font-semibold text-ink-900">${isNew?'New page':'Edit: '+escape(item.title)}</h3>
+        <div class="flex items-center gap-2">
+          ${!isNew ? `<a href="/p/${encodeURIComponent(item.slug)}" target="_blank" class="text-xs text-teal-700 hover:underline">View ↗</a>` : ''}
+          <button type="button" class="text-slate-400 hover:text-slate-700 text-xl leading-none close-x">×</button>
+        </div>
+      </div>
+      <div class="flex-1 overflow-hidden grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x">
+        <div class="p-5 space-y-3 overflow-y-auto">
+          <h4 class="text-sm font-semibold text-ink-900">Page settings</h4>
+          <label class="block">
+            <span class="block text-xs font-semibold text-slate-700 mb-1">Title <span class="text-red-500">*</span></span>
+            <input class="input cf" name="title" required value="${escape(item.title)}"/>
+          </label>
+          <label class="block">
+            <span class="block text-xs font-semibold text-slate-700 mb-1">Slug <span class="text-red-500">*</span></span>
+            <input class="input cf" name="slug" required value="${escape(item.slug)}" placeholder="about-us"/>
+          </label>
+          <label class="block">
+            <span class="block text-xs font-semibold text-slate-700 mb-1">Description</span>
+            <textarea class="input cf auto" name="description" rows="2">${escape(item.description||'')}</textarea>
+          </label>
+          <label class="block">
+            <span class="block text-xs font-semibold text-slate-700 mb-1">Status</span>
+            <select class="input cf" name="status">
+              <option value="draft" ${item.status==='draft'?'selected':''}>Draft</option>
+              <option value="published" ${item.status==='published'?'selected':''}>Published</option>
+              <option value="archived" ${item.status==='archived'?'selected':''}>Archived</option>
+            </select>
+          </label>
+          <div class="pt-3 border-t mt-3">
+            <h4 class="text-xs font-semibold text-slate-700 mb-2">Add a section</h4>
+            <div class="grid grid-cols-2 gap-2">
+              ${WIDGETS.map((w) => `<button type="button" class="card p-3 text-center hover:ring-2 hover:ring-teal-500 cursor-pointer addWidget" data-type="${w.type}"><div class="text-2xl mb-1">${w.icon}</div><div class="text-xs font-semibold">${w.label}</div></button>`).join('')}
+            </div>
+          </div>
+        </div>
+        <div class="md:col-span-2 p-5 overflow-y-auto bg-slate-50">
+          <h4 class="text-sm font-semibold text-ink-900 mb-3">Sections (drag to reorder)</h4>
+          <div id="secList" class="space-y-3"></div>
+        </div>
+      </div>
+      <div class="px-5 py-3 border-t flex justify-end gap-2 bg-white">
+        <button type="button" class="btn btn-ghost text-xs close-x">Cancel</button>
+        <button type="button" id="cpSave" class="btn btn-primary text-xs">${isNew?'Create page':'Save'}</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay || e.target.classList.contains('close-x')) overlay.remove(); });
+
+  const sections = item.sections.slice();
+
+  function renderSections() {
+    const list = overlay.querySelector('#secList');
+    if (!sections.length) {
+      list.innerHTML = '<div class="card p-8 text-center text-slate-500 text-sm">No sections yet. Pick a widget on the left to add one.</div>';
+      return;
+    }
+    list.innerHTML = sections.map((s, i) => sectionCard(s, i)).join('');
+    list.querySelectorAll('.secCard').forEach((row, idx) => {
+      row.draggable = true;
+      row.addEventListener('dragstart', (e) => { e.dataTransfer.setData('text/idx', String(idx)); row.classList.add('opacity-50'); });
+      row.addEventListener('dragend',   () => row.classList.remove('opacity-50'));
+      row.addEventListener('dragover',  (e) => { e.preventDefault(); row.classList.add('ring-2','ring-teal-500'); });
+      row.addEventListener('dragleave', () => row.classList.remove('ring-2','ring-teal-500'));
+      row.addEventListener('drop', (e) => {
+        e.preventDefault();
+        row.classList.remove('ring-2','ring-teal-500');
+        const fromIdx = parseInt(e.dataTransfer.getData('text/idx'), 10);
+        if (Number.isNaN(fromIdx) || fromIdx === idx) return;
+        const moved = sections.splice(fromIdx, 1)[0];
+        sections.splice(idx, 0, moved);
+        renderSections();
+      });
+    });
+    list.querySelectorAll('[data-edit-sec]').forEach((b) => b.addEventListener('click', () => editSection(parseInt(b.dataset.editSec, 10))));
+    list.querySelectorAll('[data-dup-sec]').forEach((b) => b.addEventListener('click', () => { sections.splice(+b.dataset.dupSec + 1, 0, JSON.parse(JSON.stringify(sections[+b.dataset.dupSec]))); renderSections(); }));
+    list.querySelectorAll('[data-del-sec]').forEach((b) => b.addEventListener('click', () => { sections.splice(+b.dataset.delSec, 1); renderSections(); }));
+  }
+
+  function sectionCard(s, i) {
+    const w = WIDGETS_BY_TYPE[s.type] || { label: s.type, icon: '?' };
+    let summary = '';
+    if (s.type === 'hero') summary = s.data.heading || '(no heading)';
+    else if (s.type === 'rich_text') summary = (s.data.html || '').replace(/<[^>]+>/g, '').slice(0, 80);
+    else if (s.type === 'image_text') summary = s.data.heading || '(no heading)';
+    else if (s.type === 'stats') summary = `${(s.data.items||[]).length} stats`;
+    else if (s.type === 'cta') summary = s.data.heading || '(no heading)';
+    else if (s.type === 'faq') summary = `${(s.data.items||[]).length} questions`;
+    else if (s.type === 'service_grid') summary = `${(s.data.items||[]).length} services`;
+    else if (s.type === 'custom_html') summary = (s.data.html || '').slice(0, 60);
+    return `
+      <div class="card p-3 secCard cursor-move" data-idx="${i}">
+        <div class="flex items-center gap-3">
+          <span class="text-slate-300 select-none">⋮⋮</span>
+          <div class="text-2xl">${w.icon}</div>
+          <div class="flex-1 min-w-0">
+            <div class="text-sm font-semibold text-ink-900">${escape(w.label)}</div>
+            <div class="text-xs text-slate-500 truncate">${escape(summary)}</div>
+          </div>
+          <div class="inline-flex gap-1">
+            <button class="btn btn-ghost text-xs py-1" data-edit-sec="${i}">Edit</button>
+            <button class="btn btn-ghost text-xs py-1" data-dup-sec="${i}">Dup</button>
+            <button class="btn btn-danger text-xs py-1" data-del-sec="${i}">Del</button>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function editSection(idx) {
+    const s = sections[idx];
+    openSectionEditor(s, (updated) => { sections[idx] = updated; renderSections(); });
+  }
+
+  overlay.querySelectorAll('.addWidget').forEach((b) => b.addEventListener('click', () => {
+    const type = b.dataset.type;
+    const def = WIDGETS_BY_TYPE[type].defaults;
+    const newSec = { type, data: JSON.parse(JSON.stringify(def)) };
+    sections.push(newSec);
+    renderSections();
+  }));
+
+  overlay.querySelector('#cpSave').addEventListener('click', async () => {
+    const data = {};
+    overlay.querySelectorAll('.cf').forEach((el) => { data[el.name] = el.value; });
+    if (!data.title?.trim()) { toast('Title required', 'error'); return; }
+    if (!data.slug?.trim())  { toast('Slug required', 'error'); return; }
+    data.sections = sections;
+    try {
+      if (isNew) {
+        const r = await api.post('/api/admin/cms-pages', data);
+        toast('Created');
+        overlay.remove();
+        openCmsPage(r.id);
+      } else {
+        await api.put('/api/admin/cms-pages/' + id, data);
+        toast('Saved');
+      }
+    } catch (err) { toast(err.message, 'error'); }
+  });
+
+  renderSections();
+}
+
+function openSectionEditor(section, onSave) {
+  const overlay = document.createElement('div');
+  overlay.className = 'fixed inset-0 z-[60] bg-black/50 flex items-center justify-center p-3';
+  const w = WIDGETS_BY_TYPE[section.type];
+  overlay.innerHTML = `
+    <div class="card max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+      <div class="px-5 py-3 border-b flex items-center justify-between">
+        <h3 class="font-semibold text-ink-900">Edit: ${escape(w.label)}</h3>
+        <button type="button" class="text-slate-400 hover:text-slate-700 text-xl leading-none close-x">×</button>
+      </div>
+      <div id="seBody" class="p-5 overflow-y-auto"></div>
+      <div class="px-5 py-3 border-t flex justify-end gap-2 bg-slate-50">
+        <button type="button" class="btn btn-ghost text-xs close-x">Cancel</button>
+        <button type="button" id="seSave" class="btn btn-primary text-xs">Save section</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay || e.target.classList.contains('close-x')) overlay.remove(); });
+
+  const body = overlay.querySelector('#seBody');
+  const data = JSON.parse(JSON.stringify(section.data || {}));
+  body.innerHTML = renderSectionFields(section.type, data);
+  wireSectionFields(body, section.type, data);
+
+  overlay.querySelector('#seSave').addEventListener('click', () => {
+    onSave({ type: section.type, data });
+    overlay.remove();
+  });
+}
+
+function renderSectionFields(type, data) {
+  const F = (label, html) => `<div class="mb-3"><label class="block text-xs font-semibold text-slate-700 mb-1">${label}</label>${html}</div>`;
+  const ipt = (k, v, ph='') => `<input class="input se" data-k="${k}" value="${escape(v||'')}" placeholder="${escape(ph)}"/>`;
+  const tx  = (k, v, rows=3) => `<textarea class="input se auto" data-k="${k}" rows="${rows}">${escape(v||'')}</textarea>`;
+  const num = (k, v, step='1') => `<input class="input se" type="number" step="${step}" data-k="${k}" value="${v ?? ''}"/>`;
+  const pickImg = (k, v) => `<div class="flex gap-2"><input class="input se flex-1" data-k="${k}" value="${escape(v||'')}"/><button type="button" class="btn btn-ghost text-xs sePick" data-target="${k}">Pick</button></div>`;
+
+  if (type === 'hero') return [
+    F('Eyebrow', ipt('eyebrow', data.eyebrow)),
+    F('Heading <span class="text-red-500">*</span>', ipt('heading', data.heading)),
+    F('Heading accent', ipt('heading_accent', data.heading_accent)),
+    F('Description', tx('description', data.description, 3)),
+    `<div class="grid grid-cols-2 gap-3">${F('Button 1 text', ipt('btn1_text', data.btn1_text))}${F('Button 1 link', ipt('btn1_link', data.btn1_link))}${F('Button 2 text', ipt('btn2_text', data.btn2_text))}${F('Button 2 link', ipt('btn2_link', data.btn2_link))}</div>`,
+    F('Background image', pickImg('bg_image_url', data.bg_image_url)),
+    `<div class="grid grid-cols-3 gap-3">${F('Overlay opacity (0–1)', num('overlay_opacity', data.overlay_opacity, '0.05'))}${F('Text align', `<select class="input se" data-k="text_align"><option value="left" ${data.text_align==='left'?'selected':''}>Left</option><option value="center" ${data.text_align==='center'?'selected':''}>Center</option><option value="right" ${data.text_align==='right'?'selected':''}>Right</option></select>`)}${F('Text color', `<input type="color" class="input se h-10" data-k="text_color" value="${data.text_color||'#ffffff'}"/>`)}</div>`,
+  ].join('');
+
+  if (type === 'rich_text') return F('HTML content', `<div id="rtEditor" contenteditable="true" class="border border-slate-300 rounded p-3 min-h-[200px] text-sm bg-white">${data.html || ''}</div><input type="hidden" class="se" data-k="html" value=""/>`);
+
+  if (type === 'image_text') return [
+    F('Image', pickImg('image_url', data.image_url)),
+    F('Image side', `<select class="input se" data-k="side"><option value="left" ${data.side==='left'?'selected':''}>Left</option><option value="right" ${data.side==='right'?'selected':''}>Right</option></select>`),
+    F('Heading', ipt('heading', data.heading)),
+    F('Body HTML', `<div id="itEditor" contenteditable="true" class="border border-slate-300 rounded p-3 min-h-[120px] text-sm bg-white">${data.body_html || ''}</div><input type="hidden" class="se" data-k="body_html" value=""/>`),
+    `<div class="grid grid-cols-2 gap-3">${F('Button text', ipt('btn_text', data.btn_text))}${F('Button link', ipt('btn_link', data.btn_link))}</div>`,
+  ].join('');
+
+  if (type === 'stats') {
+    const items = data.items || [];
+    return F('Stats (one per row)', `
+      <div id="statsList">${items.map((it, i) => statRow(it, i)).join('')}</div>
+      <button type="button" id="statAdd" class="btn btn-ghost text-xs mt-2">+ Add stat</button>
+    `);
+  }
+
+  if (type === 'cta') return [
+    F('Heading', ipt('heading', data.heading)),
+    F('Subtext', tx('subtext', data.subtext, 2)),
+    `<div class="grid grid-cols-2 gap-3">${F('Button text', ipt('btn_text', data.btn_text))}${F('Button link', ipt('btn_link', data.btn_link))}</div>`,
+    F('Background color', `<input type="color" class="input se h-10" data-k="bg_color" value="${data.bg_color||'#0a7575'}"/>`),
+  ].join('');
+
+  if (type === 'faq') {
+    const items = data.items || [];
+    return F('Q&A items', `
+      <div id="faqList">${items.map((it, i) => faqRow(it, i)).join('')}</div>
+      <button type="button" id="faqAdd" class="btn btn-ghost text-xs mt-2">+ Add Q&A</button>
+    `);
+  }
+
+  if (type === 'service_grid') {
+    const items = data.items || [];
+    return F('Services (icon + title + link)', `
+      <div id="srvList">${items.map((it, i) => srvRow(it, i)).join('')}</div>
+      <button type="button" id="srvAdd" class="btn btn-ghost text-xs mt-2">+ Add service</button>
+    `);
+  }
+
+  if (type === 'custom_html') return F('Raw HTML', `<textarea class="input se font-mono" data-k="html" rows="10">${escape(data.html||'')}</textarea>`);
+
+  return '<p>Unknown widget type.</p>';
+}
+
+function statRow(it, i) { return `<div class="flex gap-2 mb-1 statRow"><input class="input flex-1" data-i="${i}" data-f="value" value="${escape(it.value||'')}" placeholder="20+"/><input class="input flex-1" data-i="${i}" data-f="label" value="${escape(it.label||'')}" placeholder="Years"/><button type="button" class="btn btn-danger text-xs" data-rm-stat="${i}">×</button></div>`; }
+function faqRow(it, i)  { return `<div class="card p-2 mb-2 faqRow"><input class="input mb-1" data-i="${i}" data-f="q" value="${escape(it.q||'')}" placeholder="Question"/><textarea class="input auto" data-i="${i}" data-f="a" rows="2" placeholder="Answer">${escape(it.a||'')}</textarea><button type="button" class="btn btn-danger text-xs mt-1" data-rm-faq="${i}">Remove</button></div>`; }
+function srvRow(it, i)  { return `<div class="flex gap-2 mb-1 srvRow"><input class="input w-16" data-i="${i}" data-f="icon" value="${escape(it.icon||'')}" placeholder="📊"/><input class="input flex-1" data-i="${i}" data-f="title" value="${escape(it.title||'')}" placeholder="Title"/><input class="input flex-1" data-i="${i}" data-f="link" value="${escape(it.link||'')}" placeholder="link.html"/><button type="button" class="btn btn-danger text-xs" data-rm-srv="${i}">×</button></div>`; }
+
+function wireSectionFields(body, type, data) {
+  // Generic .se inputs
+  body.querySelectorAll('.se').forEach((el) => {
+    el.addEventListener('input', () => { data[el.dataset.k] = el.value; });
+  });
+  // Image pickers
+  body.querySelectorAll('.sePick').forEach((b) => b.addEventListener('click', async () => {
+    const url = await pickMedia({});
+    if (!url) return;
+    const inp = body.querySelector(`.se[data-k="${b.dataset.target}"]`);
+    inp.value = url; data[b.dataset.target] = url;
+  }));
+  // Rich text editor sync
+  const rt = body.querySelector('#rtEditor');
+  if (rt) rt.addEventListener('input', () => { data.html = rt.innerHTML; });
+  const itE = body.querySelector('#itEditor');
+  if (itE) itE.addEventListener('input', () => { data.body_html = itE.innerHTML; });
+
+  // Stats list
+  if (type === 'stats') {
+    const wire = () => body.querySelectorAll('.statRow input').forEach((inp) => inp.addEventListener('input', () => {
+      const i = +inp.dataset.i; data.items[i][inp.dataset.f] = inp.value;
+    }));
+    wire();
+    body.querySelector('#statAdd')?.addEventListener('click', () => { (data.items=data.items||[]).push({value:'', label:''}); body.querySelector('#statsList').innerHTML += statRow({value:'',label:''}, data.items.length-1); wire(); body.querySelectorAll('[data-rm-stat]').forEach((b) => b.onclick = () => { data.items.splice(+b.dataset.rmStat,1); body.querySelector('#statsList').innerHTML = data.items.map(statRow).join(''); wire(); }); });
+    body.querySelectorAll('[data-rm-stat]').forEach((b) => b.onclick = () => { data.items.splice(+b.dataset.rmStat,1); body.querySelector('#statsList').innerHTML = data.items.map(statRow).join(''); wire(); });
+  }
+
+  if (type === 'faq') {
+    const wire = () => body.querySelectorAll('.faqRow input, .faqRow textarea').forEach((inp) => inp.addEventListener('input', () => {
+      const i = +inp.dataset.i; data.items[i][inp.dataset.f] = inp.value;
+    }));
+    wire();
+    body.querySelector('#faqAdd')?.addEventListener('click', () => { (data.items=data.items||[]).push({q:'', a:''}); body.querySelector('#faqList').innerHTML += faqRow({q:'',a:''}, data.items.length-1); wire(); body.querySelectorAll('[data-rm-faq]').forEach((b) => b.onclick = () => { data.items.splice(+b.dataset.rmFaq,1); body.querySelector('#faqList').innerHTML = data.items.map(faqRow).join(''); wire(); }); });
+    body.querySelectorAll('[data-rm-faq]').forEach((b) => b.onclick = () => { data.items.splice(+b.dataset.rmFaq,1); body.querySelector('#faqList').innerHTML = data.items.map(faqRow).join(''); wire(); });
+  }
+
+  if (type === 'service_grid') {
+    const wire = () => body.querySelectorAll('.srvRow input').forEach((inp) => inp.addEventListener('input', () => {
+      const i = +inp.dataset.i; data.items[i][inp.dataset.f] = inp.value;
+    }));
+    wire();
+    body.querySelector('#srvAdd')?.addEventListener('click', () => { (data.items=data.items||[]).push({icon:'',title:'',link:''}); body.querySelector('#srvList').innerHTML += srvRow({icon:'',title:'',link:''}, data.items.length-1); wire(); body.querySelectorAll('[data-rm-srv]').forEach((b) => b.onclick = () => { data.items.splice(+b.dataset.rmSrv,1); body.querySelector('#srvList').innerHTML = data.items.map(srvRow).join(''); wire(); }); });
+    body.querySelectorAll('[data-rm-srv]').forEach((b) => b.onclick = () => { data.items.splice(+b.dataset.rmSrv,1); body.querySelector('#srvList').innerHTML = data.items.map(srvRow).join(''); wire(); });
+  }
+}
 
 window.navigate = navigate; // expose for inline handlers
 

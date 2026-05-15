@@ -3,7 +3,8 @@
 /admin/*  /admin/:splat  200
 /admin    /admin/        301
 
+# CMS pages built with the Page Builder live at /p/:slug
+/p/*      /page-render.html?slug=:splat   200
+
 # SPA-style fallback for any other unknown URL.
 /*    /index.html   200
-
-

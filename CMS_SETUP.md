@@ -76,9 +76,13 @@ After deploy completes:
 | `wrangler.toml`                   | D1 + R2 bindings for `wrangler` CLI / local dev |
 | `db/schema.sql`                   | All tables + seed content (run once) |
 | `db/migrations/002_media.sql`     | Media library table (run once) |
-| `cms-loader.js`                   | Tiny client script — hydrates `data-cms-key` elements on static pages |
+| `content-loader.js`               | Tiny client script — hydrates `data-content="..."` elements from `/api/content` |
+| `hero-banners.js`                 | Replaces homepage hero with admin-managed banners (fallback to static slides) |
 | `functions/api/admin/media/`      | List, upload (R2), update meta, delete |
 | `functions/api/media/[[path]].js` | Public R2 read-through (used when R2_PUBLIC_BASE not set) |
+| `functions/api/admin/banners/`    | List, create, update, delete, reorder |
+| `functions/api/banners.js`        | Public GET — active banners only (cacheable) |
+| `db/migrations/003_banners.sql`   | Hero banners table (run once) |
 | `functions/_lib/`                 | Auth + HTTP helpers shared by routes |
 | `functions/api/registration.js`   | Public POST — registrations form |
 | `functions/api/contact.js`        | Public POST — contact form |
@@ -174,12 +178,53 @@ Add `data-cms-key` attributes to whichever elements you want admin-editable. The
 
 ---
 
-## Things still NOT done (deferred to Phase 3+)
+## Phase 3 — Hero Banners (dynamic homepage slider)
 
-- **Banners manager** (and dynamic homepage hero) — needs media library, which is now done; ready when you are
+Phase 3 adds an admin-managed homepage hero slider. The existing 3 hardcoded slides remain as a **fallback**: if no active banners exist in the admin, the homepage shows the static slides; the moment you save 1+ active banners, the homepage swaps to those.
+
+### A. Apply the banners migration
+
+In the D1 console, paste and run [db/migrations/003_banners.sql](db/migrations/003_banners.sql).
+
+Or via CLI:
+
+```bash
+npx wrangler d1 execute gasf-cms --remote --file=db/migrations/003_banners.sql
+```
+
+### B. Redeploy
+
+Push the latest commit (or **Retry deployment**). No new bindings or secrets required for Phase 3 — it reuses D1 + R2 + the auth set up in Phases 1–2.
+
+### C. Use it
+
+1. Open `/admin/` → **Hero Banners** in the sidebar
+2. Click **+ New banner**
+3. Fill in eyebrow / heading / heading accent / description / buttons
+4. Background: pick **Image**, **Image + overlay**, **Gradient**, **Solid**, or **Video**. For images, click **Pick** to choose from your Media Library (or upload right from the picker)
+5. Live preview updates as you type
+6. Toggle **Active** and save
+7. On the homepage, hard-refresh — your banners replace the old slides
+8. Drag the rows in the list to reorder; click **Hide** on any banner to remove it from the live slider without deleting it
+
+### D. How the fallback works
+
+- `hero-banners.js` runs after page load on the homepage.
+- It calls `/api/banners` (public, cached 60s).
+- If the response has 0 active banners → it does nothing → static slides stay.
+- If the response has 1+ banners → it replaces `#heroSlider .carousel-track` and re-initialises the auto-rotation.
+
+This means you can keep the static slides as a safety net even after configuring banners — just toggle them all to inactive in admin and the static slides re-appear instantly.
+
+---
+
+## Things still NOT done (deferred to Phase 4+)
+
 - **Form builder** (custom forms beyond the existing 3)
-- **Page builder / widget system**
-- **Blogs / SEO manager / redirects manager**
+- **Blogs / Insights manager**
+- **SEO manager** + Redirects + Sitemap
+- **Page builder / widget system** (the bigger lift — adds widget library + per-page section editor)
+- **Activity logs viewer in admin** (table exists; just no UI)
 
 ---
 

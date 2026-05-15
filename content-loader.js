@@ -16,9 +16,11 @@
     });
   }
 
-  // Fetch and apply immediately
+  // Fetch and apply immediately. The Pages Functions API returns
+  // { ok: true, content: { key: value } }; the legacy Express server
+  // returned a flat { key: value } map. Handle both shapes.
   fetch(API)
     .then(r => r.ok ? r.json() : Promise.reject())
-    .then(apply)
+    .then(body => apply((body && body.content) ? body.content : body))
     .catch(() => {}); // silent fallback — static content stays
 })();

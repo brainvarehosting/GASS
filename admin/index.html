@@ -107,9 +107,13 @@
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
         Media Library
       </div>
+      <div class="nav-item" data-route="banners">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+        Hero Banners
+      </div>
       <div class="nav-section">Coming next</div>
-      <div class="nav-item opacity-50 cursor-not-allowed">Banners</div>
       <div class="nav-item opacity-50 cursor-not-allowed">Form builder</div>
+      <div class="nav-item opacity-50 cursor-not-allowed">Page builder</div>
     </nav>
     <div class="p-3 border-t border-white/10">
       <button id="logoutBtn" class="nav-item w-full">
@@ -709,6 +713,386 @@ async function openMediaDetail(id) {
       } catch (e) { toast(e.message, 'error'); }
     });
   } catch (e) { toast(e.message, 'error'); }
+}
+
+// ---------- MEDIA PICKER (reusable) ----------
+// Opens a drawer that lets the user pick an image from the Media Library.
+// Returns a Promise<string|null> resolving to the public_url (or null on cancel).
+function pickMedia({ category = '' } = {}) {
+  return new Promise((resolve) => {
+    const overlay = document.createElement('div');
+    overlay.className = 'fixed inset-0 z-[60] bg-black/50 flex items-center justify-center p-4';
+    overlay.innerHTML = `
+      <div class="card max-w-4xl w-full max-h-[85vh] overflow-hidden flex flex-col">
+        <div class="px-5 py-3 border-b flex items-center justify-between">
+          <h3 class="font-semibold text-ink-900">Choose an image</h3>
+          <button class="text-slate-400 hover:text-slate-700 text-xl leading-none close-x">×</button>
+        </div>
+        <div class="px-5 py-3 border-b flex flex-wrap gap-2 items-center">
+          <select id="pkCat" class="input w-auto">
+            <option value="">All categories</option>
+            ${MEDIA_CATEGORIES.map(c => `<option value="${c}" ${c===category?'selected':''}>${c}</option>`).join('')}
+          </select>
+          <input id="pkQ" class="input flex-1 min-w-[160px]" placeholder="Search…"/>
+          <button id="pkFilter" class="btn btn-primary">Filter</button>
+          <label class="btn btn-ghost text-xs cursor-pointer">
+            ⤒ Upload new
+            <input id="pkUp" type="file" class="hidden" accept="image/*"/>
+          </label>
+        </div>
+        <div id="pkGrid" class="flex-1 overflow-y-auto p-5 min-h-[200px]"></div>
+      </div>`;
+    document.body.appendChild(overlay);
+
+    const close = (val) => { overlay.remove(); resolve(val); };
+    overlay.addEventListener('click', (e) => { if (e.target === overlay || e.target.classList.contains('close-x')) close(null); });
+
+    async function load() {
+      const params = new URLSearchParams();
+      const cat = overlay.querySelector('#pkCat').value;
+      const q   = overlay.querySelector('#pkQ').value;
+      if (cat) params.set('category', cat);
+      if (q)   params.set('q', q);
+      params.set('limit', '120');
+      overlay.querySelector('#pkGrid').innerHTML = '<div class="text-center text-slate-400 text-sm py-12">Loading…</div>';
+      try {
+        const res = await api.get('/api/admin/media?' + params.toString());
+        const grid = overlay.querySelector('#pkGrid');
+        if (!res.items.length) {
+          grid.innerHTML = '<div class="text-center text-slate-500 text-sm py-12">No media. Upload from the Media Library tab or via the upload button above.</div>';
+          return;
+        }
+        grid.innerHTML = `
+          <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
+            ${res.items.map((m) => `
+              <button type="button" data-url="${m.public_url}" class="group text-left">
+                <div class="relative aspect-square bg-slate-100 rounded-lg overflow-hidden border border-slate-200 group-hover:ring-2 group-hover:ring-teal-500 transition">
+                  ${/^image\//.test(m.mime_type)
+                    ? `<img src="${m.public_url}" alt="" class="absolute inset-0 w-full h-full object-cover"/>`
+                    : `<div class="absolute inset-0 flex items-center justify-center text-slate-400 text-xs uppercase">${(m.mime_type||'file').split('/')[1]}</div>`}
+                </div>
+                <div class="mt-1 text-xs truncate">${escape(m.filename)}</div>
+              </button>`).join('')}
+          </div>`;
+        grid.querySelectorAll('button[data-url]').forEach((b) => b.addEventListener('click', () => close(b.dataset.url)));
+      } catch (e) {
+        overlay.querySelector('#pkGrid').innerHTML = `<div class="text-center text-red-600 text-sm py-12">${e.message}</div>`;
+      }
+    }
+
+    overlay.querySelector('#pkFilter').addEventListener('click', load);
+    overlay.querySelector('#pkQ').addEventListener('keydown', (e) => { if (e.key === 'Enter') load(); });
+    overlay.querySelector('#pkUp').addEventListener('change', async (e) => {
+      const f = e.target.files?.[0]; if (!f) return;
+      const fd = new FormData();
+      fd.append('file', f);
+      fd.append('category', overlay.querySelector('#pkCat').value || category || 'general');
+      try {
+        const res = await fetch('/api/admin/media', { method:'POST', credentials:'include', body: fd });
+        const body = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(body.error || res.statusText);
+        toast('Uploaded');
+        close(body.public_url);
+      } catch (err) { toast(err.message, 'error'); }
+    });
+
+    load();
+  });
+}
+
+// ---------- HERO BANNERS ----------
+const BG_TYPES = [
+  { v:'image',         label:'Image' },
+  { v:'image_overlay', label:'Image + overlay' },
+  { v:'gradient',      label:'Gradient' },
+  { v:'solid',         label:'Solid color' },
+  { v:'video',         label:'Video' },
+];
+
+routes.banners = {
+  title: 'Hero Banners',
+  async render(root) {
+    let res;
+    try { res = await api.get('/api/admin/banners'); }
+    catch (e) { root.innerHTML = `<div class="card p-6 text-red-600">Failed to load: ${e.message}</div>`; return; }
+
+    root.innerHTML = `
+      <div class="mb-4 flex items-center justify-between">
+        <p class="text-sm text-slate-600">Active banners appear on the homepage hero, in this order. Drag to reorder. If no banners are active, the homepage falls back to the static slides.</p>
+        <button id="bAdd" class="btn btn-primary">+ New banner</button>
+      </div>
+      <div id="bList" class="space-y-3"></div>`;
+
+    function renderList(items) {
+      const list = $('#bList');
+      if (!items.length) {
+        list.innerHTML = '<div class="card p-12 text-center text-slate-500 text-sm">No banners yet. Click "New banner" to create one — until you add an active banner, the homepage uses the existing static slides.</div>';
+        return;
+      }
+      list.innerHTML = items.map(bannerRow).join('');
+
+      // drag-reorder
+      list.querySelectorAll('.b-row').forEach((row) => {
+        row.draggable = true;
+        row.addEventListener('dragstart', (e) => { e.dataTransfer.setData('text/id', row.dataset.id); row.classList.add('opacity-50'); });
+        row.addEventListener('dragend',   () => row.classList.remove('opacity-50'));
+        row.addEventListener('dragover',  (e) => { e.preventDefault(); row.classList.add('ring-2','ring-teal-500'); });
+        row.addEventListener('dragleave', () => row.classList.remove('ring-2','ring-teal-500'));
+        row.addEventListener('drop', async (e) => {
+          e.preventDefault();
+          row.classList.remove('ring-2','ring-teal-500');
+          const fromId = e.dataTransfer.getData('text/id');
+          if (!fromId || fromId === row.dataset.id) return;
+          const ids = [...list.querySelectorAll('.b-row')].map((r) => r.dataset.id);
+          const fromIdx = ids.indexOf(fromId);
+          const toIdx   = ids.indexOf(row.dataset.id);
+          ids.splice(toIdx, 0, ids.splice(fromIdx, 1)[0]);
+          try {
+            await api.post('/api/admin/banners/reorder', { order: ids.map(Number) });
+            toast('Order saved');
+            navigate('banners');
+          } catch (err) { toast(err.message, 'error'); }
+        });
+      });
+
+      list.querySelectorAll('.b-edit')   .forEach((b) => b.addEventListener('click', () => openBanner(parseInt(b.dataset.id, 10))));
+      list.querySelectorAll('.b-toggle') .forEach((b) => b.addEventListener('click', async () => {
+        try { await api.put('/api/admin/banners/' + b.dataset.id, { is_active: b.dataset.active === '1' ? 0 : 1 }); navigate('banners'); }
+        catch (err) { toast(err.message, 'error'); }
+      }));
+      list.querySelectorAll('.b-del').forEach((b) => b.addEventListener('click', async () => {
+        if (!confirm('Delete this banner permanently?')) return;
+        try { await api.del('/api/admin/banners/' + b.dataset.id); toast('Deleted'); navigate('banners'); }
+        catch (err) { toast(err.message, 'error'); }
+      }));
+    }
+
+    renderList(res.items);
+
+    $('#bAdd').addEventListener('click', () => openBanner(null));
+  }
+};
+
+function bannerRow(b) {
+  const thumb = b.bg_image_url
+    ? `<img src="${b.bg_image_url}" class="w-24 h-16 object-cover rounded-md border border-slate-200"/>`
+    : `<div class="w-24 h-16 rounded-md flex items-center justify-center text-[.65rem] text-slate-500 uppercase tracking-wider" style="${bgPreviewStyle(b)}">${b.bg_type}</div>`;
+  return `
+    <div class="b-row card p-3 flex items-center gap-4 cursor-move" data-id="${b.id}">
+      <div class="text-slate-300 select-none">⋮⋮</div>
+      ${thumb}
+      <div class="flex-1 min-w-0">
+        <div class="text-sm font-semibold text-ink-900 truncate">${escape(b.heading || '(untitled)')}</div>
+        <div class="text-xs text-slate-500 truncate">${escape(b.eyebrow || '')} ${b.description ? '· ' + escape(b.description.slice(0,80)) : ''}</div>
+      </div>
+      <span class="pill ${b.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}">${b.is_active ? 'Active' : 'Hidden'}</span>
+      <div class="inline-flex gap-1">
+        <button class="btn btn-ghost text-xs py-1 b-toggle" data-id="${b.id}" data-active="${b.is_active}">${b.is_active ? 'Hide' : 'Show'}</button>
+        <button class="btn btn-ghost text-xs py-1 b-edit"   data-id="${b.id}">Edit</button>
+        <button class="btn btn-danger text-xs py-1 b-del"    data-id="${b.id}">Del</button>
+      </div>
+    </div>`;
+}
+
+function bgPreviewStyle(b) {
+  if (b.bg_type === 'solid') return `background:${b.bg_color || '#0b1f2a'};color:#fff;`;
+  if (b.bg_type === 'gradient') return `background:linear-gradient(135deg, ${b.bg_gradient_from || '#0b1f2a'}, ${b.bg_gradient_to || '#0a7575'});color:#fff;`;
+  return 'background:#e2e8f0;';
+}
+
+async function openBanner(id) {
+  const isNew = !id;
+  let item = {
+    eyebrow: '', heading: '', heading_accent: '', description: '',
+    btn1_text: '', btn1_link: '', btn2_text: '', btn2_link: '',
+    bg_type: 'image_overlay', bg_image_url: '', bg_image_mobile_url: '', bg_video_url: '',
+    bg_color: '#0b1f2a', bg_gradient_from: '#0b1f2a', bg_gradient_to: '#0a7575',
+    overlay_opacity: 0.55, text_align: 'left', text_color: '', is_active: 1,
+  };
+  if (!isNew) {
+    try { const { item: row } = await api.get('/api/admin/banners/' + id); item = { ...item, ...row }; }
+    catch (e) { toast(e.message, 'error'); return; }
+  }
+
+  const overlay = document.createElement('div');
+  overlay.className = 'fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4';
+  overlay.innerHTML = `
+    <form id="bForm" class="card max-w-4xl w-full max-h-[92vh] overflow-hidden flex flex-col">
+      <div class="px-5 py-3 border-b flex items-center justify-between">
+        <h3 class="font-semibold text-ink-900">${isNew ? 'New banner' : 'Edit banner #' + id}</h3>
+        <button type="button" class="text-slate-400 hover:text-slate-700 text-xl leading-none close-x">×</button>
+      </div>
+      <div class="p-5 overflow-y-auto flex-1 space-y-5">
+
+        <!-- Live preview -->
+        <div id="bPreview" class="rounded-xl overflow-hidden border border-slate-200 relative" style="min-height:200px;"></div>
+
+        <!-- Text content -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <label class="block">
+            <span class="block text-xs font-semibold text-slate-700 mb-1">Eyebrow / badge text</span>
+            <input class="input bf" name="eyebrow" value="${escape(item.eyebrow||'')}"/>
+          </label>
+          <label class="block">
+            <span class="block text-xs font-semibold text-slate-700 mb-1">Text alignment</span>
+            <select class="input bf" name="text_align">
+              <option value="left"   ${item.text_align==='left'?'selected':''}>Left</option>
+              <option value="center" ${item.text_align==='center'?'selected':''}>Center</option>
+              <option value="right"  ${item.text_align==='right'?'selected':''}>Right</option>
+            </select>
+          </label>
+          <label class="block md:col-span-2">
+            <span class="block text-xs font-semibold text-slate-700 mb-1">Heading <span class="text-red-500">*</span></span>
+            <input class="input bf" name="heading" required value="${escape(item.heading||'')}"/>
+          </label>
+          <label class="block md:col-span-2">
+            <span class="block text-xs font-semibold text-slate-700 mb-1">Heading accent (optional, shown after heading in accent color)</span>
+            <input class="input bf" name="heading_accent" value="${escape(item.heading_accent||'')}"/>
+          </label>
+          <label class="block md:col-span-2">
+            <span class="block text-xs font-semibold text-slate-700 mb-1">Description</span>
+            <textarea class="input bf auto" name="description" rows="3">${escape(item.description||'')}</textarea>
+          </label>
+        </div>
+
+        <!-- Buttons -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <fieldset class="border border-slate-200 rounded-lg p-3">
+            <legend class="text-xs font-semibold text-slate-700 px-2">Primary button</legend>
+            <input class="input bf mb-2" name="btn1_text" placeholder="Button text" value="${escape(item.btn1_text||'')}"/>
+            <input class="input bf"      name="btn1_link" placeholder="Link (e.g. services.html)" value="${escape(item.btn1_link||'')}"/>
+          </fieldset>
+          <fieldset class="border border-slate-200 rounded-lg p-3">
+            <legend class="text-xs font-semibold text-slate-700 px-2">Secondary button</legend>
+            <input class="input bf mb-2" name="btn2_text" placeholder="Button text" value="${escape(item.btn2_text||'')}"/>
+            <input class="input bf"      name="btn2_link" placeholder="Link" value="${escape(item.btn2_link||'')}"/>
+          </fieldset>
+        </div>
+
+        <!-- Background -->
+        <fieldset class="border border-slate-200 rounded-lg p-3">
+          <legend class="text-xs font-semibold text-slate-700 px-2">Background</legend>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <label class="block">
+              <span class="block text-xs font-semibold text-slate-700 mb-1">Type</span>
+              <select class="input bf" name="bg_type">
+                ${BG_TYPES.map(t => `<option value="${t.v}" ${t.v===item.bg_type?'selected':''}>${t.label}</option>`).join('')}
+              </select>
+            </label>
+            <label class="block">
+              <span class="block text-xs font-semibold text-slate-700 mb-1">Overlay opacity (0–1, image_overlay only)</span>
+              <input class="input bf" name="overlay_opacity" type="number" step="0.05" min="0" max="1" value="${item.overlay_opacity ?? 0.55}"/>
+            </label>
+            <div class="md:col-span-2 flex gap-2 items-end">
+              <label class="block flex-1">
+                <span class="block text-xs font-semibold text-slate-700 mb-1">Desktop background image URL</span>
+                <input class="input bf" name="bg_image_url" value="${escape(item.bg_image_url||'')}" placeholder="https://… or /assets/…"/>
+              </label>
+              <button type="button" class="btn btn-ghost text-xs h-[38px] pickImg" data-target="bg_image_url">Pick</button>
+            </div>
+            <div class="md:col-span-2 flex gap-2 items-end">
+              <label class="block flex-1">
+                <span class="block text-xs font-semibold text-slate-700 mb-1">Mobile background image URL (optional)</span>
+                <input class="input bf" name="bg_image_mobile_url" value="${escape(item.bg_image_mobile_url||'')}"/>
+              </label>
+              <button type="button" class="btn btn-ghost text-xs h-[38px] pickImg" data-target="bg_image_mobile_url">Pick</button>
+            </div>
+            <label class="block">
+              <span class="block text-xs font-semibold text-slate-700 mb-1">Solid color (hex)</span>
+              <input class="input bf" name="bg_color" type="color" value="${item.bg_color||'#0b1f2a'}"/>
+            </label>
+            <label class="block">
+              <span class="block text-xs font-semibold text-slate-700 mb-1">Text color (hex, optional)</span>
+              <input class="input bf" name="text_color" value="${item.text_color||''}" placeholder="#ffffff"/>
+            </label>
+            <label class="block">
+              <span class="block text-xs font-semibold text-slate-700 mb-1">Gradient from</span>
+              <input class="input bf" name="bg_gradient_from" type="color" value="${item.bg_gradient_from||'#0b1f2a'}"/>
+            </label>
+            <label class="block">
+              <span class="block text-xs font-semibold text-slate-700 mb-1">Gradient to</span>
+              <input class="input bf" name="bg_gradient_to" type="color" value="${item.bg_gradient_to||'#0a7575'}"/>
+            </label>
+            <label class="block md:col-span-2">
+              <span class="block text-xs font-semibold text-slate-700 mb-1">Background video URL (mp4/webm, type=video)</span>
+              <input class="input bf" name="bg_video_url" value="${escape(item.bg_video_url||'')}"/>
+            </label>
+          </div>
+        </fieldset>
+
+        <label class="flex items-center gap-2 text-sm">
+          <input type="checkbox" class="bf" name="is_active" ${item.is_active ? 'checked' : ''}/>
+          Active (show on homepage)
+        </label>
+      </div>
+      <div class="px-5 py-3 border-t flex items-center justify-between bg-slate-50">
+        <div class="text-xs text-slate-500">${isNew ? 'New banner — saves to the end of the order' : 'Saving updates the live homepage immediately'}</div>
+        <div class="flex gap-2">
+          <button type="button" class="btn btn-ghost text-xs close-x">Cancel</button>
+          <button type="submit" class="btn btn-primary text-xs">${isNew ? 'Create banner' : 'Save changes'}</button>
+        </div>
+      </div>
+    </form>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay || e.target.classList.contains('close-x')) overlay.remove(); });
+
+  const form = overlay.querySelector('#bForm');
+  const previewBox = overlay.querySelector('#bPreview');
+
+  function readForm() {
+    const out = {};
+    form.querySelectorAll('.bf').forEach((el) => {
+      const name = el.name;
+      if (!name) return;
+      if (el.type === 'checkbox') out[name] = el.checked ? 1 : 0;
+      else if (el.type === 'number') out[name] = el.value === '' ? null : Number(el.value);
+      else out[name] = el.value;
+    });
+    return out;
+  }
+
+  function renderPreview() {
+    const d = readForm();
+    let bg = '';
+    if (d.bg_type === 'solid') bg = `background:${d.bg_color};`;
+    else if (d.bg_type === 'gradient') bg = `background:linear-gradient(135deg, ${d.bg_gradient_from}, ${d.bg_gradient_to});`;
+    else if (d.bg_type === 'image' && d.bg_image_url) bg = `background:url('${d.bg_image_url}') center/cover;`;
+    else if (d.bg_type === 'image_overlay' && d.bg_image_url) bg = `background:linear-gradient(rgba(0,0,0,${d.overlay_opacity}),rgba(0,0,0,${d.overlay_opacity})), url('${d.bg_image_url}') center/cover;`;
+    else if (d.bg_type === 'video') bg = 'background:#0b1f2a;';
+    const color = d.text_color || '#fff';
+    const align = d.text_align;
+    previewBox.style.cssText = `min-height:200px; padding:2rem; color:${color}; text-align:${align}; ${bg}`;
+    previewBox.innerHTML = `
+      ${d.eyebrow ? `<div style="font-size:.75rem;letter-spacing:.18em;text-transform:uppercase;opacity:.85;margin-bottom:.5rem;">${escape(d.eyebrow)}</div>` : ''}
+      ${d.heading ? `<h2 style="font-size:1.6rem;font-weight:700;line-height:1.2;margin-bottom:.5rem;">${escape(d.heading)} ${d.heading_accent ? `<span style="color:#fbbf24;">${escape(d.heading_accent)}</span>` : ''}</h2>` : ''}
+      ${d.description ? `<p style="opacity:.85;font-size:.9rem;max-width:560px;${align==='center'?'margin-left:auto;margin-right:auto;':''}">${escape(d.description)}</p>` : ''}
+      <div style="display:flex;gap:.5rem;margin-top:1rem;${align==='center'?'justify-content:center;':align==='right'?'justify-content:flex-end;':''}">
+        ${d.btn1_text ? `<span style="background:#fbbf24;color:#0b1f2a;padding:.4rem 1rem;border-radius:999px;font-size:.8rem;font-weight:600;">${escape(d.btn1_text)}</span>` : ''}
+        ${d.btn2_text ? `<span style="border:1px solid rgba(255,255,255,.5);padding:.4rem 1rem;border-radius:999px;font-size:.8rem;font-weight:600;">${escape(d.btn2_text)}</span>` : ''}
+      </div>`;
+  }
+
+  form.querySelectorAll('.bf').forEach((el) => el.addEventListener('input', renderPreview));
+  form.querySelectorAll('.pickImg').forEach((btn) => btn.addEventListener('click', async () => {
+    const url = await pickMedia({ category: 'banners' });
+    if (!url) return;
+    const target = form.querySelector(`input[name="${btn.dataset.target}"]`);
+    target.value = url; renderPreview();
+  }));
+  renderPreview();
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = readForm();
+    if (!data.heading) { toast('Heading is required', 'error'); return; }
+    try {
+      if (isNew) await api.post('/api/admin/banners', data);
+      else       await api.put ('/api/admin/banners/' + id, data);
+      toast(isNew ? 'Banner created' : 'Saved');
+      overlay.remove();
+      navigate('banners');
+    } catch (err) { toast(err.message, 'error'); }
+  });
 }
 
 window.navigate = navigate; // expose for inline handlers

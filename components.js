@@ -1,37 +1,19 @@
 // ── Form endpoint config ───────────────────────────────────────────────────────
-// On localhost:4000 → use local Express API (stores to SQLite)
-// On Cloudflare Pages → use Web3Forms (free, sends email to brainvarehosting@gmail.com)
-const IS_LOCAL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-const W3F_KEY  = 'c4b02d7a-520a-4322-b106-25b1925817c8';
+// All form submissions POST to Pages Functions backed by D1.
+// Submissions appear in /admin/ → Submissions.
 
 async function postForm(endpoint, data) {
-  if (IS_LOCAL) {
-    // Local dev — hit the Express API
-    const res = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    if (!res.ok) throw new Error('Server error');
-    return res.json();
-  } else {
-    // Production (Cloudflare Pages) — use Web3Forms
-    const formType = endpoint.replace('/api/', '');
-    const payload  = {
-      access_key:   W3F_KEY,
-      subject:      `[GASF] New ${formType.charAt(0).toUpperCase() + formType.slice(1)} Submission`,
-      from_name:    'GreenApple Success Factors Website',
-      ...data,
-    };
-    const res = await fetch('https://api.web3forms.com/submit', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body:    JSON.stringify(payload),
-    });
-    const json = await res.json();
-    if (!json.success) throw new Error(json.message || 'Web3Forms error');
-    return json;
+  const res = await fetch(endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  let body = {};
+  try { body = await res.json(); } catch {}
+  if (!res.ok || body.ok === false) {
+    throw new Error(body.error || `Server error (${res.status})`);
   }
+  return body;
 }
 
 // ── Consulting FAB ─────────────────────────────────────────────────────────────

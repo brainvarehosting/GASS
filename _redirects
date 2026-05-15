@@ -1,1 +1,7 @@
+# Pages Functions and the admin app must NOT be rewritten to index.html.
+/api/*    /api/:splat    200
+/admin/*  /admin/:splat  200
+/admin    /admin/        301
+
+# SPA-style fallback for any other unknown URL.
 /*    /index.html   200

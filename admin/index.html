@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin · GreenApple Success Factors</title>
+<meta name="robots" content="noindex,nofollow"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          ink:   { 900:'#0b1f2a', 800:'#0f2937', 700:'#13384a' },
+          teal:  { 50:'#f0fbfb', 100:'#e0f7f7', 200:'#b8ecec', 300:'#85dcdc', 500:'#13b8b8', 600:'#0e9595', 700:'#0a7575', 800:'#075c5c', 900:'#054444' },
+          gold:  { 300:'#fcd34d', 400:'#fbbf24', 500:'#f59e0b', 600:'#d97706' },
+        },
+        fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui'] }
+      }
+    }
+  };
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  body{font-family:'Inter',sans-serif;background:#f6f8fa;}
+  [x-cloak]{display:none}
+  .scrollbar-thin::-webkit-scrollbar{height:6px;width:6px}
+  .scrollbar-thin::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
+  textarea.auto{field-sizing:content;min-height:60px;}
+  .pill{display:inline-flex;align-items:center;padding:.15rem .55rem;border-radius:999px;font-size:.7rem;font-weight:600;line-height:1.2}
+  .nav-item{display:flex;align-items:center;gap:.65rem;padding:.55rem .85rem;border-radius:.5rem;color:#cbd5e1;font-size:.9rem;cursor:pointer;transition:all .15s}
+  .nav-item:hover{background:rgba(255,255,255,.06);color:#fff}
+  .nav-item.active{background:linear-gradient(135deg,#13b8b8,#0a7575);color:#fff;box-shadow:0 4px 14px -4px rgba(19,184,184,.55)}
+  .nav-section{font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:#64748b;font-weight:600;padding:1.25rem .85rem .35rem}
+  .card{background:#fff;border:1px solid #e5e7eb;border-radius:.85rem;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+  .btn{display:inline-flex;align-items:center;gap:.4rem;padding:.55rem .95rem;border-radius:.55rem;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .12s;border:1px solid transparent;}
+  .btn-primary{background:#0a7575;color:#fff}
+  .btn-primary:hover{background:#075c5c}
+  .btn-ghost{background:transparent;color:#0a7575;border-color:#0a7575}
+  .btn-ghost:hover{background:#f0fbfb}
+  .btn-danger{background:#dc2626;color:#fff}
+  .btn-danger:hover{background:#b91c1c}
+  .input{width:100%;padding:.55rem .8rem;border:1px solid #d1d5db;border-radius:.5rem;font-size:.9rem;background:#fff;transition:border-color .12s,box-shadow .12s;}
+  .input:focus{outline:none;border-color:#13b8b8;box-shadow:0 0 0 3px rgba(19,184,184,.18)}
+  .toast{position:fixed;top:1.25rem;right:1.25rem;z-index:50;padding:.85rem 1.1rem;border-radius:.6rem;background:#0b1f2a;color:#fff;font-size:.88rem;box-shadow:0 12px 30px -10px rgba(0,0,0,.35);transform:translateX(120%);transition:transform .25s ease;}
+  .toast.show{transform:translateX(0)}
+  .toast.error{background:#dc2626}
+  .toast.success{background:#0a7575}
+  .skeleton{background:linear-gradient(90deg,#e5e7eb 0%,#f3f4f6 50%,#e5e7eb 100%);background-size:200% 100%;animation:shimmer 1.4s ease-in-out infinite;border-radius:.4rem;}
+  @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+</style>
+</head>
+<body class="text-slate-800">
+
+<!-- ============== LOGIN VIEW ============== -->
+<div id="loginView" class="hidden min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-ink-900 via-teal-900 to-ink-800">
+  <div class="card w-full max-w-md p-8">
+    <div class="text-center mb-7">
+      <div class="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br from-teal-500 to-teal-700 text-white text-2xl font-bold mb-3">GA</div>
+      <h1 class="text-xl font-bold text-ink-900">GASF Admin</h1>
+      <p class="text-sm text-slate-500 mt-1">Sign in to manage the website</p>
+    </div>
+    <form id="loginForm" class="space-y-4">
+      <div>
+        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Password</label>
+        <input id="loginPassword" type="password" class="input" autocomplete="current-password" required autofocus/>
+      </div>
+      <button class="btn btn-primary w-full justify-center py-2.5" type="submit">
+        <span id="loginBtnText">Sign in</span>
+      </button>
+      <p id="loginError" class="text-sm text-red-600 hidden"></p>
+    </form>
+  </div>
+</div>
+
+<!-- ============== APP SHELL ============== -->
+<div id="appView" class="hidden min-h-screen flex">
+
+  <!-- Sidebar -->
+  <aside class="w-60 bg-ink-900 text-white flex-shrink-0 flex flex-col">
+    <div class="p-5 border-b border-white/10">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-md bg-gradient-to-br from-teal-500 to-teal-700 flex items-center justify-center font-bold text-sm">GA</div>
+        <div>
+          <div class="font-semibold text-sm">GASF Admin</div>
+          <div class="text-[.7rem] text-slate-400">CMS Lite v1</div>
+        </div>
+      </div>
+    </div>
+    <nav class="flex-1 px-3 py-2 overflow-y-auto">
+      <div class="nav-section">Overview</div>
+      <div class="nav-item active" data-route="dashboard">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        Dashboard
+      </div>
+      <div class="nav-section">Forms &amp; Leads</div>
+      <div class="nav-item" data-route="submissions">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        Submissions
+      </div>
+      <div class="nav-section">Website</div>
+      <div class="nav-item" data-route="content">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+        Page Content
+      </div>
+      <div class="nav-section">Coming next</div>
+      <div class="nav-item opacity-50 cursor-not-allowed">Banners</div>
+      <div class="nav-item opacity-50 cursor-not-allowed">Media library</div>
+      <div class="nav-item opacity-50 cursor-not-allowed">Form builder</div>
+    </nav>
+    <div class="p-3 border-t border-white/10">
+      <button id="logoutBtn" class="nav-item w-full">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+        Sign out
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="flex-1 flex flex-col overflow-hidden">
+    <header class="bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between">
+      <h1 id="pageTitle" class="text-lg font-semibold text-ink-900">Dashboard</h1>
+      <div class="flex items-center gap-2 text-xs text-slate-500">
+        <span class="hidden sm:inline">Live site:</span>
+        <a href="https://gasf-website.pages.dev" target="_blank" class="text-teal-700 font-semibold hover:underline">gasf-website.pages.dev →</a>
+      </div>
+    </header>
+    <div id="viewRoot" class="flex-1 overflow-y-auto p-6"></div>
+  </main>
+</div>
+
+<div id="toast" class="toast">…</div>
+
+<!-- ============== APP SCRIPT ============== -->
+<script>
+const $ = (sel) => document.querySelector(sel);
+const $$ = (sel) => document.querySelectorAll(sel);
+
+const api = {
+  async get(path)            { return r(await fetch(path, {credentials:'include'})); },
+  async post(path, body)     { return r(await fetch(path, {method:'POST', credentials:'include', headers:{'content-type':'application/json'}, body: JSON.stringify(body||{})})); },
+  async put(path, body)      { return r(await fetch(path, {method:'PUT', credentials:'include', headers:{'content-type':'application/json'}, body: JSON.stringify(body||{})})); },
+  async patch(path, body)    { return r(await fetch(path, {method:'PATCH', credentials:'include', headers:{'content-type':'application/json'}, body: JSON.stringify(body||{})})); },
+  async del(path)            { return r(await fetch(path, {method:'DELETE', credentials:'include'})); },
+};
+async function r(res) {
+  let body = {};
+  try { body = await res.json(); } catch {}
+  if (!res.ok) {
+    const err = new Error(body.error || res.statusText);
+    err.status = res.status;
+    err.body = body;
+    throw err;
+  }
+  return body;
+}
+
+const toast = (msg, kind='success') => {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + kind;
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => t.classList.remove('show'), 2800);
+};
+
+// ---------- Auth bootstrap ----------
+async function bootstrap() {
+  try {
+    await api.get('/api/auth/me');
+    showApp();
+  } catch (e) {
+    showLogin();
+  }
+}
+
+function showLogin() {
+  $('#loginView').classList.remove('hidden');
+  $('#appView').classList.add('hidden');
+}
+function showApp() {
+  $('#loginView').classList.add('hidden');
+  $('#appView').classList.remove('hidden');
+  navigate('dashboard');
+}
+
+$('#loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const pwd = $('#loginPassword').value;
+  $('#loginBtnText').textContent = 'Signing in…';
+  $('#loginError').classList.add('hidden');
+  try {
+    await api.post('/api/auth/login', { password: pwd });
+    showApp();
+  } catch (err) {
+    $('#loginError').textContent = err.message || 'Login failed';
+    $('#loginError').classList.remove('hidden');
+  } finally {
+    $('#loginBtnText').textContent = 'Sign in';
+  }
+});
+
+$('#logoutBtn').addEventListener('click', async () => {
+  await api.post('/api/auth/logout').catch(()=>{});
+  showLogin();
+});
+
+// ---------- Routing ----------
+const routes = {};
+function navigate(name) {
+  $$('.nav-item').forEach((el) => el.classList.toggle('active', el.dataset.route === name));
+  $('#pageTitle').textContent = (routes[name]?.title) || name;
+  $('#viewRoot').innerHTML = '<div class="space-y-3"><div class="skeleton h-6 w-1/3"></div><div class="skeleton h-32 w-full"></div></div>';
+  routes[name]?.render?.($('#viewRoot'));
+}
+$$('.nav-item[data-route]').forEach((el) => {
+  el.addEventListener('click', () => navigate(el.dataset.route));
+});
+
+// ---------- DASHBOARD ----------
+routes.dashboard = {
+  title: 'Dashboard',
+  async render(root) {
+    let d;
+    try { d = await api.get('/api/admin/dashboard'); }
+    catch (e) { root.innerHTML = `<div class="card p-6 text-red-600">Failed to load: ${e.message}</div>`; return; }
+
+    const c = d.counts;
+    const card = (label, value, sub, color) => `
+      <div class="card p-5">
+        <div class="text-xs uppercase tracking-wider text-slate-500 font-semibold">${label}</div>
+        <div class="text-3xl font-bold mt-1.5 text-ink-900">${value}</div>
+        <div class="text-xs text-slate-500 mt-1">${sub}</div>
+      </div>`;
+
+    root.innerHTML = `
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        ${card('Registrations', c.registrations.total, `${c.registrations.today} today · ${c.registrations.new} new`)}
+        ${card('Contact messages', c.contacts.total, `${c.contacts.today} today · ${c.contacts.new} new`)}
+        ${card('Consulting enquiries', c.enquiries.total, `${c.enquiries.today} today · ${c.enquiries.new} new`)}
+        ${card('Editable content keys', c.content_items, 'Across pages')}
+      </div>
+      <div class="card overflow-hidden">
+        <div class="px-5 py-3 border-b flex items-center justify-between">
+          <h3 class="font-semibold text-ink-900">Recent submissions</h3>
+          <button class="btn btn-ghost text-xs py-1" onclick="navigate('submissions')">View all →</button>
+        </div>
+        ${d.recent.length === 0
+          ? '<div class="p-10 text-center text-slate-500 text-sm">No submissions yet.</div>'
+          : `<div class="divide-y">${d.recent.map(rowDashboard).join('')}</div>`}
+      </div>`;
+  }
+};
+
+function rowDashboard(s) {
+  return `
+    <div class="px-5 py-3 flex items-center gap-4 hover:bg-slate-50">
+      <span class="pill bg-${tableColor(s.table_name)}">${tableLabel(s.table_name)}</span>
+      <div class="flex-1 min-w-0">
+        <div class="font-medium text-sm text-ink-900 truncate">${escape(s.name)}</div>
+        <div class="text-xs text-slate-500 truncate">${escape(s.email||'')} ${s.phone?'· '+escape(s.phone):''} ${s.subject?'· '+escape(s.subject):''}</div>
+      </div>
+      <div class="text-xs text-slate-400 whitespace-nowrap">${formatDate(s.created_at)}</div>
+      ${statusPill(s.status)}
+    </div>`;
+}
+
+const tableLabel = (t) => ({registrations:'Registration', contacts:'Contact', enquiries:'Enquiry'}[t] || t);
+const tableColor = (t) => ({registrations:'amber-100 text-amber-800', contacts:'sky-100 text-sky-800', enquiries:'emerald-100 text-emerald-800'}[t] || 'slate-100 text-slate-800');
+
+function statusPill(s) {
+  const map = {
+    new:'bg-blue-100 text-blue-700',
+    viewed:'bg-slate-100 text-slate-700',
+    contacted:'bg-yellow-100 text-yellow-800',
+    converted:'bg-emerald-100 text-emerald-700',
+    spam:'bg-red-100 text-red-700',
+    archived:'bg-slate-200 text-slate-600',
+  };
+  return `<span class="pill ${map[s]||'bg-slate-100 text-slate-700'}">${s}</span>`;
+}
+
+const escape = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+function formatDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso.replace(' ', 'T') + (iso.includes('Z') ? '' : 'Z'));
+  if (isNaN(d)) return iso;
+  return d.toLocaleString(undefined, { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+
+// ---------- SUBMISSIONS ----------
+routes.submissions = {
+  title: 'Submissions',
+  state: { table:'', status:'', q:'', limit:50, offset:0 },
+  async render(root) {
+    const s = routes.submissions.state;
+    root.innerHTML = `
+      <div class="card p-4 mb-4">
+        <div class="flex flex-wrap gap-2 items-center">
+          <select id="fTable" class="input w-auto">
+            <option value="">All forms</option>
+            <option value="registrations">Registrations</option>
+            <option value="contacts">Contact messages</option>
+            <option value="enquiries">Consulting enquiries</option>
+          </select>
+          <select id="fStatus" class="input w-auto">
+            <option value="">All statuses</option>
+            <option value="new">New</option>
+            <option value="viewed">Viewed</option>
+            <option value="contacted">Contacted</option>
+            <option value="converted">Converted</option>
+            <option value="spam">Spam</option>
+            <option value="archived">Archived</option>
+          </select>
+          <input id="fQ" class="input flex-1 min-w-[200px]" placeholder="Search name, email, phone, message…"/>
+          <button id="fApply" class="btn btn-primary">Filter</button>
+          <div class="flex-1"></div>
+          <button id="exportReg"  class="btn btn-ghost text-xs">⤓ Registrations CSV</button>
+          <button id="exportCt"   class="btn btn-ghost text-xs">⤓ Contacts CSV</button>
+          <button id="exportEnq"  class="btn btn-ghost text-xs">⤓ Enquiries CSV</button>
+        </div>
+      </div>
+      <div id="subTable" class="card overflow-hidden"></div>
+      <div id="subPager" class="mt-4 flex items-center justify-between text-sm text-slate-600"></div>`;
+
+    $('#fTable').value = s.table; $('#fStatus').value = s.status; $('#fQ').value = s.q;
+    $('#fApply').addEventListener('click', () => {
+      s.table = $('#fTable').value; s.status = $('#fStatus').value; s.q = $('#fQ').value; s.offset = 0;
+      load();
+    });
+    $('#fQ').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#fApply').click(); });
+    $('#exportReg').addEventListener('click', () => { window.location = '/api/admin/submissions/export?table=registrations'; });
+    $('#exportCt').addEventListener('click',  () => { window.location = '/api/admin/submissions/export?table=contacts'; });
+    $('#exportEnq').addEventListener('click', () => { window.location = '/api/admin/submissions/export?table=enquiries'; });
+
+    async function load() {
+      const params = new URLSearchParams();
+      if (s.table) params.set('table', s.table);
+      if (s.status) params.set('status', s.status);
+      if (s.q) params.set('q', s.q);
+      params.set('limit', s.limit); params.set('offset', s.offset);
+      $('#subTable').innerHTML = '<div class="p-10 text-center text-slate-400 text-sm">Loading…</div>';
+      try {
+        const res = await api.get('/api/admin/submissions?' + params.toString());
+        renderTable(res);
+      } catch (e) {
+        $('#subTable').innerHTML = `<div class="p-10 text-center text-red-600 text-sm">Error: ${e.message}</div>`;
+      }
+    }
+
+    function renderTable(res) {
+      if (!res.items.length) {
+        $('#subTable').innerHTML = '<div class="p-10 text-center text-slate-500 text-sm">No submissions match these filters.</div>';
+        $('#subPager').textContent = '';
+        return;
+      }
+      const rowsHtml = res.items.map((it) => `
+        <tr class="border-t hover:bg-slate-50">
+          <td class="px-4 py-3"><span class="pill bg-${tableColor(it.table_name)}">${tableLabel(it.table_name)}</span></td>
+          <td class="px-4 py-3">
+            <div class="font-medium text-sm">${escape(it.name)}</div>
+            <div class="text-xs text-slate-500">${escape(it.email||'')}${it.phone?' · '+escape(it.phone):''}</div>
+          </td>
+          <td class="px-4 py-3 text-sm">${escape(it.organisation||'—')}</td>
+          <td class="px-4 py-3 text-sm max-w-xs truncate">${escape(it.subject||'—')}</td>
+          <td class="px-4 py-3 text-xs text-slate-500 whitespace-nowrap">${formatDate(it.created_at)}</td>
+          <td class="px-4 py-3">
+            <select class="input py-1 text-xs status-sel" data-table="${it.table_name}" data-id="${it.id}">
+              ${['new','viewed','contacted','converted','spam','archived'].map(st => `<option value="${st}" ${st===it.status?'selected':''}>${st}</option>`).join('')}
+            </select>
+          </td>
+          <td class="px-4 py-3 text-right">
+            <div class="inline-flex gap-1">
+              <button class="btn btn-ghost text-xs py-1 view-btn" data-table="${it.table_name}" data-id="${it.id}">View</button>
+              <button class="btn btn-danger text-xs py-1 del-btn"  data-table="${it.table_name}" data-id="${it.id}">Del</button>
+            </div>
+          </td>
+        </tr>`).join('');
+
+      $('#subTable').innerHTML = `
+        <div class="overflow-x-auto scrollbar-thin">
+          <table class="min-w-full text-left">
+            <thead class="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
+              <tr>
+                <th class="px-4 py-3 font-semibold">Form</th>
+                <th class="px-4 py-3 font-semibold">Person</th>
+                <th class="px-4 py-3 font-semibold">Org</th>
+                <th class="px-4 py-3 font-semibold">Subject / Programme</th>
+                <th class="px-4 py-3 font-semibold">Date</th>
+                <th class="px-4 py-3 font-semibold">Status</th>
+                <th class="px-4 py-3 font-semibold text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>${rowsHtml}</tbody>
+          </table>
+        </div>`;
+
+      const start = res.offset + 1;
+      const end = Math.min(res.offset + res.items.length, res.total);
+      $('#subPager').innerHTML = `
+        <span>Showing <strong>${start}–${end}</strong> of <strong>${res.total}</strong></span>
+        <div class="flex gap-2">
+          <button id="pgPrev" class="btn btn-ghost text-xs py-1" ${res.offset === 0 ? 'disabled style="opacity:.4"':''}>← Prev</button>
+          <button id="pgNext" class="btn btn-ghost text-xs py-1" ${end >= res.total ? 'disabled style="opacity:.4"':''}>Next →</button>
+        </div>`;
+      $('#pgPrev')?.addEventListener('click', () => { s.offset = Math.max(0, s.offset - s.limit); load(); });
+      $('#pgNext')?.addEventListener('click', () => { s.offset = s.offset + s.limit; load(); });
+
+      $$('.status-sel').forEach((el) => el.addEventListener('change', async () => {
+        try {
+          await api.patch(`/api/admin/submissions/${el.dataset.table}/${el.dataset.id}`, { status: el.value });
+          toast('Status updated');
+        } catch (e) { toast(e.message, 'error'); }
+      }));
+      $$('.view-btn').forEach((el) => el.addEventListener('click', () => openDetail(el.dataset.table, el.dataset.id)));
+      $$('.del-btn').forEach((el) => el.addEventListener('click', async () => {
+        if (!confirm('Delete this submission permanently?')) return;
+        try {
+          await api.del(`/api/admin/submissions/${el.dataset.table}/${el.dataset.id}`);
+          toast('Deleted');
+          load();
+        } catch (e) { toast(e.message, 'error'); }
+      }));
+    }
+
+    load();
+  }
+};
+
+async function openDetail(table, id) {
+  try {
+    const { item } = await api.get(`/api/admin/submissions/${table}/${id}`);
+    const fields = Object.entries(item)
+      .filter(([k,v]) => v !== null && v !== '' && v !== undefined)
+      .map(([k,v]) => `<div class="grid grid-cols-3 gap-3 py-1.5 border-b border-slate-100"><dt class="text-xs uppercase tracking-wider text-slate-500 font-semibold">${k.replace(/_/g,' ')}</dt><dd class="col-span-2 text-sm text-ink-900 break-words">${escape(v)}</dd></div>`).join('');
+
+    const overlay = document.createElement('div');
+    overlay.className = 'fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4';
+    overlay.innerHTML = `
+      <div class="card max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+        <div class="px-5 py-3 border-b flex items-center justify-between">
+          <h3 class="font-semibold text-ink-900">${tableLabel(table)} · #${id}</h3>
+          <button class="text-slate-400 hover:text-slate-700 text-xl leading-none close-x">×</button>
+        </div>
+        <div class="p-5 overflow-y-auto">
+          <div class="flex flex-wrap gap-2 mb-4">
+            ${item.email ? `<a class="btn btn-ghost text-xs" href="mailto:${escape(item.email)}">✉ Email</a>` : ''}
+            ${(item.phone || item.mobile) ? `<a class="btn btn-ghost text-xs" href="tel:${escape(item.phone || item.mobile)}">📞 Call</a>` : ''}
+            ${(item.phone || item.mobile) ? `<a class="btn btn-ghost text-xs" target="_blank" href="https://wa.me/${(item.phone||item.mobile).replace(/[^0-9]/g,'')}">💬 WhatsApp</a>` : ''}
+          </div>
+          ${fields}
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay || e.target.classList.contains('close-x')) overlay.remove(); });
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+// ---------- CONTENT ----------
+routes.content = {
+  title: 'Page Content',
+  async render(root) {
+    let res;
+    try { res = await api.get('/api/admin/content'); }
+    catch (e) { root.innerHTML = `<div class="card p-6 text-red-600">Failed to load: ${e.message}</div>`; return; }
+
+    const groups = {};
+    for (const it of res.items) (groups[it.page || 'Other'] ||= []).push(it);
+
+    const groupHtml = Object.entries(groups).map(([page, items]) => `
+      <div class="card overflow-hidden">
+        <div class="px-5 py-3 bg-slate-50 border-b">
+          <h3 class="font-semibold text-ink-900">${escape(page)}</h3>
+          <p class="text-xs text-slate-500">${items.length} editable field${items.length===1?'':'s'}</p>
+        </div>
+        <div class="divide-y">
+          ${items.map(it => `
+            <div class="px-5 py-4 grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <div>
+                <div class="text-sm font-medium text-ink-900">${escape(it.label || it.key)}</div>
+                <div class="text-[.7rem] uppercase tracking-wider text-slate-400 mt-0.5 font-mono">${escape(it.key)}</div>
+              </div>
+              <div class="lg:col-span-2">
+                ${it.type === 'textarea'
+                  ? `<textarea class="input auto content-input" data-key="${escape(it.key)}">${escape(it.value)}</textarea>`
+                  : `<input class="input content-input" data-key="${escape(it.key)}" value="${escape(it.value)}"/>`}
+                <div class="flex justify-end mt-2">
+                  <button class="btn btn-primary text-xs save-btn" data-key="${escape(it.key)}">Save</button>
+                </div>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>`).join('');
+
+    root.innerHTML = `
+      <div class="mb-4 text-sm text-slate-600">
+        Edit individual page strings. Changes save to the database immediately and serve via <code class="bg-slate-100 px-1.5 py-0.5 rounded text-xs">/api/content</code>.
+        <span class="text-amber-700">Static pages don't yet read these — wire them up in Phase 2.</span>
+      </div>
+      <div class="space-y-5">${groupHtml}</div>`;
+
+    $$('.save-btn').forEach((btn) => btn.addEventListener('click', async () => {
+      const key = btn.dataset.key;
+      const input = root.querySelector(`.content-input[data-key="${CSS.escape(key)}"]`);
+      try {
+        await api.put('/api/admin/content/' + encodeURIComponent(key), { value: input.value });
+        toast('Saved');
+      } catch (e) { toast(e.message, 'error'); }
+    }));
+  }
+};
+
+window.navigate = navigate; // expose for inline handlers
+
+bootstrap();
+</script>
+</body>
+</html>

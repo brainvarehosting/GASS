@@ -111,8 +111,11 @@
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
         Hero Banners
       </div>
+      <div class="nav-item" data-route="forms">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+        Form Builder
+      </div>
       <div class="nav-section">Coming next</div>
-      <div class="nav-item opacity-50 cursor-not-allowed">Form builder</div>
       <div class="nav-item opacity-50 cursor-not-allowed">Page builder</div>
     </nav>
     <div class="p-3 border-t border-white/10">
@@ -1093,6 +1096,395 @@ async function openBanner(id) {
       navigate('banners');
     } catch (err) { toast(err.message, 'error'); }
   });
+}
+
+// ---------- FORM BUILDER ----------
+const FIELD_TYPE_LABELS = {
+  text:'Short text', email:'Email', phone:'Phone', textarea:'Long text', date:'Date',
+  select:'Dropdown', radio:'Radio buttons', checkbox:'Checkboxes',
+  consent:'Consent checkbox', hidden:'Hidden field',
+};
+const FIELD_TYPES_LIST = Object.keys(FIELD_TYPE_LABELS);
+const TYPES_WITH_OPTIONS = new Set(['select','radio','checkbox']);
+
+routes.forms = {
+  title: 'Form Builder',
+  async render(root) {
+    let res;
+    try { res = await api.get('/api/admin/forms'); }
+    catch (e) { root.innerHTML = `<div class="card p-6 text-red-600">Failed to load: ${e.message}</div>`; return; }
+
+    root.innerHTML = `
+      <div class="mb-4 flex items-center justify-between">
+        <p class="text-sm text-slate-600">Create custom forms beyond the built-in registration / contact / enquiry forms. Embed on any page with <code class="bg-slate-100 px-1.5 py-0.5 rounded text-xs">&lt;div data-gasf-form="slug"&gt;&lt;/div&gt;</code>.</p>
+        <button id="fAdd" class="btn btn-primary">+ New form</button>
+      </div>
+      <div id="fList"></div>`;
+
+    const list = $('#fList');
+    if (!res.items.length) {
+      list.innerHTML = '<div class="card p-12 text-center text-slate-500 text-sm">No custom forms yet. Click "New form" to create one.</div>';
+    } else {
+      list.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-2 gap-3">${res.items.map(formCard).join('')}</div>`;
+      list.querySelectorAll('[data-edit]').forEach((b) => b.addEventListener('click', () => openForm(parseInt(b.dataset.edit, 10))));
+      list.querySelectorAll('[data-subs]').forEach((b) => b.addEventListener('click', () => openFormSubmissions(parseInt(b.dataset.subs, 10), b.dataset.name)));
+      list.querySelectorAll('[data-toggle]').forEach((b) => b.addEventListener('click', async () => {
+        try { await api.put('/api/admin/forms/' + b.dataset.toggle, { is_active: b.dataset.active === '1' ? 0 : 1 }); navigate('forms'); }
+        catch (err) { toast(err.message, 'error'); }
+      }));
+      list.querySelectorAll('[data-del]').forEach((b) => b.addEventListener('click', async () => {
+        if (!confirm('Delete this form, its fields, and all its submissions?')) return;
+        try { await api.del('/api/admin/forms/' + b.dataset.del); toast('Deleted'); navigate('forms'); }
+        catch (err) { toast(err.message, 'error'); }
+      }));
+      list.querySelectorAll('[data-copy]').forEach((b) => b.addEventListener('click', () => {
+        const tmp = document.createElement('input'); tmp.value = b.dataset.copy; document.body.appendChild(tmp); tmp.select(); document.execCommand('copy'); tmp.remove();
+        toast('Embed snippet copied');
+      }));
+    }
+
+    $('#fAdd').addEventListener('click', () => openForm(null));
+  }
+};
+
+function formCard(f) {
+  const embed = `<div data-gasf-form="${f.slug}"></div><script src="/forms.js" defer><\/script>`;
+  return `
+    <div class="card p-4 flex flex-col gap-2">
+      <div class="flex items-start gap-3">
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <h4 class="font-semibold text-ink-900 truncate">${escape(f.name)}</h4>
+            <span class="pill ${f.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}">${f.is_active ? 'Active' : 'Hidden'}</span>
+          </div>
+          <div class="text-xs text-slate-500 mt-0.5 font-mono">/${escape(f.slug)}</div>
+          ${f.description ? `<p class="text-xs text-slate-600 mt-1 line-clamp-2">${escape(f.description)}</p>` : ''}
+        </div>
+      </div>
+      <div class="flex items-center justify-between text-xs text-slate-500">
+        <span>${f.field_count} field${f.field_count===1?'':'s'} · ${f.submission_count} submission${f.submission_count===1?'':'s'}</span>
+      </div>
+      <div class="flex flex-wrap gap-1 mt-1">
+        <button class="btn btn-ghost text-xs py-1" data-edit="${f.id}">Edit fields</button>
+        <button class="btn btn-ghost text-xs py-1" data-subs="${f.id}" data-name="${escape(f.name)}">Submissions (${f.submission_count})</button>
+        <button class="btn btn-ghost text-xs py-1" data-copy="${escape(embed)}">Copy embed</button>
+        <button class="btn btn-ghost text-xs py-1" data-toggle="${f.id}" data-active="${f.is_active}">${f.is_active ? 'Hide' : 'Show'}</button>
+        <button class="btn btn-danger text-xs py-1" data-del="${f.id}">Del</button>
+      </div>
+    </div>`;
+}
+
+async function openForm(id) {
+  const isNew = !id;
+  let form, fields;
+  if (isNew) {
+    form = { slug:'', name:'', description:'', success_message:'Thanks — we will be in touch shortly.', redirect_url:'', notification_email:'', button_text:'Submit', is_active:1 };
+    fields = [];
+  } else {
+    try { const res = await api.get('/api/admin/forms/' + id); form = res.item; fields = res.fields; }
+    catch (e) { toast(e.message, 'error'); return; }
+  }
+
+  const overlay = document.createElement('div');
+  overlay.className = 'fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4';
+  overlay.innerHTML = `
+    <div class="card max-w-5xl w-full max-h-[92vh] overflow-hidden flex flex-col">
+      <div class="px-5 py-3 border-b flex items-center justify-between">
+        <h3 class="font-semibold text-ink-900">${isNew ? 'New form' : 'Edit form: ' + escape(form.name)}</h3>
+        <button class="text-slate-400 hover:text-slate-700 text-xl leading-none close-x">×</button>
+      </div>
+      <div class="flex-1 overflow-y-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-0 divide-y md:divide-y-0 md:divide-x">
+
+          <!-- Form settings -->
+          <form id="fSettings" class="p-5 space-y-3">
+            <h4 class="text-sm font-semibold text-ink-900 mb-2">Form settings</h4>
+            <label class="block">
+              <span class="block text-xs font-semibold text-slate-700 mb-1">Form name</span>
+              <input class="input ff" name="name" required value="${escape(form.name)}"/>
+            </label>
+            <label class="block">
+              <span class="block text-xs font-semibold text-slate-700 mb-1">Slug (URL key) <span class="text-red-500">*</span></span>
+              <input class="input ff" name="slug" required value="${escape(form.slug)}" placeholder="newsletter"/>
+              <span class="text-xs text-slate-500">Lowercase letters, numbers, dashes</span>
+            </label>
+            <label class="block">
+              <span class="block text-xs font-semibold text-slate-700 mb-1">Description (admin-only)</span>
+              <textarea class="input ff auto" name="description" rows="2">${escape(form.description||'')}</textarea>
+            </label>
+            <label class="block">
+              <span class="block text-xs font-semibold text-slate-700 mb-1">Submit button text</span>
+              <input class="input ff" name="button_text" value="${escape(form.button_text||'Submit')}"/>
+            </label>
+            <label class="block">
+              <span class="block text-xs font-semibold text-slate-700 mb-1">Success message</span>
+              <textarea class="input ff auto" name="success_message" rows="2">${escape(form.success_message||'')}</textarea>
+            </label>
+            <label class="block">
+              <span class="block text-xs font-semibold text-slate-700 mb-1">Redirect URL (optional)</span>
+              <input class="input ff" name="redirect_url" value="${escape(form.redirect_url||'')}" placeholder="/thank-you.html"/>
+            </label>
+            <label class="block">
+              <span class="block text-xs font-semibold text-slate-700 mb-1">Notification email (optional)</span>
+              <input class="input ff" type="email" name="notification_email" value="${escape(form.notification_email||'')}"/>
+            </label>
+            <label class="flex items-center gap-2 text-sm pt-1">
+              <input type="checkbox" class="ff" name="is_active" ${form.is_active ? 'checked' : ''}/>
+              Active
+            </label>
+            <div class="pt-2 flex justify-end">
+              <button type="submit" class="btn btn-primary text-xs">${isNew ? 'Create form' : 'Save settings'}</button>
+            </div>
+          </form>
+
+          <!-- Fields -->
+          <div class="p-5">
+            <div class="flex items-center justify-between mb-2">
+              <h4 class="text-sm font-semibold text-ink-900">Fields</h4>
+              <button id="fAddField" class="btn btn-primary text-xs" ${isNew ? 'disabled style="opacity:.4"' : ''}>+ Add field</button>
+            </div>
+            ${isNew ? '<p class="text-xs text-slate-500">Save form settings first to add fields.</p>' : ''}
+            <div id="fFieldList" class="space-y-2"></div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay || e.target.classList.contains('close-x')) overlay.remove(); });
+
+  const settingsForm = overlay.querySelector('#fSettings');
+  function readSettings() {
+    const out = {};
+    settingsForm.querySelectorAll('.ff').forEach((el) => {
+      const n = el.name; if (!n) return;
+      out[n] = el.type === 'checkbox' ? (el.checked ? 1 : 0) : el.value;
+    });
+    return out;
+  }
+  settingsForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = readSettings();
+    try {
+      if (isNew) {
+        const r = await api.post('/api/admin/forms', data);
+        toast('Form created');
+        overlay.remove();
+        openForm(r.id); // reopen with id so they can add fields
+      } else {
+        await api.put('/api/admin/forms/' + id, data);
+        toast('Settings saved');
+      }
+    } catch (err) { toast(err.message, 'error'); }
+  });
+
+  if (!isNew) {
+    renderFieldList(overlay.querySelector('#fFieldList'), fields, id);
+    overlay.querySelector('#fAddField').addEventListener('click', () => openField(id, null, () => refreshFields(overlay, id)));
+  }
+}
+
+async function refreshFields(overlay, formId) {
+  try {
+    const res = await api.get('/api/admin/forms/' + formId);
+    renderFieldList(overlay.querySelector('#fFieldList'), res.fields, formId);
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+function renderFieldList(container, fields, formId) {
+  if (!fields.length) {
+    container.innerHTML = '<p class="text-sm text-slate-500 py-4 text-center">No fields yet. Add your first field →</p>';
+    return;
+  }
+  container.innerHTML = fields.map(fieldRow).join('');
+  // drag reorder
+  container.querySelectorAll('[data-field]').forEach((row) => {
+    row.draggable = true;
+    row.addEventListener('dragstart', (e) => { e.dataTransfer.setData('text/id', row.dataset.field); row.classList.add('opacity-50'); });
+    row.addEventListener('dragend',   () => row.classList.remove('opacity-50'));
+    row.addEventListener('dragover',  (e) => { e.preventDefault(); row.classList.add('ring-2','ring-teal-500'); });
+    row.addEventListener('dragleave', () => row.classList.remove('ring-2','ring-teal-500'));
+    row.addEventListener('drop', async (e) => {
+      e.preventDefault();
+      row.classList.remove('ring-2','ring-teal-500');
+      const fromId = e.dataTransfer.getData('text/id');
+      if (!fromId || fromId === row.dataset.field) return;
+      const ids = [...container.querySelectorAll('[data-field]')].map((r) => r.dataset.field);
+      const fromIdx = ids.indexOf(fromId), toIdx = ids.indexOf(row.dataset.field);
+      ids.splice(toIdx, 0, ids.splice(fromIdx, 1)[0]);
+      try {
+        await api.post(`/api/admin/forms/${formId}/fields-reorder`, { order: ids.map(Number) });
+        toast('Order saved');
+      } catch (err) { toast(err.message, 'error'); }
+    });
+  });
+  container.querySelectorAll('[data-edit-field]').forEach((b) => b.addEventListener('click', () => openField(formId, parseInt(b.dataset.editField, 10), () => {
+    const overlay = b.closest('.fixed'); refreshFields(overlay, formId);
+  })));
+  container.querySelectorAll('[data-del-field]').forEach((b) => b.addEventListener('click', async () => {
+    if (!confirm('Delete this field?')) return;
+    try { await api.del('/api/admin/form-fields/' + b.dataset.delField); toast('Deleted'); const overlay = b.closest('.fixed'); refreshFields(overlay, formId); }
+    catch (err) { toast(err.message, 'error'); }
+  }));
+}
+
+function fieldRow(f) {
+  return `
+    <div class="card p-3 flex items-center gap-3 cursor-move" data-field="${f.id}">
+      <div class="text-slate-300 select-none">⋮⋮</div>
+      <div class="flex-1 min-w-0">
+        <div class="text-sm font-medium text-ink-900 truncate">${escape(f.label)} ${f.is_required ? '<span class="text-red-500">*</span>' : ''}</div>
+        <div class="text-xs text-slate-500">
+          <span class="font-mono">${escape(f.name)}</span> · ${FIELD_TYPE_LABELS[f.type] || f.type}
+        </div>
+      </div>
+      <div class="inline-flex gap-1">
+        <button class="btn btn-ghost text-xs py-1" data-edit-field="${f.id}">Edit</button>
+        <button class="btn btn-danger text-xs py-1" data-del-field="${f.id}">Del</button>
+      </div>
+    </div>`;
+}
+
+async function openField(formId, fieldId, onDone) {
+  const isNew = !fieldId;
+  let f = { label:'', name:'', type:'text', placeholder:'', options_json:'[]', is_required:0, help_text:'', default_value:'' };
+  if (!isNew) {
+    try {
+      const res = await api.get('/api/admin/forms/' + formId);
+      const found = res.fields.find((x) => x.id === fieldId);
+      if (found) f = { ...f, ...found };
+    } catch (e) { toast(e.message, 'error'); return; }
+  }
+
+  const overlay = document.createElement('div');
+  overlay.className = 'fixed inset-0 z-[60] bg-black/50 flex items-center justify-center p-4';
+  overlay.innerHTML = `
+    <form class="card max-w-md w-full">
+      <div class="px-5 py-3 border-b flex items-center justify-between">
+        <h3 class="font-semibold text-ink-900">${isNew ? 'New field' : 'Edit field'}</h3>
+        <button type="button" class="text-slate-400 hover:text-slate-700 text-xl leading-none close-x">×</button>
+      </div>
+      <div class="p-5 space-y-3">
+        <label class="block">
+          <span class="block text-xs font-semibold text-slate-700 mb-1">Label <span class="text-red-500">*</span></span>
+          <input class="input xf" name="label" required value="${escape(f.label)}"/>
+        </label>
+        <label class="block">
+          <span class="block text-xs font-semibold text-slate-700 mb-1">Field key (snake_case) <span class="text-red-500">*</span></span>
+          <input class="input xf" name="name" required value="${escape(f.name)}" placeholder="full_name"/>
+        </label>
+        <label class="block">
+          <span class="block text-xs font-semibold text-slate-700 mb-1">Type</span>
+          <select class="input xf" name="type">
+            ${FIELD_TYPES_LIST.map((t) => `<option value="${t}" ${t===f.type?'selected':''}>${FIELD_TYPE_LABELS[t]}</option>`).join('')}
+          </select>
+        </label>
+        <label class="block">
+          <span class="block text-xs font-semibold text-slate-700 mb-1">Placeholder</span>
+          <input class="input xf" name="placeholder" value="${escape(f.placeholder||'')}"/>
+        </label>
+        <label class="block">
+          <span class="block text-xs font-semibold text-slate-700 mb-1">Help text</span>
+          <input class="input xf" name="help_text" value="${escape(f.help_text||'')}"/>
+        </label>
+        <div id="optsRow" class="${TYPES_WITH_OPTIONS.has(f.type) ? '' : 'hidden'}">
+          <label class="block">
+            <span class="block text-xs font-semibold text-slate-700 mb-1">Options (one per line)</span>
+            <textarea class="input xf auto" name="options_json" rows="4" placeholder="Option 1&#10;Option 2&#10;Option 3">${optionsToText(f.options_json)}</textarea>
+          </label>
+        </div>
+        <label class="block">
+          <span class="block text-xs font-semibold text-slate-700 mb-1">Default value</span>
+          <input class="input xf" name="default_value" value="${escape(f.default_value||'')}"/>
+        </label>
+        <label class="flex items-center gap-2 text-sm pt-1">
+          <input type="checkbox" class="xf" name="is_required" ${f.is_required ? 'checked' : ''}/>
+          Required
+        </label>
+      </div>
+      <div class="px-5 py-3 border-t flex justify-end gap-2 bg-slate-50">
+        <button type="button" class="btn btn-ghost text-xs close-x">Cancel</button>
+        <button type="submit" class="btn btn-primary text-xs">${isNew ? 'Add field' : 'Save'}</button>
+      </div>
+    </form>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay || e.target.classList.contains('close-x')) overlay.remove(); });
+
+  overlay.querySelector('[name="type"]').addEventListener('change', (e) => {
+    overlay.querySelector('#optsRow').classList.toggle('hidden', !TYPES_WITH_OPTIONS.has(e.target.value));
+  });
+
+  overlay.querySelector('form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const out = {};
+    overlay.querySelectorAll('.xf').forEach((el) => {
+      const n = el.name; if (!n) return;
+      out[n] = el.type === 'checkbox' ? (el.checked ? 1 : 0) : el.value;
+    });
+    if (TYPES_WITH_OPTIONS.has(out.type)) {
+      const arr = (out.options_json || '').split('\n').map((s) => s.trim()).filter(Boolean);
+      out.options_json = JSON.stringify(arr);
+    } else {
+      delete out.options_json;
+    }
+    try {
+      if (isNew) await api.post(`/api/admin/forms/${formId}/fields`, out);
+      else        await api.put(`/api/admin/form-fields/${fieldId}`, out);
+      toast(isNew ? 'Field added' : 'Saved');
+      overlay.remove();
+      onDone?.();
+    } catch (err) { toast(err.message, 'error'); }
+  });
+}
+
+function optionsToText(jsonStr) {
+  try { const a = JSON.parse(jsonStr || '[]'); return Array.isArray(a) ? a.join('\n') : ''; }
+  catch { return ''; }
+}
+
+async function openFormSubmissions(formId, formName) {
+  const overlay = document.createElement('div');
+  overlay.className = 'fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4';
+  overlay.innerHTML = `
+    <div class="card max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+      <div class="px-5 py-3 border-b flex items-center justify-between">
+        <h3 class="font-semibold text-ink-900">Submissions: ${escape(formName)}</h3>
+        <button class="text-slate-400 hover:text-slate-700 text-xl leading-none close-x">×</button>
+      </div>
+      <div class="px-5 py-3 border-b flex flex-wrap gap-2 items-center">
+        <input id="sQ" class="input flex-1 min-w-[160px]" placeholder="Search…"/>
+        <button id="sFilter" class="btn btn-primary text-xs">Filter</button>
+      </div>
+      <div id="sBody" class="flex-1 overflow-y-auto p-5"></div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay || e.target.classList.contains('close-x')) overlay.remove(); });
+
+  async function load() {
+    const params = new URLSearchParams();
+    const q = overlay.querySelector('#sQ').value;
+    if (q) params.set('q', q);
+    overlay.querySelector('#sBody').innerHTML = '<div class="text-center text-slate-400 text-sm py-8">Loading…</div>';
+    try {
+      const res = await api.get(`/api/admin/forms/${formId}/submissions?` + params.toString());
+      if (!res.items.length) {
+        overlay.querySelector('#sBody').innerHTML = '<div class="text-center text-slate-500 text-sm py-12">No submissions yet.</div>';
+        return;
+      }
+      overlay.querySelector('#sBody').innerHTML = `
+        <div class="text-xs text-slate-500 mb-3">${res.total} submission${res.total===1?'':'s'}</div>
+        <div class="space-y-2">${res.items.map((s) => {
+          let parsed = {};
+          try { parsed = JSON.parse(s.data_json); } catch {}
+          const lines = Object.entries(parsed).map(([k,v]) => `<div class="text-xs"><span class="text-slate-500 uppercase tracking-wider font-semibold">${escape(k)}:</span> <span class="text-ink-900">${escape(v)}</span></div>`).join('');
+          return `<details class="card p-3"><summary class="cursor-pointer text-sm flex items-center justify-between"><span><strong>${escape(s.name||'(no name)')}</strong> <span class="text-slate-500">${escape(s.email||'')}</span></span><span class="text-xs text-slate-400">${formatDate(s.created_at)}</span></summary><div class="mt-2 space-y-1">${lines}</div></details>`;
+        }).join('')}</div>`;
+    } catch (e) {
+      overlay.querySelector('#sBody').innerHTML = `<div class="text-center text-red-600 text-sm py-8">${e.message}</div>`;
+    }
+  }
+  overlay.querySelector('#sFilter').addEventListener('click', load);
+  overlay.querySelector('#sQ').addEventListener('keydown', (e) => { if (e.key === 'Enter') load(); });
+  load();
 }
 
 window.navigate = navigate; // expose for inline handlers

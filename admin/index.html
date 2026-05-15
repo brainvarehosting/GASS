@@ -103,9 +103,12 @@
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
         Page Content
       </div>
+      <div class="nav-item" data-route="media">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        Media Library
+      </div>
       <div class="nav-section">Coming next</div>
       <div class="nav-item opacity-50 cursor-not-allowed">Banners</div>
-      <div class="nav-item opacity-50 cursor-not-allowed">Media library</div>
       <div class="nav-item opacity-50 cursor-not-allowed">Form builder</div>
     </nav>
     <div class="p-3 border-t border-white/10">
@@ -509,6 +512,204 @@ routes.content = {
     }));
   }
 };
+
+// ---------- MEDIA LIBRARY ----------
+const MEDIA_CATEGORIES = ['general','banners','services','team','book','brochures','blogs','testimonials','events'];
+
+routes.media = {
+  title: 'Media Library',
+  state: { category:'', q:'', uploadCategory:'general' },
+  async render(root) {
+    const s = routes.media.state;
+    root.innerHTML = `
+      <div class="card p-4 mb-4">
+        <div class="flex flex-wrap gap-2 items-center">
+          <select id="mCategory" class="input w-auto">
+            <option value="">All categories</option>
+            ${MEDIA_CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('')}
+          </select>
+          <input id="mQ" class="input flex-1 min-w-[200px]" placeholder="Search filename, alt text, caption…"/>
+          <button id="mFilter" class="btn btn-primary">Filter</button>
+          <div class="flex-1"></div>
+          <label class="btn btn-primary cursor-pointer">
+            <span>⤒ Upload files</span>
+            <input id="mUpload" type="file" multiple class="hidden" accept="image/*,application/pdf,video/mp4,video/webm"/>
+          </label>
+        </div>
+        <div class="mt-3 flex items-center gap-2 text-xs text-slate-600">
+          <span>Upload to category:</span>
+          <select id="mUploadCategory" class="input w-auto py-1">
+            ${MEDIA_CATEGORIES.map(c => `<option value="${c}" ${c===s.uploadCategory?'selected':''}>${c}</option>`).join('')}
+          </select>
+          <span class="text-slate-400">· max 10 MB per file · images, PDF, MP4/WebM</span>
+        </div>
+      </div>
+      <div id="mDrop" class="card p-12 mb-4 border-2 border-dashed border-slate-300 text-center text-slate-500 text-sm hidden">
+        Drop files here to upload
+      </div>
+      <div id="mUploads" class="space-y-2 mb-4"></div>
+      <div id="mGrid" class="card p-4 min-h-[200px]"></div>`;
+
+    $('#mCategory').value = s.category;
+    $('#mQ').value = s.q;
+    $('#mFilter').addEventListener('click', () => { s.category = $('#mCategory').value; s.q = $('#mQ').value; load(); });
+    $('#mQ').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#mFilter').click(); });
+    $('#mUploadCategory').addEventListener('change', (e) => { s.uploadCategory = e.target.value; });
+    $('#mUpload').addEventListener('change', (e) => uploadFiles(e.target.files));
+
+    // Drag-drop
+    const drop = $('#mDrop');
+    let dragDepth = 0;
+    document.addEventListener('dragenter', (e) => { e.preventDefault(); if (++dragDepth === 1) drop.classList.remove('hidden'); });
+    document.addEventListener('dragleave', () => { if (--dragDepth <= 0) { dragDepth = 0; drop.classList.add('hidden'); } });
+    document.addEventListener('dragover', (e) => e.preventDefault());
+    document.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dragDepth = 0;
+      drop.classList.add('hidden');
+      if (e.dataTransfer?.files?.length) uploadFiles(e.dataTransfer.files);
+    });
+
+    async function uploadFiles(files) {
+      const list = $('#mUploads');
+      for (const file of files) {
+        const row = document.createElement('div');
+        row.className = 'card px-4 py-3 flex items-center gap-3 text-sm';
+        row.innerHTML = `<div class="flex-1 truncate"><strong>${escape(file.name)}</strong> <span class="text-slate-400">· ${(file.size/1024).toFixed(0)} KB</span></div><div class="text-xs text-slate-500">Uploading…</div>`;
+        list.prepend(row);
+        try {
+          const fd = new FormData();
+          fd.append('file', file);
+          fd.append('category', s.uploadCategory);
+          const res = await fetch('/api/admin/media', { method:'POST', credentials:'include', body: fd });
+          const body = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error(body.error || res.statusText);
+          row.querySelector('.text-xs').innerHTML = '<span class="text-emerald-600">✓ Uploaded</span>';
+          setTimeout(() => row.remove(), 2000);
+          load();
+        } catch (err) {
+          row.querySelector('.text-xs').innerHTML = `<span class="text-red-600">✗ ${escape(err.message)}</span>`;
+        }
+      }
+    }
+
+    async function load() {
+      $('#mGrid').innerHTML = '<div class="p-10 text-center text-slate-400 text-sm">Loading…</div>';
+      const params = new URLSearchParams();
+      if (s.category) params.set('category', s.category);
+      if (s.q) params.set('q', s.q);
+      try {
+        const res = await api.get('/api/admin/media?' + params.toString());
+        if (!res.items.length) {
+          $('#mGrid').innerHTML = '<div class="p-12 text-center text-slate-500 text-sm">No media yet. Drop files above to upload.</div>';
+          return;
+        }
+        $('#mGrid').innerHTML = `
+          <div class="text-xs text-slate-500 mb-3">${res.total} file${res.total===1?'':'s'}</div>
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+            ${res.items.map(mediaTile).join('')}
+          </div>`;
+        $$('#mGrid [data-id]').forEach((el) => el.addEventListener('click', () => openMediaDetail(el.dataset.id)));
+      } catch (e) {
+        $('#mGrid').innerHTML = `<div class="p-10 text-center text-red-600 text-sm">${e.message}</div>`;
+      }
+    }
+    load();
+  }
+};
+
+function isImage(mime) { return /^image\//.test(mime || ''); }
+function mediaTile(m) {
+  const thumb = isImage(m.mime_type)
+    ? `<img src="${m.public_url}" alt="" class="absolute inset-0 w-full h-full object-cover"/>`
+    : `<div class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 text-xs uppercase tracking-wider font-semibold">${(m.mime_type||'file').split('/')[1] || 'file'}</div>`;
+  return `
+    <div class="group cursor-pointer" data-id="${m.id}">
+      <div class="relative aspect-square bg-slate-100 rounded-lg overflow-hidden border border-slate-200 group-hover:ring-2 group-hover:ring-teal-500 transition">
+        ${thumb}
+      </div>
+      <div class="mt-1.5 text-xs truncate text-slate-700" title="${escape(m.filename)}">${escape(m.filename)}</div>
+      <div class="text-[.65rem] text-slate-400 uppercase tracking-wider">${m.category} · ${(m.size/1024).toFixed(0)} KB</div>
+    </div>`;
+}
+
+async function openMediaDetail(id) {
+  try {
+    const { item } = await api.get('/api/admin/media/' + id);
+    const overlay = document.createElement('div');
+    overlay.className = 'fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4';
+    const preview = isImage(item.mime_type)
+      ? `<img src="${item.public_url}" class="max-h-[60vh] mx-auto rounded-lg border border-slate-200"/>`
+      : `<div class="aspect-video bg-slate-100 rounded-lg flex items-center justify-center text-slate-500 text-sm">${escape(item.mime_type)}</div>`;
+    overlay.innerHTML = `
+      <div class="card max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+        <div class="px-5 py-3 border-b flex items-center justify-between">
+          <h3 class="font-semibold text-ink-900 truncate">${escape(item.filename)}</h3>
+          <button class="text-slate-400 hover:text-slate-700 text-xl leading-none close-x">×</button>
+        </div>
+        <div class="p-5 overflow-y-auto">
+          ${preview}
+          <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Public URL</label>
+              <div class="flex gap-2">
+                <input id="mUrl" class="input text-xs font-mono" readonly value="${escape(item.public_url)}"/>
+                <button id="mCopy" class="btn btn-ghost text-xs">Copy</button>
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Category</label>
+              <select id="mCat" class="input">
+                ${MEDIA_CATEGORIES.map(c => `<option value="${c}" ${c===item.category?'selected':''}>${c}</option>`).join('')}
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Alt text</label>
+              <input id="mAlt" class="input" value="${escape(item.alt_text||'')}"/>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Caption</label>
+              <input id="mCap" class="input" value="${escape(item.caption||'')}"/>
+            </div>
+            <div class="md:col-span-2 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs text-slate-500">
+              <div><div class="uppercase tracking-wider font-semibold text-slate-400">Type</div>${escape(item.mime_type)}</div>
+              <div><div class="uppercase tracking-wider font-semibold text-slate-400">Size</div>${(item.size/1024).toFixed(1)} KB</div>
+              <div><div class="uppercase tracking-wider font-semibold text-slate-400">Uploaded</div>${formatDate(item.created_at)}</div>
+              <div><div class="uppercase tracking-wider font-semibold text-slate-400">R2 key</div><span class="font-mono text-[.65rem] break-all">${escape(item.r2_key)}</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="px-5 py-3 border-t flex items-center justify-between bg-slate-50">
+          <button id="mDel" class="btn btn-danger text-xs">Delete</button>
+          <button id="mSave" class="btn btn-primary text-xs">Save changes</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay || e.target.classList.contains('close-x')) overlay.remove(); });
+    overlay.querySelector('#mCopy').addEventListener('click', () => { overlay.querySelector('#mUrl').select(); document.execCommand('copy'); toast('URL copied'); });
+    overlay.querySelector('#mSave').addEventListener('click', async () => {
+      try {
+        await api.put('/api/admin/media/' + id, {
+          alt_text: overlay.querySelector('#mAlt').value,
+          caption:  overlay.querySelector('#mCap').value,
+          category: overlay.querySelector('#mCat').value,
+        });
+        toast('Saved');
+        overlay.remove();
+        navigate('media');
+      } catch (e) { toast(e.message, 'error'); }
+    });
+    overlay.querySelector('#mDel').addEventListener('click', async () => {
+      if (!confirm('Delete this file from R2 and the database?')) return;
+      try {
+        await api.del('/api/admin/media/' + id);
+        toast('Deleted');
+        overlay.remove();
+        navigate('media');
+      } catch (e) { toast(e.message, 'error'); }
+    });
+  } catch (e) { toast(e.message, 'error'); }
+}
 
 window.navigate = navigate; // expose for inline handlers
 

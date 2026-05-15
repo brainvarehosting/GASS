@@ -73,8 +73,12 @@ After deploy completes:
 
 | Path                              | What it does |
 |-----------------------------------|--------------|
-| `wrangler.toml`                   | D1 binding for `wrangler` CLI / local dev |
+| `wrangler.toml`                   | D1 + R2 bindings for `wrangler` CLI / local dev |
 | `db/schema.sql`                   | All tables + seed content (run once) |
+| `db/migrations/002_media.sql`     | Media library table (run once) |
+| `cms-loader.js`                   | Tiny client script — hydrates `data-cms-key` elements on static pages |
+| `functions/api/admin/media/`      | List, upload (R2), update meta, delete |
+| `functions/api/media/[[path]].js` | Public R2 read-through (used when R2_PUBLIC_BASE not set) |
 | `functions/_lib/`                 | Auth + HTTP helpers shared by routes |
 | `functions/api/registration.js`   | Public POST — registrations form |
 | `functions/api/contact.js`        | Public POST — contact form |
@@ -90,16 +94,92 @@ After deploy completes:
 
 ---
 
-## Things that are NOT done yet (deferred to Phase 2+)
+## Phase 2 — Media Library (R2) + content sync
 
-- **Banners manager** (and dynamic homepage hero)
-- **Media library** (R2)
-- **Form builder** (custom forms)
+Phase 2 adds: media library backed by R2 (free up to 10 GB), and the small loader script that lets admin-edited content actually appear on the live static pages.
+
+### A. Create the R2 bucket
+
+In Cloudflare dashboard → **R2 → Create bucket**:
+
+- Name: `gasf-media`
+- Location: APAC if you're India-based
+
+Then click into the bucket → **Settings → Public access** → enable **Public R2.dev bucket URL**. Copy the `https://pub-xxxxxxxxxxxxxxxxxxxx.r2.dev` URL.
+
+(Alternative: bind a custom subdomain like `media.gasuccessfactors.com` for nicer URLs. Skip for now.)
+
+### B. Bind R2 to the Pages project
+
+**Workers & Pages → your Pages project → Settings → Functions → R2 bucket bindings → Add**:
+
+- Variable name: `MEDIA`
+- R2 bucket: `gasf-media`
+
+Save (do this for both Production and Preview if used).
+
+### C. Set R2 public base URL secret
+
+**Settings → Environment variables → Production → Edit**:
+
+| Name              | Value                                                |
+|-------------------|------------------------------------------------------|
+| `R2_PUBLIC_BASE`  | `https://pub-xxxxxxxxxxxxxxxxxxxx.r2.dev` (from step A) |
+
+If you don't set this, the system falls back to serving every file through `/api/media/...` (works but uses Function invocations on every read). Setting `R2_PUBLIC_BASE` lets browsers fetch files directly from R2's CDN.
+
+### D. Apply the media migration
+
+In the D1 console, paste and run [db/migrations/002_media.sql](db/migrations/002_media.sql).
+
+Or via CLI:
+
+```bash
+npx wrangler d1 execute gasf-cms --remote --file=db/migrations/002_media.sql
+```
+
+### E. Redeploy and verify
+
+1. Push any commit (or **Retry deployment**)
+2. Open `/admin/`, click **Media Library** in the sidebar
+3. Click **Upload files** or drag-drop a few images
+4. Click a tile → drawer opens with public URL, alt text, caption, category, delete
+
+### F. Wire content to static pages (data-cms-key)
+
+The script `cms-loader.js` (in repo root) lets the admin's Page Content editor actually change live page text.
+
+**Add the loader to any HTML page:**
+
+```html
+<!-- before </body> -->
+<script src="/cms-loader.js" defer></script>
+```
+
+**Mark elements as editable** by adding `data-cms-key`:
+
+```html
+<h1 data-cms-key="home.hero1.h1">Empowering Business Growth & Sustainability</h1>
+<p  data-cms-key="home.hero1.p" data-cms-format="textarea">…</p>
+```
+
+The default text in HTML stays as a fallback (no flash if JS fails). On load, the loader fetches `/api/content` once (sessionStorage-cached for 60s) and swaps in admin-edited values.
+
+For attribute swapping (e.g. an image src):
+```html
+<img data-cms-key="home.hero1.image" data-cms-attr="src" src="/assets/default.jpg" alt="…"/>
+```
+
+Add `data-cms-key` attributes to whichever elements you want admin-editable. The keys are the same ones listed in the Page Content tab.
+
+---
+
+## Things still NOT done (deferred to Phase 3+)
+
+- **Banners manager** (and dynamic homepage hero) — needs media library, which is now done; ready when you are
+- **Form builder** (custom forms beyond the existing 3)
 - **Page builder / widget system**
 - **Blogs / SEO manager / redirects manager**
-- **Wiring static HTML pages to render from `/api/content`** — admin can edit values but the live pages still show baked-in text until we add a small loader (~30 lines of JS) or migrate templates.
-
-If you want the static pages to start picking up admin-edited content, that's a small follow-up: add a script that fetches `/api/content` once on page load and swaps values into elements with `data-cms-key="..."` attributes. Tell me when you're ready and I'll wire it up.
 
 ---
 

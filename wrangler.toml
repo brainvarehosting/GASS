@@ -6,3 +6,7 @@ pages_build_output_dir = "."
 binding = "DB"
 database_name = "gasf-cms"
 database_id = "REPLACE_WITH_D1_ID_FROM_DASHBOARD"
+
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "gasf-media"

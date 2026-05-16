@@ -4,6 +4,8 @@
 
 export const SECTION_TYPES = new Set([
   'hero', 'rich_text', 'image_text', 'stats', 'cta', 'faq', 'service_grid', 'custom_html',
+  'mission_vision', 'featured_book', 'quick_services', 'service_detail_grid', 'form_embed',
+  'contact_columns',
 ]);
 
 export function normalizeSections(input) {

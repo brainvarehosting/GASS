@@ -34,7 +34,7 @@ function buildHeader() {
   const current = location.pathname.split('/').pop() || 'index.html';
   const links = [
     { href: 'index.html', label: 'Home' },
-    { href: 'services.html', label: 'Services' },
+    { href: '/p/services', label: 'Services' },
     { href: 'profile.html', label: 'Profile' },
     { href: 'cxo-conclave.html', label: 'Upcoming Event' },
     { href: 'blog.html', label: 'Insights' },
@@ -91,12 +91,12 @@ function buildFooter() {
         <div>
           <h4>Our Services</h4>
           <nav class="footer-links">
-            <a href="business-consulting.html">Business Consulting & Growth</a>
-            <a href="startup-mentoring.html">Startup & Entrepreneurial Mentoring</a>
-            <a href="academic-empowerment.html">Academic & Institutional Empowerment</a>
-            <a href="training-programs.html">Corporate Training & Professional Development</a>
-            <a href="risk-compliance-funding.html">Risk, Compliance, ESG & Funding Advisory</a>
-            <a href="branding-transformation.html">Branding, Collaborations & Transformation</a>
+            <a href="/p/business-consulting">Business Consulting & Growth</a>
+            <a href="/p/startup-mentoring">Startup & Entrepreneurial Mentoring</a>
+            <a href="/p/academic-empowerment">Academic & Institutional Empowerment</a>
+            <a href="/p/training-programs">Corporate Training & Professional Development</a>
+            <a href="/p/risk-compliance-funding">Risk, Compliance, ESG & Funding Advisory</a>
+            <a href="/p/branding-transformation">Branding, Collaborations & Transformation</a>
           </nav>
         </div>
         <div>
@@ -104,7 +104,7 @@ function buildFooter() {
           <nav class="footer-links">
             <a href="index.html">Home</a>
             <a href="profile.html">Profile</a>
-            <a href="services.html">Our Services</a>
+            <a href="/p/services">Our Services</a>
             <a href="gallery.html">Gallery</a>
             <a href="reach-us.html">Reach Us</a>
             <a href="registration.html">Register</a>

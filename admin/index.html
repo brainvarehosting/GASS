@@ -2212,14 +2212,20 @@ routes.settings = {
 // Section types and their default data shapes. Add more here + matching
 // renderers in page-renderer.js to extend the widget library.
 const WIDGETS = [
-  { type:'hero',         label:'Hero banner',   icon:'⬛', defaults:{ eyebrow:'', heading:'Heading', heading_accent:'', description:'', btn1_text:'', btn1_link:'', btn2_text:'', btn2_link:'', bg_image_url:'', overlay_opacity:0.55, text_align:'left', text_color:'#ffffff' } },
-  { type:'rich_text',    label:'Rich text',     icon:'¶', defaults:{ html:'<p>Write here…</p>' } },
-  { type:'image_text',   label:'Image + text',  icon:'▦', defaults:{ image_url:'', side:'left', heading:'', body_html:'<p>Text…</p>', btn_text:'', btn_link:'' } },
-  { type:'stats',        label:'Stats counter', icon:'#', defaults:{ items:[ {value:'20+', label:'Years'}, {value:'100%', label:'Result'}, {value:'6', label:'Specialisations'} ] } },
-  { type:'cta',          label:'CTA banner',    icon:'!', defaults:{ heading:'Ready to get started?', subtext:'', btn_text:'Talk to us', btn_link:'reach-us.html', bg_color:'#0a7575' } },
-  { type:'faq',          label:'FAQ accordion', icon:'?', defaults:{ items:[ {q:'Question?', a:'Answer.'} ] } },
-  { type:'service_grid', label:'Service grid',  icon:'▤', defaults:{ items:[ {icon:'📊', title:'Service one', link:'#'}, {icon:'🚀', title:'Service two', link:'#'} ] } },
-  { type:'custom_html',  label:'Custom HTML',   icon:'<>', defaults:{ html:'<!-- Paste any HTML --><div></div>' } },
+  { type:'hero',                label:'Hero banner',     icon:'⬛', defaults:{ eyebrow:'', heading:'Heading', heading_accent:'', description:'', btn1_text:'', btn1_link:'', btn2_text:'', btn2_link:'', bg_image_url:'', overlay_opacity:0.55, text_align:'left', text_color:'#ffffff' } },
+  { type:'rich_text',           label:'Rich text',       icon:'¶',  defaults:{ html:'<p>Write here…</p>' } },
+  { type:'image_text',          label:'Image + text',    icon:'▦',  defaults:{ image_url:'', side:'left', heading:'', body_html:'<p>Text…</p>', btn_text:'', btn_link:'' } },
+  { type:'stats',               label:'Stats counter',   icon:'#',  defaults:{ items:[ {value:'20+', label:'Years'}, {value:'100%', label:'Result'}, {value:'6', label:'Specialisations'} ] } },
+  { type:'mission_vision',      label:'Mission & Vision',icon:'⊕',  defaults:{ items:[ {icon:'🌱', title:'Our Vision', text:'…'}, {icon:'🎯', title:'Our Mission', text:'…'} ] } },
+  { type:'service_detail_grid', label:'Service details', icon:'▣',  defaults:{ left_title:'What We Do', left_items:['Item 1','Item 2'], right_title:'Outcomes You Can Expect', right_items:['Outcome 1','Outcome 2'], ideal_title:'Ideal For', ideal_items:['Ideal 1','Ideal 2','Ideal 3','Ideal 4'] } },
+  { type:'quick_services',      label:'Quick services',  icon:'▤',  defaults:{ heading:'Our Services', subtext:'', items:[ {icon:'📊', title:'Business Consulting', link:'/p/business-consulting'} ] } },
+  { type:'featured_book',       label:'Featured book',   icon:'📖', defaults:{ heading:'Featured Book', subtext:'', cover_image_url:'', eyebrow:'New Release', title:'Why Mentor Matters', subtitle:'A must-read handbook…', author:'By Dr. George V Antony', description:'…', btn1_text:'Read More', btn1_link:'#', btn2_text:'Visit website', btn2_link:'#' } },
+  { type:'cta',                 label:'CTA banner',      icon:'!',  defaults:{ heading:'Ready to get started?', subtext:'', btn_text:'Talk to us', btn_link:'/p/reach-us', bg_color:'#0a7575' } },
+  { type:'faq',                 label:'FAQ accordion',   icon:'?',  defaults:{ items:[ {q:'Question?', a:'Answer.'} ] } },
+  { type:'service_grid',        label:'Service tiles',   icon:'▥',  defaults:{ items:[ {icon:'📊', title:'Service one', link:'#'}, {icon:'🚀', title:'Service two', link:'#'} ] } },
+  { type:'contact_columns',     label:'Contact info',    icon:'☎',  defaults:{ items:[ {icon:'📞', title:'Phone', text:'+91 8330 833330', link:'tel:+918330833330'}, {icon:'✉', title:'Email', text:'mail@gasuccessfactors.com', link:'mailto:mail@gasuccessfactors.com'}, {icon:'📍', title:'Address', text:'Kochi, Kerala', link:''} ] } },
+  { type:'form_embed',          label:'Embed form',      icon:'✎',  defaults:{ form_slug:'', heading:'', subtext:'' } },
+  { type:'custom_html',         label:'Custom HTML',     icon:'<>', defaults:{ html:'<!-- Paste any HTML --><div></div>' } },
 ];
 const WIDGETS_BY_TYPE = Object.fromEntries(WIDGETS.map((w) => [w.type, w]));
 
@@ -2517,8 +2523,81 @@ function renderSectionFields(type, data) {
 
   if (type === 'custom_html') return F('Raw HTML', `<textarea class="input se font-mono" data-k="html" rows="10">${escape(data.html||'')}</textarea>`);
 
+  if (type === 'mission_vision') {
+    const items = data.items || [];
+    return F('Cards (icon, title, text)', `
+      <div id="mvList">${items.map((it, i) => mvRow(it, i)).join('')}</div>
+      <button type="button" id="mvAdd" class="btn btn-ghost text-xs mt-2">+ Add card</button>
+    `);
+  }
+
+  if (type === 'service_detail_grid') {
+    const lines = (arr) => (arr || []).join('\n');
+    return [
+      `<div class="grid grid-cols-1 md:grid-cols-2 gap-3">`,
+      F('Left column title', ipt('left_title', data.left_title)),
+      F('Right column title', ipt('right_title', data.right_title)),
+      F('Left items (one per line)', `<textarea class="input se-list auto" data-k="left_items" rows="6">${escape(lines(data.left_items))}</textarea>`),
+      F('Right items (one per line)', `<textarea class="input se-list auto" data-k="right_items" rows="6">${escape(lines(data.right_items))}</textarea>`),
+      `</div>`,
+      F('"Ideal For" title', ipt('ideal_title', data.ideal_title)),
+      F('Ideal For items (one per line)', `<textarea class="input se-list auto" data-k="ideal_items" rows="4">${escape(lines(data.ideal_items))}</textarea>`),
+    ].join('');
+  }
+
+  if (type === 'quick_services') {
+    const items = data.items || [];
+    return [
+      F('Section heading', ipt('heading', data.heading)),
+      F('Section subtext', tx('subtext', data.subtext, 2)),
+      F('Service tiles', `
+        <div id="qsList">${items.map((it, i) => srvRow(it, i)).join('')}</div>
+        <button type="button" id="qsAdd" class="btn btn-ghost text-xs mt-2">+ Add tile</button>`),
+    ].join('');
+  }
+
+  if (type === 'featured_book') {
+    return [
+      F('Section heading', ipt('heading', data.heading)),
+      F('Section subtext', tx('subtext', data.subtext, 2)),
+      F('Book cover', pickImg('cover_image_url', data.cover_image_url)),
+      `<div class="grid grid-cols-1 md:grid-cols-2 gap-3">`,
+      F('Eyebrow', ipt('eyebrow', data.eyebrow)),
+      F('Title', ipt('title', data.title)),
+      F('Subtitle', ipt('subtitle', data.subtitle)),
+      F('Author', ipt('author', data.author)),
+      `</div>`,
+      F('Description', tx('description', data.description, 3)),
+      `<div class="grid grid-cols-2 gap-3">`,
+      F('Button 1 text', ipt('btn1_text', data.btn1_text)),
+      F('Button 1 link', ipt('btn1_link', data.btn1_link)),
+      F('Button 2 text', ipt('btn2_text', data.btn2_text)),
+      F('Button 2 link', ipt('btn2_link', data.btn2_link)),
+      `</div>`,
+    ].join('');
+  }
+
+  if (type === 'contact_columns') {
+    const items = data.items || [];
+    return F('Contact methods (icon, title, text, link)', `
+      <div id="ccList">${items.map((it, i) => ccRow(it, i)).join('')}</div>
+      <button type="button" id="ccAdd" class="btn btn-ghost text-xs mt-2">+ Add method</button>
+    `);
+  }
+
+  if (type === 'form_embed') {
+    return [
+      F('Form slug (from Form Builder)', ipt('form_slug', data.form_slug, 'newsletter')),
+      F('Heading (optional)', ipt('heading', data.heading)),
+      F('Subtext (optional)', tx('subtext', data.subtext, 2)),
+    ].join('');
+  }
+
   return '<p>Unknown widget type.</p>';
 }
+
+function mvRow(it, i)  { return `<div class="card p-2 mb-2 mvRow"><div class="flex gap-2"><input class="input w-16" data-i="${i}" data-f="icon" value="${escape(it.icon||'')}" placeholder="🌱"/><input class="input flex-1" data-i="${i}" data-f="title" value="${escape(it.title||'')}" placeholder="Title"/></div><textarea class="input auto mt-1" data-i="${i}" data-f="text" rows="2" placeholder="Text">${escape(it.text||'')}</textarea><button type="button" class="btn btn-danger text-xs mt-1" data-rm-mv="${i}">Remove</button></div>`; }
+function ccRow(it, i)  { return `<div class="card p-2 mb-2 ccRow"><div class="flex gap-2"><input class="input w-16" data-i="${i}" data-f="icon" value="${escape(it.icon||'')}" placeholder="📞"/><input class="input flex-1" data-i="${i}" data-f="title" value="${escape(it.title||'')}" placeholder="Title"/></div><input class="input mt-1" data-i="${i}" data-f="text" value="${escape(it.text||'')}" placeholder="Text"/><input class="input mt-1" data-i="${i}" data-f="link" value="${escape(it.link||'')}" placeholder="tel: / mailto: / URL"/><button type="button" class="btn btn-danger text-xs mt-1" data-rm-cc="${i}">Remove</button></div>`; }
 
 function statRow(it, i) { return `<div class="flex gap-2 mb-1 statRow"><input class="input flex-1" data-i="${i}" data-f="value" value="${escape(it.value||'')}" placeholder="20+"/><input class="input flex-1" data-i="${i}" data-f="label" value="${escape(it.label||'')}" placeholder="Years"/><button type="button" class="btn btn-danger text-xs" data-rm-stat="${i}">×</button></div>`; }
 function faqRow(it, i)  { return `<div class="card p-2 mb-2 faqRow"><input class="input mb-1" data-i="${i}" data-f="q" value="${escape(it.q||'')}" placeholder="Question"/><textarea class="input auto" data-i="${i}" data-f="a" rows="2" placeholder="Answer">${escape(it.a||'')}</textarea><button type="button" class="btn btn-danger text-xs mt-1" data-rm-faq="${i}">Remove</button></div>`; }
@@ -2561,13 +2640,39 @@ function wireSectionFields(body, type, data) {
     body.querySelectorAll('[data-rm-faq]').forEach((b) => b.onclick = () => { data.items.splice(+b.dataset.rmFaq,1); body.querySelector('#faqList').innerHTML = data.items.map(faqRow).join(''); wire(); });
   }
 
-  if (type === 'service_grid') {
+  if (type === 'service_grid' || type === 'quick_services') {
+    const listSel = type === 'quick_services' ? '#qsList' : '#srvList';
+    const addSel  = type === 'quick_services' ? '#qsAdd'  : '#srvAdd';
     const wire = () => body.querySelectorAll('.srvRow input').forEach((inp) => inp.addEventListener('input', () => {
       const i = +inp.dataset.i; data.items[i][inp.dataset.f] = inp.value;
     }));
     wire();
-    body.querySelector('#srvAdd')?.addEventListener('click', () => { (data.items=data.items||[]).push({icon:'',title:'',link:''}); body.querySelector('#srvList').innerHTML += srvRow({icon:'',title:'',link:''}, data.items.length-1); wire(); body.querySelectorAll('[data-rm-srv]').forEach((b) => b.onclick = () => { data.items.splice(+b.dataset.rmSrv,1); body.querySelector('#srvList').innerHTML = data.items.map(srvRow).join(''); wire(); }); });
-    body.querySelectorAll('[data-rm-srv]').forEach((b) => b.onclick = () => { data.items.splice(+b.dataset.rmSrv,1); body.querySelector('#srvList').innerHTML = data.items.map(srvRow).join(''); wire(); });
+    body.querySelector(addSel)?.addEventListener('click', () => { (data.items=data.items||[]).push({icon:'',title:'',link:''}); body.querySelector(listSel).innerHTML += srvRow({icon:'',title:'',link:''}, data.items.length-1); wire(); body.querySelectorAll('[data-rm-srv]').forEach((b) => b.onclick = () => { data.items.splice(+b.dataset.rmSrv,1); body.querySelector(listSel).innerHTML = data.items.map(srvRow).join(''); wire(); }); });
+    body.querySelectorAll('[data-rm-srv]').forEach((b) => b.onclick = () => { data.items.splice(+b.dataset.rmSrv,1); body.querySelector(listSel).innerHTML = data.items.map(srvRow).join(''); wire(); });
+  }
+
+  if (type === 'mission_vision') {
+    const wire = () => body.querySelectorAll('.mvRow input, .mvRow textarea').forEach((inp) => inp.addEventListener('input', () => {
+      const i = +inp.dataset.i; data.items[i][inp.dataset.f] = inp.value;
+    }));
+    wire();
+    body.querySelector('#mvAdd')?.addEventListener('click', () => { (data.items=data.items||[]).push({icon:'',title:'',text:''}); body.querySelector('#mvList').innerHTML += mvRow({icon:'',title:'',text:''}, data.items.length-1); wire(); body.querySelectorAll('[data-rm-mv]').forEach((b) => b.onclick = () => { data.items.splice(+b.dataset.rmMv,1); body.querySelector('#mvList').innerHTML = data.items.map(mvRow).join(''); wire(); }); });
+    body.querySelectorAll('[data-rm-mv]').forEach((b) => b.onclick = () => { data.items.splice(+b.dataset.rmMv,1); body.querySelector('#mvList').innerHTML = data.items.map(mvRow).join(''); wire(); });
+  }
+
+  if (type === 'contact_columns') {
+    const wire = () => body.querySelectorAll('.ccRow input').forEach((inp) => inp.addEventListener('input', () => {
+      const i = +inp.dataset.i; data.items[i][inp.dataset.f] = inp.value;
+    }));
+    wire();
+    body.querySelector('#ccAdd')?.addEventListener('click', () => { (data.items=data.items||[]).push({icon:'',title:'',text:'',link:''}); body.querySelector('#ccList').innerHTML += ccRow({icon:'',title:'',text:'',link:''}, data.items.length-1); wire(); body.querySelectorAll('[data-rm-cc]').forEach((b) => b.onclick = () => { data.items.splice(+b.dataset.rmCc,1); body.querySelector('#ccList').innerHTML = data.items.map(ccRow).join(''); wire(); }); });
+    body.querySelectorAll('[data-rm-cc]').forEach((b) => b.onclick = () => { data.items.splice(+b.dataset.rmCc,1); body.querySelector('#ccList').innerHTML = data.items.map(ccRow).join(''); wire(); });
+  }
+
+  if (type === 'service_detail_grid') {
+    body.querySelectorAll('.se-list').forEach((el) => el.addEventListener('input', () => {
+      data[el.dataset.k] = el.value.split('\n').map((s) => s.trim()).filter(Boolean);
+    }));
   }
 }
 

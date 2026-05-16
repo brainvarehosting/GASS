@@ -344,10 +344,16 @@ routes.submissions = {
           <input id="fQ" class="input flex-1 min-w-[200px]" placeholder="Search name, email, phone, message…"/>
           <button id="fApply" class="btn btn-primary">Filter</button>
           <div class="flex-1"></div>
-          <button id="exportReg"  class="btn btn-ghost text-xs">⤓ Registrations CSV</button>
-          <button id="exportCt"   class="btn btn-ghost text-xs">⤓ Contacts CSV</button>
-          <button id="exportEnq"  class="btn btn-ghost text-xs">⤓ Enquiries CSV</button>
+          <div class="relative">
+            <button id="exportToggle" class="btn btn-ghost text-xs">⤓ Export CSV ▾</button>
+            <div id="exportMenu" class="hidden absolute right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg overflow-hidden z-10 min-w-[200px]">
+              <button class="block w-full text-left px-4 py-2 text-sm hover:bg-slate-50" data-export="registrations">Registrations</button>
+              <button class="block w-full text-left px-4 py-2 text-sm hover:bg-slate-50" data-export="contacts">Contact messages</button>
+              <button class="block w-full text-left px-4 py-2 text-sm hover:bg-slate-50" data-export="enquiries">Consulting enquiries</button>
+            </div>
+          </div>
         </div>
+        <p class="text-xs text-slate-500 mt-2">Click any row to see the full submission and contact actions.</p>
       </div>
       <div id="subTable" class="card overflow-hidden"></div>
       <div id="subPager" class="mt-4 flex items-center justify-between text-sm text-slate-600"></div>`;
@@ -358,9 +364,13 @@ routes.submissions = {
       load();
     });
     $('#fQ').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#fApply').click(); });
-    $('#exportReg').addEventListener('click', () => { window.location = '/api/admin/submissions/export?table=registrations'; });
-    $('#exportCt').addEventListener('click',  () => { window.location = '/api/admin/submissions/export?table=contacts'; });
-    $('#exportEnq').addEventListener('click', () => { window.location = '/api/admin/submissions/export?table=enquiries'; });
+    const expBtn = $('#exportToggle'), expMenu = $('#exportMenu');
+    expBtn.addEventListener('click', (e) => { e.stopPropagation(); expMenu.classList.toggle('hidden'); });
+    document.addEventListener('click', () => expMenu.classList.add('hidden'), { once: true });
+    expMenu.querySelectorAll('[data-export]').forEach((b) => b.addEventListener('click', () => {
+      window.location = '/api/admin/submissions/export?table=' + b.dataset.export;
+      expMenu.classList.add('hidden');
+    }));
 
     async function load() {
       const params = new URLSearchParams();
@@ -379,29 +389,34 @@ routes.submissions = {
 
     function renderTable(res) {
       if (!res.items.length) {
-        $('#subTable').innerHTML = '<div class="p-10 text-center text-slate-500 text-sm">No submissions match these filters.</div>';
+        $('#subTable').innerHTML = `
+          <div class="p-12 text-center">
+            <div class="text-4xl mb-2">📥</div>
+            <div class="text-slate-700 font-semibold mb-1">No submissions yet</div>
+            <div class="text-slate-500 text-sm">When visitors fill any contact / enquiry / registration form on the site, their entries will appear here. Try submitting a test from <a href="/reach-us.html" target="_blank" class="text-teal-700 underline">/reach-us.html</a>.</div>
+          </div>`;
         $('#subPager').textContent = '';
         return;
       }
       const rowsHtml = res.items.map((it) => `
-        <tr class="border-t hover:bg-slate-50">
+        <tr class="border-t hover:bg-teal-50 cursor-pointer sub-row" data-table="${it.table_name}" data-id="${it.id}">
           <td class="px-4 py-3"><span class="pill bg-${tableColor(it.table_name)}">${tableLabel(it.table_name)}</span></td>
           <td class="px-4 py-3">
-            <div class="font-medium text-sm">${escape(it.name)}</div>
-            <div class="text-xs text-slate-500">${escape(it.email||'')}${it.phone?' · '+escape(it.phone):''}</div>
+            <div class="font-medium text-sm text-ink-900">${escape(it.name)}</div>
+            <div class="text-xs text-slate-500">${escape(it.email||'—')}${it.phone?' · '+escape(it.phone):''}</div>
           </td>
-          <td class="px-4 py-3 text-sm">${escape(it.organisation||'—')}</td>
+          <td class="px-4 py-3 text-sm hidden md:table-cell">${escape(it.organisation||'—')}</td>
           <td class="px-4 py-3 text-sm max-w-xs truncate">${escape(it.subject||'—')}</td>
-          <td class="px-4 py-3 text-xs text-slate-500 whitespace-nowrap">${formatDate(it.created_at)}</td>
-          <td class="px-4 py-3">
+          <td class="px-4 py-3 text-xs text-slate-500 whitespace-nowrap hidden md:table-cell">${formatDate(it.created_at)}</td>
+          <td class="px-4 py-3" onclick="event.stopPropagation()">
             <select class="input py-1 text-xs status-sel" data-table="${it.table_name}" data-id="${it.id}">
               ${['new','viewed','contacted','converted','spam','archived'].map(st => `<option value="${st}" ${st===it.status?'selected':''}>${st}</option>`).join('')}
             </select>
           </td>
-          <td class="px-4 py-3 text-right">
+          <td class="px-4 py-3 text-right whitespace-nowrap" onclick="event.stopPropagation()">
             <div class="inline-flex gap-1">
-              <button class="btn btn-ghost text-xs py-1 view-btn" data-table="${it.table_name}" data-id="${it.id}">View</button>
-              <button class="btn btn-danger text-xs py-1 del-btn"  data-table="${it.table_name}" data-id="${it.id}">Del</button>
+              <button class="btn btn-ghost text-xs py-1 view-btn" data-table="${it.table_name}" data-id="${it.id}" title="View full submission">View →</button>
+              <button class="btn btn-danger text-xs py-1 del-btn"  data-table="${it.table_name}" data-id="${it.id}" title="Delete">×</button>
             </div>
           </td>
         </tr>`).join('');
@@ -413,9 +428,9 @@ routes.submissions = {
               <tr>
                 <th class="px-4 py-3 font-semibold">Form</th>
                 <th class="px-4 py-3 font-semibold">Person</th>
-                <th class="px-4 py-3 font-semibold">Org</th>
+                <th class="px-4 py-3 font-semibold hidden md:table-cell">Organisation</th>
                 <th class="px-4 py-3 font-semibold">Subject / Programme</th>
-                <th class="px-4 py-3 font-semibold">Date</th>
+                <th class="px-4 py-3 font-semibold hidden md:table-cell">Submitted</th>
                 <th class="px-4 py-3 font-semibold">Status</th>
                 <th class="px-4 py-3 font-semibold text-right">Actions</th>
               </tr>
@@ -423,6 +438,9 @@ routes.submissions = {
             <tbody>${rowsHtml}</tbody>
           </table>
         </div>`;
+
+      // Whole-row click opens detail
+      $$('.sub-row').forEach((tr) => tr.addEventListener('click', () => openDetail(tr.dataset.table, tr.dataset.id)));
 
       const start = res.offset + 1;
       const end = Math.min(res.offset + res.items.length, res.total);

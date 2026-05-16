@@ -323,15 +323,53 @@ routes.submissions = {
   state: { table:'', status:'', q:'', limit:50, offset:0 },
   async render(root) {
     const s = routes.submissions.state;
+
+    // Fetch counts for the form tabs and any custom forms
+    let dash, customForms = [];
+    try { dash = await api.get('/api/admin/dashboard'); } catch {}
+    try { const r = await api.get('/api/admin/forms'); customForms = r.items || []; } catch {}
+    const c = dash?.counts || { registrations:{total:0}, contacts:{total:0}, enquiries:{total:0} };
+
+    const tabs = [
+      { key:'',              label:'All forms',          count: c.registrations.total + c.contacts.total + c.enquiries.total, color:'slate' },
+      { key:'registrations', label:'Registrations',      count: c.registrations.total, color:'amber'   },
+      { key:'contacts',      label:'Contact messages',   count: c.contacts.total,      color:'sky'     },
+      { key:'enquiries',     label:'Consulting enquiries', count: c.enquiries.total,   color:'emerald' },
+    ];
+
+    const customFormCards = customForms.length
+      ? `<div class="mt-4">
+           <div class="text-xs uppercase tracking-wider text-slate-500 font-semibold mb-2">Custom forms (Form Builder)</div>
+           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+             ${customForms.map((f) => `
+               <div class="card p-4">
+                 <div class="flex items-start justify-between gap-2">
+                   <div class="min-w-0 flex-1">
+                     <div class="text-sm font-semibold text-ink-900 truncate">${escape(f.name)}</div>
+                     <div class="text-xs text-slate-500 font-mono truncate">/${escape(f.slug)}</div>
+                   </div>
+                   <span class="pill ${f.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}">${f.is_active?'Active':'Hidden'}</span>
+                 </div>
+                 <div class="text-xs text-slate-500 mt-2">${f.submission_count} submission${f.submission_count===1?'':'s'}</div>
+                 <button class="btn btn-ghost text-xs py-1 mt-2 w-full justify-center" data-cf-id="${f.id}" data-cf-name="${escape(f.name)}">View submissions →</button>
+               </div>`).join('')}
+           </div>
+         </div>`
+      : '';
+
     root.innerHTML = `
+      <!-- Form tabs -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+        ${tabs.map((t) => `
+          <button class="card p-4 text-left hover:ring-2 hover:ring-teal-500 transition tab-btn ${s.table===t.key?'ring-2 ring-teal-600':''}" data-tab="${t.key}">
+            <div class="text-xs uppercase tracking-wider text-slate-500 font-semibold">${escape(t.label)}</div>
+            <div class="text-2xl font-bold text-ink-900 mt-1">${t.count}</div>
+          </button>`).join('')}
+      </div>
+
+      <!-- Filter bar -->
       <div class="card p-4 mb-4">
         <div class="flex flex-wrap gap-2 items-center">
-          <select id="fTable" class="input w-auto">
-            <option value="">All forms</option>
-            <option value="registrations">Registrations</option>
-            <option value="contacts">Contact messages</option>
-            <option value="enquiries">Consulting enquiries</option>
-          </select>
           <select id="fStatus" class="input w-auto">
             <option value="">All statuses</option>
             <option value="new">New</option>
@@ -353,16 +391,20 @@ routes.submissions = {
             </div>
           </div>
         </div>
-        <p class="text-xs text-slate-500 mt-2">Click any row to see the full submission and contact actions.</p>
+        <p class="text-xs text-slate-500 mt-2">Showing <strong>${s.table ? tabs.find((t) => t.key === s.table)?.label : 'all built-in forms'}</strong>. Click any row for full details.</p>
       </div>
-      <div id="subTable" class="card overflow-hidden"></div>
-      <div id="subPager" class="mt-4 flex items-center justify-between text-sm text-slate-600"></div>`;
 
-    $('#fTable').value = s.table; $('#fStatus').value = s.status; $('#fQ').value = s.q;
-    $('#fApply').addEventListener('click', () => {
-      s.table = $('#fTable').value; s.status = $('#fStatus').value; s.q = $('#fQ').value; s.offset = 0;
-      load();
-    });
+      <div id="subTable" class="card overflow-hidden"></div>
+      <div id="subPager" class="mt-4 flex items-center justify-between text-sm text-slate-600"></div>
+
+      ${customFormCards}`;
+
+    $('#fStatus').value = s.status; $('#fQ').value = s.q;
+    $$('.tab-btn').forEach((b) => b.addEventListener('click', () => {
+      s.table = b.dataset.tab; s.offset = 0;
+      navigate('submissions'); // re-render with new active tab
+    }));
+    $('#fApply').addEventListener('click', () => { s.status = $('#fStatus').value; s.q = $('#fQ').value; s.offset = 0; load(); });
     $('#fQ').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#fApply').click(); });
     const expBtn = $('#exportToggle'), expMenu = $('#exportMenu');
     expBtn.addEventListener('click', (e) => { e.stopPropagation(); expMenu.classList.toggle('hidden'); });
@@ -371,6 +413,8 @@ routes.submissions = {
       window.location = '/api/admin/submissions/export?table=' + b.dataset.export;
       expMenu.classList.add('hidden');
     }));
+    // Custom form quick links
+    root.querySelectorAll('[data-cf-id]').forEach((b) => b.addEventListener('click', () => openFormSubmissions(parseInt(b.dataset.cfId, 10), b.dataset.cfName)));
 
     async function load() {
       const params = new URLSearchParams();

@@ -521,9 +521,34 @@ routes.submissions = {
 async function openDetail(table, id) {
   try {
     const { item } = await api.get(`/api/admin/submissions/${table}/${id}`);
-    const fields = Object.entries(item)
-      .filter(([k,v]) => v !== null && v !== '' && v !== undefined)
-      .map(([k,v]) => `<div class="grid grid-cols-3 gap-3 py-1.5 border-b border-slate-100"><dt class="text-xs uppercase tracking-wider text-slate-500 font-semibold">${k.replace(/_/g,' ')}</dt><dd class="col-span-2 text-sm text-ink-900 break-words">${escape(v)}</dd></div>`).join('');
+
+    // Show ALL fields. Empty values render as "—" so the form structure
+    // is visible even when the user left fields blank.
+    const HIDE = new Set(['ip_address', 'user_agent']); // technical fields under a fold
+    const ORDER = ['id','created_at','status',
+      'reg_type','programme','title','first_name','middle_name','last_name','dob',
+      'designation','company','industry','specialization',
+      'name','organisation','service','message',
+      'email_office','email_permanent','email','tel','mobile','phone',
+      'addr_office','pin_office','addr_residence','pin_residence',
+      'iod_member','amount','date','source_page'];
+
+    const sortedKeys = Object.keys(item).sort((a, b) => {
+      const ai = ORDER.indexOf(a), bi = ORDER.indexOf(b);
+      if (ai === -1 && bi === -1) return a.localeCompare(b);
+      if (ai === -1) return 1;
+      if (bi === -1) return -1;
+      return ai - bi;
+    });
+
+    const renderRow = (k, v) => {
+      const empty = v === null || v === undefined || v === '';
+      const display = empty ? '<span class="text-slate-300 italic">— empty —</span>' : escape(v);
+      return `<div class="grid grid-cols-3 gap-3 py-2 border-b border-slate-100"><dt class="text-xs uppercase tracking-wider text-slate-500 font-semibold">${k.replace(/_/g,' ')}</dt><dd class="col-span-2 text-sm text-ink-900 break-words">${display}</dd></div>`;
+    };
+
+    const mainFields = sortedKeys.filter((k) => !HIDE.has(k)).map((k) => renderRow(k, item[k])).join('');
+    const techFields = sortedKeys.filter((k) => HIDE.has(k)).map((k) => renderRow(k, item[k])).join('');
 
     const overlay = document.createElement('div');
     overlay.className = 'fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4';
@@ -535,11 +560,12 @@ async function openDetail(table, id) {
         </div>
         <div class="p-5 overflow-y-auto">
           <div class="flex flex-wrap gap-2 mb-4">
-            ${item.email ? `<a class="btn btn-ghost text-xs" href="mailto:${escape(item.email)}">✉ Email</a>` : ''}
-            ${(item.phone || item.mobile) ? `<a class="btn btn-ghost text-xs" href="tel:${escape(item.phone || item.mobile)}">📞 Call</a>` : ''}
-            ${(item.phone || item.mobile) ? `<a class="btn btn-ghost text-xs" target="_blank" href="https://wa.me/${(item.phone||item.mobile).replace(/[^0-9]/g,'')}">💬 WhatsApp</a>` : ''}
+            ${(item.email || item.email_office || item.email_permanent) ? `<a class="btn btn-ghost text-xs" href="mailto:${escape(item.email || item.email_office || item.email_permanent)}">✉ Email</a>` : ''}
+            ${(item.phone || item.mobile || item.tel) ? `<a class="btn btn-ghost text-xs" href="tel:${escape(item.phone || item.mobile || item.tel)}">📞 Call</a>` : ''}
+            ${(item.phone || item.mobile || item.tel) ? `<a class="btn btn-ghost text-xs" target="_blank" href="https://wa.me/${(item.phone||item.mobile||item.tel).replace(/[^0-9]/g,'')}">💬 WhatsApp</a>` : ''}
           </div>
-          ${fields}
+          ${mainFields}
+          ${techFields ? `<details class="mt-4"><summary class="text-xs text-slate-500 cursor-pointer">Technical fields</summary><div class="mt-2">${techFields}</div></details>` : ''}
         </div>
       </div>`;
     document.body.appendChild(overlay);

@@ -18,18 +18,25 @@ export async function notifyEmail(env, { subject, fields }) {
     .join('\n');
 
   try {
-    await fetch('https://api.web3forms.com/submit', {
+    const res = await fetch('https://api.web3forms.com/submit', {
       method: 'POST',
       headers: { 'content-type': 'application/json', accept: 'application/json' },
       body: JSON.stringify({
         access_key: key,
         subject,
         from_name: 'GASF Website',
-        message: lines,
+        email: fields.email || fields.email_office || fields.email_permanent || 'noreply@gasuccessfactors.com',
+        message: lines || subject,
         ...fields,
       }),
     });
+    const body = await res.text();
+    if (!res.ok || !body.includes('"success":true')) {
+      console.error('notifyEmail rejected by Web3Forms:', res.status, body.slice(0, 400));
+    } else {
+      console.log('notifyEmail ok:', res.status);
+    }
   } catch (e) {
-    console.error('notifyEmail failed:', e?.message || e);
+    console.error('notifyEmail threw:', e?.message || e, e?.stack);
   }
 }

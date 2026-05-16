@@ -37,7 +37,6 @@ function buildHeader() {
     { href: 'services.html', label: 'Services' },
     { href: 'profile.html', label: 'Profile' },
     { href: 'cxo-conclave.html', label: 'Upcoming Event' },
-    { href: 'blog.html', label: 'Insights' },
     { href: 'gallery.html', label: 'Gallery' },
     { href: 'reach-us.html', label: 'Reach Us', cta: true },
   ];

@@ -6,7 +6,7 @@ const STATIC_PAGES = [
   '/risk-compliance-funding.html', '/branding-transformation.html',
   '/cxo-conclave.html', '/cxo-brochure.html', '/cxo-registration.html',
   '/mentoring-form.html', '/registration.html', '/reach-us.html',
-  '/brochure.html', '/gallery.html', '/blog.html',
+  '/brochure.html', '/gallery.html',
 ];
 
 export const onRequestGet = async ({ env, request }) => {
@@ -18,20 +18,6 @@ export const onRequestGet = async ({ env, request }) => {
   for (const p of STATIC_PAGES) {
     urls.push({ loc: base + p, priority: p === '/' ? '1.0' : '0.7' });
   }
-
-  // Add published blogs
-  try {
-    const { results } = await env.DB
-      .prepare("SELECT slug, COALESCE(published_at, updated_at) AS lastmod FROM blogs WHERE status='published'")
-      .all();
-    for (const b of results || []) {
-      urls.push({
-        loc: `${base}/blog-post.html?slug=${encodeURIComponent(b.slug)}`,
-        lastmod: b.lastmod ? b.lastmod.replace(' ', 'T') + 'Z' : undefined,
-        priority: '0.6',
-      });
-    }
-  } catch {}
 
   // Add CMS pages (Phase 7)
   try {

@@ -228,14 +228,14 @@ This means you can keep the static slides as a safety net even after configuring
 
 ---
 
-## Cleanup (do AFTER you've verified the new system works)
+## Cleanup — done
 
-Once the new flow is confirmed working on Cloudflare:
+Legacy Express + Firebase + image-processing files have been removed
+from the repo. The repo is now Cloudflare-Pages-only.
+
+You can also delete these locally if you want to free disk space (they
+are in `.gitignore`):
 
 ```bash
-# These no longer run on Cloudflare and exist only as legacy:
-git rm server.js submissions.db package.json package-lock.json
-rm -rf node_modules
+rm -rf node_modules submissions.db
 ```
-
-Don't do this until you've confirmed the new admin + form flow works end-to-end.

@@ -1,7 +1,9 @@
 // GET /sitemap.xml — auto-generated from CMS data + static page list.
 
 const STATIC_PAGES = [
-  '/', '/profile.html',
+  '/', '/services.html', '/profile.html', '/business-consulting.html',
+  '/startup-mentoring.html', '/academic-empowerment.html', '/training-programs.html',
+  '/risk-compliance-funding.html', '/branding-transformation.html',
   '/cxo-conclave.html', '/cxo-brochure.html', '/cxo-registration.html',
   '/mentoring-form.html', '/registration.html', '/reach-us.html',
   '/brochure.html', '/gallery.html', '/blog.html',

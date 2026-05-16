@@ -46,8 +46,14 @@ export const onRequestPost = async ({ request, env, waitUntil }) => {
       .bind(...values)
       .run();
 
+    const fullName = [data.first_name, data.last_name].filter(Boolean).join(' ') || '(no name)';
+    const src = (data.source_page || '').toLowerCase();
+    const formLabel =
+      src.includes('cxo-registration') ? 'CXO Conclave Registration' :
+      src.includes('mentoring-form')   ? 'Mentoring Enquiry'         :
+                                         'Programme Registration';
     await notifyEmail(env, {
-      subject: `[GASF] New Registration — ${[data.first_name, data.last_name].filter(Boolean).join(' ') || '(no name)'}`,
+      subject: `[GASF] New ${formLabel} — ${fullName}`,
       fields: data,
     });
 

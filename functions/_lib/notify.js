@@ -19,33 +19,41 @@
 // still try Web3Forms (works for direct browser submission, but is
 // blocked from Cloudflare Functions — kept only for browser fallback).
 
+// Internal/technical fields we never want to surface in the email body.
+const HIDDEN_FIELDS = new Set(['ip_address', 'user_agent', 'source_page']);
+
 export async function notifyEmail(env, { subject, fields }) {
   const to = env.NOTIFY_EMAIL || 'gvagasf@gmail.com';
   const from = env.NOTIFY_FROM || 'GASF Website <onboarding@resend.dev>';
 
-  const lines = Object.entries(fields)
-    .filter(([, v]) => v !== null && v !== undefined && v !== '')
+  const visibleFields = Object.fromEntries(
+    Object.entries(fields).filter(([k, v]) => !HIDDEN_FIELDS.has(k) && v !== null && v !== undefined && v !== '')
+  );
+
+  const lines = Object.entries(visibleFields)
     .map(([k, v]) => `${k.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}: ${v}`)
     .join('\n');
 
+  // Use visibleFields (IP/UA/source_page stripped) for email body.
+  // Keep raw fields available for reply_to lookup only.
   if (env.RESEND_API_KEY) {
-    return sendViaResend(env.RESEND_API_KEY, { to, from, subject, lines, fields });
+    return sendViaResend(env.RESEND_API_KEY, { to, from, subject, lines, fields: visibleFields, raw: fields });
   }
   if (env.WEB3FORMS_KEY) {
-    return sendViaWeb3Forms(env.WEB3FORMS_KEY, { subject, lines, fields });
+    return sendViaWeb3Forms(env.WEB3FORMS_KEY, { subject, lines, fields: visibleFields, raw: fields });
   }
   console.warn('notifyEmail: no email provider configured (set RESEND_API_KEY)');
 }
 
-async function sendViaResend(apiKey, { to, from, subject, lines, fields }) {
+async function sendViaResend(apiKey, { to, from, subject, lines, fields, raw }) {
   const html = `
-    <h2 style="font-family:sans-serif;color:#0b1f2a;">${escapeHtml(subject)}</h2>
-    <table style="border-collapse:collapse;font-family:sans-serif;font-size:14px;">
+    <h2 style="font-family:sans-serif;color:#0b1f2a;margin:0 0 12px;">${escapeHtml(subject)}</h2>
+    <table style="border-collapse:collapse;font-family:sans-serif;font-size:14px;width:100%;max-width:680px;">
       ${Object.entries(fields)
-        .filter(([, v]) => v !== null && v !== undefined && v !== '')
-        .map(([k, v]) => `<tr><td style="padding:6px 12px;border:1px solid #e5e7eb;background:#f9fafb;font-weight:600;text-transform:capitalize;">${escapeHtml(k.replace(/_/g, ' '))}</td><td style="padding:6px 12px;border:1px solid #e5e7eb;">${escapeHtml(String(v))}</td></tr>`)
+        .map(([k, v]) => `<tr><td style="padding:8px 14px;border:1px solid #e5e7eb;background:#f9fafb;font-weight:600;text-transform:capitalize;width:200px;vertical-align:top;">${escapeHtml(k.replace(/_/g, ' '))}</td><td style="padding:8px 14px;border:1px solid #e5e7eb;vertical-align:top;">${escapeHtml(String(v))}</td></tr>`)
         .join('')}
-    </table>`;
+    </table>
+    <p style="font-family:sans-serif;font-size:12px;color:#94a3b8;margin-top:18px;">Submitted via gasuccessfactors.com — view in admin: https://gasf-website.pages.dev/admin/</p>`;
 
   try {
     const res = await fetch('https://api.resend.com/emails', {
@@ -60,7 +68,7 @@ async function sendViaResend(apiKey, { to, from, subject, lines, fields }) {
         subject,
         text: lines,
         html,
-        reply_to: fields.email || fields.email_office || fields.email_permanent || undefined,
+        reply_to: (raw || fields).email || (raw || fields).email_office || (raw || fields).email_permanent || undefined,
       }),
     });
     const body = await res.text();
@@ -74,14 +82,14 @@ async function sendViaResend(apiKey, { to, from, subject, lines, fields }) {
   }
 }
 
-async function sendViaWeb3Forms(key, { subject, lines, fields }) {
+async function sendViaWeb3Forms(key, { subject, lines, fields, raw }) {
   try {
     const res = await fetch('https://api.web3forms.com/submit', {
       method: 'POST',
       headers: { 'content-type': 'application/json', accept: 'application/json' },
       body: JSON.stringify({
         access_key: key, subject, from_name: 'GASF Website',
-        email: fields.email || fields.email_office || fields.email_permanent || 'noreply@gasuccessfactors.com',
+        email: (raw || fields).email || (raw || fields).email_office || (raw || fields).email_permanent || 'noreply@gasuccessfactors.com',
         message: lines || subject, ...fields,
       }),
     });

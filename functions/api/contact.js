@@ -25,10 +25,10 @@ export const onRequestPost = async ({ request, env, waitUntil }) => {
       .bind(...cols.map((c) => data[c]))
       .run();
 
-    waitUntil?.(notifyEmail(env, {
+    await notifyEmail(env, {
       subject: `[GASF] New Contact Message — ${data.name || '(no name)'}`,
       fields: data,
-    }));
+    });
 
     return ok({ ok: true, id: result.meta?.last_row_id });
   } catch (e) {

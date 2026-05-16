@@ -46,10 +46,10 @@ export const onRequestPost = async ({ params, request, env, waitUntil }) => {
       .bind(form.id, form.slug, JSON.stringify(cleaned), name, email, phone, meta.referer, meta.ip, meta.ua)
       .run();
 
-    waitUntil?.(notifyEmail(env, {
+    await notifyEmail(env, {
       subject: `[GASF] New ${form.slug} submission — ${name || '(no name)'}`,
       fields: cleaned,
-    }));
+    });
 
     return json({ ok: true, id: result.meta?.last_row_id });
   } catch (e) {

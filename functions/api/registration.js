@@ -46,10 +46,10 @@ export const onRequestPost = async ({ request, env, waitUntil }) => {
       .bind(...values)
       .run();
 
-    waitUntil?.(notifyEmail(env, {
+    await notifyEmail(env, {
       subject: `[GASF] New Registration — ${[data.first_name, data.last_name].filter(Boolean).join(' ') || '(no name)'}`,
       fields: data,
-    }));
+    });
 
     return ok({ ok: true, id: result.meta?.last_row_id });
   } catch (e) {

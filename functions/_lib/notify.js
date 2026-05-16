@@ -1,42 +1,99 @@
-// Email notification helper — fire-and-forget POST to Web3Forms.
-// Web3Forms is free (no signup, just verify the destination email),
-// works over HTTPS so it runs from Pages Functions, and the destination
-// inbox is baked into the access key. Generate a key at
-//   https://web3forms.com/  →  enter gvagasf@gmail.com
-// then set WEB3FORMS_KEY in Pages env vars (Production).
+// Email notification helper.
 //
-// Use ctx.waitUntil(notifyEmail(...)) so the user-facing response isn't
-// blocked while the email send completes.
+// Uses Resend (https://resend.com) — free 100 emails/day, designed for
+// serverless platforms (Web3Forms blocks Cloudflare Worker IPs with
+// HTTP 403 Cloudflare error 1106).
+//
+// One-time setup:
+//   1. Sign up at https://resend.com (free, just email + password)
+//   2. API Keys → Create → copy the `re_...` key
+//   3. Cloudflare Pages → Settings → Variables and Secrets → Production:
+//        RESEND_API_KEY  = re_xxxxxxxxxxxx              (Secret)
+//        NOTIFY_EMAIL    = gvagasf@gmail.com            (plain text)
+//   4. Optional: NOTIFY_FROM = "GASF <noreply@yourdomain.com>"
+//      Default sender is "GASF <onboarding@resend.dev>" which works
+//      out-of-the-box for any destination — you only need to set
+//      NOTIFY_FROM after verifying a domain in Resend.
+//
+// Fallback: if WEB3FORMS_KEY is set INSTEAD of RESEND_API_KEY, we will
+// still try Web3Forms (works for direct browser submission, but is
+// blocked from Cloudflare Functions — kept only for browser fallback).
 
 export async function notifyEmail(env, { subject, fields }) {
-  const key = env.WEB3FORMS_KEY;
-  if (!key) return; // silently skip when not configured
+  const to = env.NOTIFY_EMAIL || 'gvagasf@gmail.com';
+  const from = env.NOTIFY_FROM || 'GASF Website <onboarding@resend.dev>';
 
   const lines = Object.entries(fields)
     .filter(([, v]) => v !== null && v !== undefined && v !== '')
     .map(([k, v]) => `${k.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}: ${v}`)
     .join('\n');
 
+  if (env.RESEND_API_KEY) {
+    return sendViaResend(env.RESEND_API_KEY, { to, from, subject, lines, fields });
+  }
+  if (env.WEB3FORMS_KEY) {
+    return sendViaWeb3Forms(env.WEB3FORMS_KEY, { subject, lines, fields });
+  }
+  console.warn('notifyEmail: no email provider configured (set RESEND_API_KEY)');
+}
+
+async function sendViaResend(apiKey, { to, from, subject, lines, fields }) {
+  const html = `
+    <h2 style="font-family:sans-serif;color:#0b1f2a;">${escapeHtml(subject)}</h2>
+    <table style="border-collapse:collapse;font-family:sans-serif;font-size:14px;">
+      ${Object.entries(fields)
+        .filter(([, v]) => v !== null && v !== undefined && v !== '')
+        .map(([k, v]) => `<tr><td style="padding:6px 12px;border:1px solid #e5e7eb;background:#f9fafb;font-weight:600;text-transform:capitalize;">${escapeHtml(k.replace(/_/g, ' '))}</td><td style="padding:6px 12px;border:1px solid #e5e7eb;">${escapeHtml(String(v))}</td></tr>`)
+        .join('')}
+    </table>`;
+
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'authorization': `Bearer ${apiKey}`,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        from,
+        to: Array.isArray(to) ? to : [to],
+        subject,
+        text: lines,
+        html,
+        reply_to: fields.email || fields.email_office || fields.email_permanent || undefined,
+      }),
+    });
+    const body = await res.text();
+    if (!res.ok) {
+      console.error('Resend rejected:', res.status, body.slice(0, 400));
+    } else {
+      console.log('Resend ok:', res.status);
+    }
+  } catch (e) {
+    console.error('Resend threw:', e?.message || e);
+  }
+}
+
+async function sendViaWeb3Forms(key, { subject, lines, fields }) {
   try {
     const res = await fetch('https://api.web3forms.com/submit', {
       method: 'POST',
       headers: { 'content-type': 'application/json', accept: 'application/json' },
       body: JSON.stringify({
-        access_key: key,
-        subject,
-        from_name: 'GASF Website',
+        access_key: key, subject, from_name: 'GASF Website',
         email: fields.email || fields.email_office || fields.email_permanent || 'noreply@gasuccessfactors.com',
-        message: lines || subject,
-        ...fields,
+        message: lines || subject, ...fields,
       }),
     });
     const body = await res.text();
     if (!res.ok || !body.includes('"success":true')) {
-      console.error('notifyEmail rejected by Web3Forms:', res.status, body.slice(0, 400));
-    } else {
-      console.log('notifyEmail ok:', res.status);
+      console.error('Web3Forms rejected (datacenter IPs are blocked — switch to RESEND_API_KEY):', res.status, body.slice(0, 200));
     }
   } catch (e) {
-    console.error('notifyEmail threw:', e?.message || e, e?.stack);
+    console.error('Web3Forms threw:', e?.message || e);
   }
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
 }

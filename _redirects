@@ -8,3 +8,4 @@
 
 # SPA-style fallback for any other unknown URL.
 /*    /index.html   200
+# Trigger rebuild to pick up RESEND_API_KEY 2026-05-16 07:57:57

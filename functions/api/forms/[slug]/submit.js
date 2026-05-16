@@ -1,7 +1,8 @@
 import { json, bad, notFound, serverError, readJson, getClientMeta, rateLimit } from '../../../_lib/http.js';
+import { notifyEmail } from '../../../_lib/notify.js';
 
 // POST /api/forms/:slug/submit
-export const onRequestPost = async ({ params, request, env }) => {
+export const onRequestPost = async ({ params, request, env, waitUntil }) => {
   try {
     const meta = getClientMeta(request);
     if (!rateLimit(`form:${params.slug}:${meta.ip}`, { max: 8, windowMs: 60_000 })) {
@@ -44,6 +45,11 @@ export const onRequestPost = async ({ params, request, env }) => {
                 VALUES (?,?,?,?,?,?,?,?,?)`)
       .bind(form.id, form.slug, JSON.stringify(cleaned), name, email, phone, meta.referer, meta.ip, meta.ua)
       .run();
+
+    waitUntil?.(notifyEmail(env, {
+      subject: `[GASF] New ${form.slug} submission — ${name || '(no name)'}`,
+      fields: cleaned,
+    }));
 
     return json({ ok: true, id: result.meta?.last_row_id });
   } catch (e) {

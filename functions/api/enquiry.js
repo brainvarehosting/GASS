@@ -1,6 +1,7 @@
 import { ok, bad, serverError, readJson, getClientMeta, rateLimit } from '../_lib/http.js';
+import { notifyEmail } from '../_lib/notify.js';
 
-export const onRequestPost = async ({ request, env }) => {
+export const onRequestPost = async ({ request, env, waitUntil }) => {
   try {
     const meta = getClientMeta(request);
     if (!rateLimit(`enq:${meta.ip}`, { max: 10, windowMs: 60_000 })) {
@@ -25,6 +26,11 @@ export const onRequestPost = async ({ request, env }) => {
       .prepare(`INSERT INTO enquiries (${cols.join(',')}) VALUES (${cols.map(()=>'?').join(',')})`)
       .bind(...cols.map((c) => data[c]))
       .run();
+
+    waitUntil?.(notifyEmail(env, {
+      subject: `[GASF] New Consulting Enquiry — ${data.name || '(no name)'}`,
+      fields: data,
+    }));
 
     return ok({ ok: true, id: result.meta?.last_row_id });
   } catch (e) {

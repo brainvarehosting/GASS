@@ -1,6 +1,7 @@
 import { ok, bad, serverError, readJson, getClientMeta, rateLimit } from '../_lib/http.js';
+import { notifyEmail } from '../_lib/notify.js';
 
-export const onRequestPost = async ({ request, env }) => {
+export const onRequestPost = async ({ request, env, waitUntil }) => {
   try {
     const meta = getClientMeta(request);
     if (!rateLimit(`contact:${meta.ip}`, { max: 10, windowMs: 60_000 })) {
@@ -23,6 +24,11 @@ export const onRequestPost = async ({ request, env }) => {
       .prepare(`INSERT INTO contacts (${cols.join(',')}) VALUES (${cols.map(()=>'?').join(',')})`)
       .bind(...cols.map((c) => data[c]))
       .run();
+
+    waitUntil?.(notifyEmail(env, {
+      subject: `[GASF] New Contact Message — ${data.name || '(no name)'}`,
+      fields: data,
+    }));
 
     return ok({ ok: true, id: result.meta?.last_row_id });
   } catch (e) {
